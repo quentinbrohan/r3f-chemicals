@@ -10,6 +10,7 @@ import { SerotoninPlane } from "./chemicals/SerotoninPlane";
 import { GlobalCanvas } from "@14islands/r3f-scroll-rig";
 import { Stats } from "@react-three/drei";
 import { Preload } from "./Preload";
+import { DopaminePlane } from "./chemicals/DopaminePlane";
 
 declare module '@react-three/fiber' {
     interface ThreeElements extends ThreeToJSXElements<typeof THREE> { }
@@ -72,7 +73,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = () => {
                     maxHeight: '100vh'
                 }}
             >
-                <SerotoninPlane />
+                {/* <SerotoninPlane /> */}
+                <DopaminePlane />
                 <Stats />
                 {/* <Preload /> */}
             </Canvas>
