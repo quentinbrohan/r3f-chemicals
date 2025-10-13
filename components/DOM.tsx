@@ -1,14 +1,39 @@
-import React from 'react'
-import Gallery from './Gallery'
+import React from 'react';
+
+import { ScrollScene, UseCanvas } from '@14islands/r3f-scroll-rig';
+import { useRef } from 'react';
+import { FBMShaderPlane } from './chemicals/dopamine/webgpu';
+
+interface GalleryProps {
+
+}
+
+const Dop: React.FC<GalleryProps> = ({ }) => {
+    const track = useRef(null)
+
+    return (
+        <>
+            <div ref={track} className='sticky top-0 left-0 h-screen w-full' />
+            {/* <UseCanvas>
+                <ScrollScene track={track}>
+                    {() => (
+                        null
+                        // <FBMShaderPlane />
+                    )}
+                </ScrollScene>
+            </UseCanvas> */}
+        </>
+    )
+}
 
 interface DOMProps { }
 
 
 const DOM: React.FC<DOMProps> = () => {
     return (
-        // TODO: need to compute height based on strips
-        <main className='relative h-[300vh] w-full bg-black/90'>
-            <Gallery />
+        <main className='relative h-screen w-full bg-black/90'>
+            {/* <Gallery /> */}
+            {/* <Dop /> */}
         </main>
     )
 }

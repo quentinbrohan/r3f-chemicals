@@ -5,7 +5,7 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'R3F Scroll Gallery',
+  title: 'R3F Chemicals',
 }
 
 export default function RootLayout({
