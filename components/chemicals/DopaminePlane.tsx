@@ -3,7 +3,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import * as THREE from "three";
-import { useControls, folder } from 'leva';
+import { useControls, folder, button } from 'leva';
 
 const vertexShader = /* glsl */ `
 varying vec2 v_uv;
@@ -39,16 +39,41 @@ uniform float u_color2Intensity;
 uniform float u_colorSeparation;
 uniform float u_colorSharpness;
 
+// Rand function
+uniform vec2 u_randSeed;
+uniform float u_randMultiplier;
+
+// Noise function
+uniform float u_noiseSmoothA;
+uniform float u_noiseSmoothB;
+
+// FBM function
+uniform mat2 u_fbmRotation;
+uniform float u_fbmOctave1;
+uniform float u_fbmOctave2;
+uniform float u_fbmOctave3;
+uniform float u_fbmOctave4;
+uniform float u_fbmScale1;
+uniform float u_fbmScale2;
+uniform float u_fbmScale3;
+uniform float u_fbmNorm;
+
+// Pattern function
+uniform vec2 u_patternOffset1;
+uniform float u_patternQMult;
+uniform vec2 u_patternOffset2;
+uniform float u_patternFinalMult;
+
 varying vec2 v_uv;
 
 float rand(vec2 n) {
-    return fract(sin(dot(n, vec2(1.9898, 4.1414))) * 43758.5453);
+    return fract(sin(dot(n, u_randSeed)) * u_randMultiplier);
 }
 
 float noise(vec2 p) {
     vec2 ip = floor(p);
     vec2 u = fract(p);
-    u = u*u*(3.0-2.0*u);
+    u = u*u*(u_noiseSmoothA - u_noiseSmoothB*u);
 
     float res = mix(
         mix(rand(ip), rand(ip+vec2(1.0,0.0)), u.x),
@@ -57,22 +82,21 @@ float noise(vec2 p) {
     return res*res;
 }
 
-const mat2 m2 = mat2(0.8,-0.6,0.6,0.8);
-
 float fbm(in vec2 p) {
     float f = 0.0;
-    f += 0.5000*noise(p); p = m2*p*2.02;
-    f += 0.2500*noise(p); p = m2*p*2.03;
-    f += 0.1250*noise(p); p = m2*p*2.01;
-    f += 0.0625*noise(p);
-    return f/0.769;
+    f += u_fbmOctave1*noise(p); p = u_fbmRotation*p*u_fbmScale1;
+    f += u_fbmOctave2*noise(p); p = u_fbmRotation*p*u_fbmScale2;
+    f += u_fbmOctave3*noise(p); p = u_fbmRotation*p*u_fbmScale3;
+    f += u_fbmOctave4*noise(p);
+
+    return f/u_fbmNorm;
 }
 
 float pattern(in vec2 p, float mouseInfluence) {
-    vec2 q = vec2(fbm(p + vec2(0.0,0.0)));
-    vec2 r = vec2(fbm(p + 4.0*q + vec2(1.7,9.2) + mouseInfluence));
+    vec2 q = vec2(fbm(p + u_patternOffset1));
+    vec2 r = vec2(fbm(p + u_patternQMult*q + u_patternOffset2 + mouseInfluence));
     r += u_time * u_timeSpeed;
-    return fbm(p + 1.760*r);
+    return fbm(p + u_patternFinalMult*r);
 }
 
 void main() {
@@ -116,9 +140,9 @@ void main() {
 
 export const DopaminePlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
-    const { size, mouse, clock, viewport } = useThree();
+    const { size, mouse, clock, viewport, gl, scene, camera } = useThree();
 
-    const controls = useControls('FBM Shader', {
+    const controls = useControls('Dopamine Shader', {
         'Animation': folder({
             timeSpeed: { value: 0.05, min: 0, max: 1, step: 0.01 },
             uvScale: { value: 2.7, min: 0.1, max: 10, step: 0.1 },
@@ -137,8 +161,103 @@ export const DopaminePlane = () => {
 
         'Mouse': folder({
             enableMouse: { value: true, label: 'Enable Mouse' },
-            mouseRadius: { value: 0.5, min: 0, max: 1, step: 0.01 },
-            mouseStrength: { value: 0.3, min: 0, max: 1, step: 0.01 },
+            mouseRadius: { value: 0.5, min: 0, max: 2, step: 0.05 },
+            mouseStrength: { value: 0.3, min: 0, max: 1, step: 0.05 },
+        }),
+
+        'Rand Function': folder({
+            randSeedX: { value: 1.9898, min: 0, max: 10, step: 0.0001, label: 'Seed X' },
+            randSeedY: { value: 4.1414, min: 0, max: 10, step: 0.0001, label: 'Seed Y' },
+            randMultiplier: { value: 43758.5453, min: 1000, max: 100000, step: 0.0001 },
+        }),
+
+        'Noise Function': folder({
+            noiseSmoothA: { value: 3.0, min: 0, max: 10, step: 0.1, label: 'Smooth A' },
+            noiseSmoothB: { value: 2.0, min: 0, max: 10, step: 0.1, label: 'Smooth B' },
+        }),
+
+        'FBM Function': folder({
+            fbmRotation: folder({
+                m00: { value: 0.8, min: -2, max: 2, step: 0.01, label: '[0,0]' },
+                m01: { value: -0.6, min: -2, max: 2, step: 0.01, label: '[0,1]' },
+                m10: { value: 0.6, min: -2, max: 2, step: 0.01, label: '[1,0]' },
+                m11: { value: 0.8, min: -2, max: 2, step: 0.01, label: '[1,1]' },
+            }),
+            octaves: folder({
+                octave1: { value: 0.5, min: 0, max: 1, step: 0.01, label: 'Octave 1 Weight' },
+                octave2: { value: 0.25, min: 0, max: 1, step: 0.01, label: 'Octave 2 Weight' },
+                octave3: { value: 0.125, min: 0, max: 1, step: 0.01, label: 'Octave 3 Weight' },
+                octave4: { value: 0.0625, min: 0, max: 1, step: 0.01, label: 'Octave 4 Weight' },
+            }),
+            scales: folder({
+                scale1: { value: 2.02, min: 1, max: 5, step: 0.01, label: 'Scale 1' },
+                scale2: { value: 2.03, min: 1, max: 5, step: 0.01, label: 'Scale 2' },
+                scale3: { value: 2.01, min: 1, max: 5, step: 0.01, label: 'Scale 3' },
+            }),
+            fbmNorm: { value: 0.769, min: 0.1, max: 2, step: 0.001, label: 'Normalization' },
+        }),
+
+        'Pattern Function': folder({
+            patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1, label: 'Offset 1 X' },
+            patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1, label: 'Offset 1 Y' },
+            patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1, label: 'Q Multiplier' },
+            patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1, label: 'Offset 2 X' },
+            patternOffset2Y: { value: 9.2, min: -10, max: 10, step: 0.1, label: 'Offset 2 Y' },
+            patternFinalMult: { value: 1.76, min: 0, max: 5, step: 0.01, label: 'Final Multiplier' },
+        }),
+
+        'Export Values': button(() => {
+            const values = {
+                timeSpeed: controls.timeSpeed,
+                uvScale: controls.uvScale,
+                flowDirectionX: controls.flowDirectionX,
+                flowDirectionY: controls.flowDirectionY,
+                enableMouse: controls.enableMouse,
+                mouseRadius: controls.mouseRadius,
+                mouseStrength: controls.mouseStrength,
+                color1: controls.color1,
+                color1Intensity: controls.color1Intensity,
+                color2: controls.color2,
+                color2Intensity: controls.color2Intensity,
+                colorSeparation: controls.colorSeparation,
+                colorSharpness: controls.colorSharpness,
+                randSeedX: controls.randSeedX,
+                randSeedY: controls.randSeedY,
+                randMultiplier: controls.randMultiplier,
+                noiseSmoothA: controls.noiseSmoothA,
+                noiseSmoothB: controls.noiseSmoothB,
+                m00: controls.m00,
+                m01: controls.m01,
+                m10: controls.m10,
+                m11: controls.m11,
+                octave1: controls.octave1,
+                octave2: controls.octave2,
+                octave3: controls.octave3,
+                octave4: controls.octave4,
+                scale1: controls.scale1,
+                scale2: controls.scale2,
+                scale3: controls.scale3,
+                fbmNorm: controls.fbmNorm,
+                patternOffset1X: controls.patternOffset1X,
+                patternOffset1Y: controls.patternOffset1Y,
+                patternQMult: controls.patternQMult,
+                patternOffset2X: controls.patternOffset2X,
+                patternOffset2Y: controls.patternOffset2Y,
+                patternFinalMult: controls.patternFinalMult,
+            };
+
+            navigator.clipboard.writeText(JSON.stringify(values, null, 2));
+            console.log('Copied to clipboard:', values);
+        }),
+
+        'Screenshot': button(() => {
+            gl.render(scene, camera);
+            const dataURL = gl.domElement.toDataURL('image/png');
+            const link = document.createElement('a');
+            const now = new Date().toISOString();
+            link.download = `dopamine-${now}.png`;
+            link.href = dataURL;
+            link.click();
         }),
     });
 
@@ -159,18 +278,43 @@ export const DopaminePlane = () => {
                 u_timeSpeed: { value: 0.15 },
                 u_flowDirection: { value: new THREE.Vector2(0.1, 0.0) },
 
-                // Colors
-                u_color1: { value: new THREE.Color('#0066ff') },
-                u_color1Intensity: { value: 1.0 },
-                u_color2: { value: new THREE.Color('#ff6600') },
-                u_color2Intensity: { value: 1.0 },
-                u_colorSeparation: { value: 0.5 },
-                u_colorSharpness: { value: 0.1 },
-
                 // Mouse
                 u_mouseRadius: { value: 0.5 },
                 u_mouseStrength: { value: 0.3 },
                 u_enableMouse: { value: true },
+
+                // Colors
+                u_color1: { value: new THREE.Color('#ff33ff') },
+                u_color1Intensity: { value: 1.0 },
+                u_color2: { value: new THREE.Color('#00ffff') },
+                u_color2Intensity: { value: 1.0 },
+                u_colorSeparation: { value: 0.5 },
+                u_colorSharpness: { value: 0.1 },
+
+                // Rand function
+                u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
+                u_randMultiplier: { value: 43758.5453 },
+
+                // Noise function
+                u_noiseSmoothA: { value: 3.0 },
+                u_noiseSmoothB: { value: 2.0 },
+
+                // FBM function
+                u_fbmRotation: { value: new THREE.Matrix2().set(0.8, -0.6, 0.6, 0.8) },
+                u_fbmOctave1: { value: 0.5 },
+                u_fbmOctave2: { value: 0.25 },
+                u_fbmOctave3: { value: 0.125 },
+                u_fbmOctave4: { value: 0.0625 },
+                u_fbmScale1: { value: 2.02 },
+                u_fbmScale2: { value: 2.03 },
+                u_fbmScale3: { value: 2.01 },
+                u_fbmNorm: { value: 0.769 },
+
+                // Pattern function
+                u_patternOffset1: { value: new THREE.Vector2(0.0, 0.0) },
+                u_patternQMult: { value: 4.0 },
+                u_patternOffset2: { value: new THREE.Vector2(1.7, 9.2) },
+                u_patternFinalMult: { value: 1.76 },
             },
             transparent: false
         });
@@ -200,6 +344,10 @@ export const DopaminePlane = () => {
         material.uniforms.u_timeSpeed.value = controls.timeSpeed;
         material.uniforms.u_flowDirection.value.set(controls.flowDirectionX, controls.flowDirectionY);
 
+        // Mouse
+        material.uniforms.u_mouseRadius.value = controls.mouseRadius;
+        material.uniforms.u_mouseStrength.value = controls.enableMouse ? controls.mouseStrength : 0;
+
         // Colors
         material.uniforms.u_color1.value.set(controls.color1);
         material.uniforms.u_color1Intensity.value = controls.color1Intensity;
@@ -208,15 +356,42 @@ export const DopaminePlane = () => {
         material.uniforms.u_colorSeparation.value = controls.colorSeparation;
         material.uniforms.u_colorSharpness.value = controls.colorSharpness;
 
-        // Mouse
-        material.uniforms.u_mouseRadius.value = controls.mouseRadius;
-        material.uniforms.u_mouseStrength.value = controls.enableMouse ? controls.mouseStrength : 0;
-        material.uniforms.u_enableMouse.value = controls.enableMouse;
+        // Rand function
+        material.uniforms.u_randSeed.value.set(controls.randSeedX, controls.randSeedY);
+        material.uniforms.u_randMultiplier.value = controls.randMultiplier;
+
+        // Noise function
+        material.uniforms.u_noiseSmoothA.value = controls.noiseSmoothA;
+        material.uniforms.u_noiseSmoothB.value = controls.noiseSmoothB;
+
+        // FBM rotation matrix
+        material.uniforms.u_fbmRotation.value.set(
+            controls.m00, controls.m01,
+            controls.m10, controls.m11
+        );
+
+        // FBM octaves
+        material.uniforms.u_fbmOctave1.value = controls.octave1;
+        material.uniforms.u_fbmOctave2.value = controls.octave2;
+        material.uniforms.u_fbmOctave3.value = controls.octave3;
+        material.uniforms.u_fbmOctave4.value = controls.octave4;
+
+        // FBM scales
+        material.uniforms.u_fbmScale1.value = controls.scale1;
+        material.uniforms.u_fbmScale2.value = controls.scale2;
+        material.uniforms.u_fbmScale3.value = controls.scale3;
+        material.uniforms.u_fbmNorm.value = controls.fbmNorm;
+
+        // Pattern function
+        material.uniforms.u_patternOffset1.value.set(controls.patternOffset1X, controls.patternOffset1Y);
+        material.uniforms.u_patternQMult.value = controls.patternQMult;
+        material.uniforms.u_patternOffset2.value.set(controls.patternOffset2X, controls.patternOffset2Y);
+        material.uniforms.u_patternFinalMult.value = controls.patternFinalMult;
     });
 
     return (
         <mesh ref={meshRef} position={[0, 0, 0]} material={material}>
             <planeGeometry args={[viewport.width, viewport.height, 1, 1]} />
         </mesh>
-    );
+    )
 };
