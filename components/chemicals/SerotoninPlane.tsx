@@ -116,12 +116,12 @@ void main() {
 }
 `;
 
-export const DopaminePlane = () => {
+export const SerotoninPlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
-    const { size, mouse, clock, viewport, gl } = useThree();
+    const { size, mouse, clock, viewport, gl,scene, camera } = useThree();
 
     // Grouped Leva controls
-    const controls = useControls('Dopamine Shader', {
+    const controls = useControls('Serotonin Shader', {
         Animation: folder({
             timeSpeed: { value: 0.15, min: 0, max: 1, step: 0.01 },
             uvScale: { value: 4.5, min: 0.1, max: 10, step: 0.1 },
@@ -134,7 +134,7 @@ export const DopaminePlane = () => {
         }),
 
         Colors: folder({
-            baseColor: { value: '#ff33ff', label: 'Base Color' },
+            baseColor: { value: '#a5c1e9', label: 'Base Color' },
             glowColor: { value: '#1a0d33', label: 'Glow Color' },
             displacementMult: { value: 1.2, min: 0, max: 5, step: 0.1 },
             glowStrength: { value: 2.0, min: 0, max: 5, step: 0.1 },
@@ -193,11 +193,15 @@ export const DopaminePlane = () => {
             console.log('Copied to clipboard:', values);
         }),
         'Screenshot': button(() => {
-            const link = document.createElement('a')
-            link.download = 'r3f-screenshot-dopamine.png'
-            link.href = gl.domElement.toDataURL('image/png')
-            link.click()
+            // Make sure to render the scene before capturing
+            gl.render(scene, camera)
 
+            const dataURL = gl.domElement.toDataURL('image/png')
+            const link = document.createElement('a')
+            const now = new Date().toISOString();
+            link.download = `serotonin-${now}.png`
+            link.href = dataURL
+            link.click()
         }),
     });
 

@@ -6,7 +6,7 @@ import React, { useCallback, useState } from 'react';
 import { extend } from '@react-three/fiber';
 import * as THREE from 'three/webgpu';
 import { WebGPURenderer } from "three/webgpu";
-import { DopaminePlane } from "./chemicals/dopamine";
+import { SerotoninPlane } from "./chemicals/SerotoninPlane";
 import { GlobalCanvas } from "@14islands/r3f-scroll-rig";
 import { Stats } from "@react-three/drei";
 import { Preload } from "./Preload";
@@ -72,7 +72,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = () => {
                     maxHeight: '100vh'
                 }}
             >
-                <DopaminePlane />
+                <SerotoninPlane />
                 <Stats />
                 {/* <Preload /> */}
             </Canvas>
