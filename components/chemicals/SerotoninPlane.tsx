@@ -3,7 +3,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import * as THREE from "three";
-import { useControls, folder, button, useStoreContext } from 'leva';
+import { useControls, folder, button } from 'leva';
 
 const vertexShader = /* glsl */ `
 varying vec2 v_uv;
@@ -24,6 +24,7 @@ uniform vec2 u_resolution;
 // Animation
 uniform float u_uvScale;
 uniform float u_timeSpeed;
+uniform vec2 u_flowDirection;  // ✅ Added
 
 // Mouse
 uniform float u_mouseRadius;
@@ -84,7 +85,6 @@ float fbm(in vec2 p) {
     f += u_fbmOctave2*noise(p); p = u_fbmRotation*p*u_fbmScale2;
     f += u_fbmOctave3*noise(p); p = u_fbmRotation*p*u_fbmScale3;
     f += u_fbmOctave4*noise(p);
-
     return f/u_fbmNorm;
 }
 
@@ -100,6 +100,9 @@ void main() {
     float aspect = u_resolution.x / u_resolution.y;
     uv.x *= aspect;
     uv *= u_uvScale;
+
+    // ✅ Apply directional flow
+    uv += u_flowDirection * u_time;
 
     vec2 mousePos = u_mouse;
     mousePos.x *= aspect;
@@ -118,98 +121,112 @@ void main() {
 
 export const SerotoninPlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
-    const { size, mouse, clock, viewport, gl,scene, camera } = useThree();
+    const { size, mouse, clock, viewport } = useThree();
 
-    // Grouped Leva controls
     const controls = useControls('Serotonin Shader', {
         Animation: folder({
-            timeSpeed: { value: 0.15, min: 0, max: 1, step: 0.01 },
+            timeSpeed: { value: 0.08, min: 0, max: 1, step: 0.01 },
             uvScale: { value: 4.5, min: 0.1, max: 10, step: 0.1 },
+            flowDirectionX: { value: 0.0, min: -1, max: 1, step: 0.01, label: 'Flow X' },  // ✅ Added
+            flowDirectionY: { value: 0.0, min: -1, max: 1, step: 0.01, label: 'Flow Y' },  // ✅ Added
         }),
 
         Mouse: folder({
-            enableMouse: false,
-            mouseRadius: { value: 0.5, min: 0, max: 2, step: 0.05 },
-            mouseStrength: { value: 0.3, min: 0, max: 1, step: 0.05 },
+            enableMouse: { value: false },
+            mouseRadius: { value: 0.5, min: 0, max: 2, step: 0.01 },
+            mouseStrength: { value: 0.3, min: 0, max: 2, step: 0.01 },
         }),
 
         Colors: folder({
-            baseColor: { value: '#a5c1e9', label: 'Base Color' },
+            baseColor: { value: '#a5c1e8', label: 'Base Color' },
             glowColor: { value: '#1a0d33', label: 'Glow Color' },
             displacementMult: { value: 1.2, min: 0, max: 5, step: 0.1 },
-            glowStrength: { value: 2.0, min: 0, max: 5, step: 0.1 },
+            glowStrength: { value: 2.0, min: 0, max: 10, step: 0.1 },
         }),
 
         'Rand Function': folder({
-            randSeedX: { value: 1.9898, min: 0, max: 10, step: 0.0001, label: 'Seed X' },
-            randSeedY: { value: 4.1414, min: 0, max: 10, step: 0.0001, label: 'Seed Y' },
-            randMultiplier: { value: 43758.5453, min: 1000, max: 100000, step: 0.0001 },
+            randSeedX: { value: 1.9898, min: 0, max: 10, step: 0.0001 },
+            randSeedY: { value: 4.1414, min: 0, max: 10, step: 0.0001 },
+            randMultiplier: { value: 43758.5453, min: 0, max: 100000, step: 0.0001 },
         }),
 
         'Noise Function': folder({
-            noiseSmoothA: { value: 3.0, min: 0, max: 10, step: 0.1, label: 'Smooth A' },
-            noiseSmoothB: { value: 2.0, min: 0, max: 10, step: 0.1, label: 'Smooth B' },
+            noiseSmoothA: { value: 3.0, min: 0, max: 10, step: 0.1 },
+            noiseSmoothB: { value: 2.0, min: 0, max: 10, step: 0.1 },
         }),
 
-        'FBM Function': folder({
-            fbmRotation: folder({
-                m00: { value: 0.8, min: -2, max: 2, step: 0.01, label: '[0,0]' },
-                m01: { value: -0.6, min: -2, max: 2, step: 0.01, label: '[0,1]' },
-                m10: { value: 0.6, min: -2, max: 2, step: 0.01, label: '[1,0]' },
-                m11: { value: 0.8, min: -2, max: 2, step: 0.01, label: '[1,1]' },
-            }),
-            octaves: folder({
-                octave1: { value: 0.5, min: 0, max: 1, step: 0.01, label: 'Octave 1 Weight' },
-                octave2: { value: 0.25, min: 0, max: 1, step: 0.01, label: 'Octave 2 Weight' },
-                octave3: { value: 0.125, min: 0, max: 1, step: 0.01, label: 'Octave 3 Weight' },
-                octave4: { value: 0.0625, min: 0, max: 1, step: 0.01, label: 'Octave 4 Weight' },
-            }),
-            scales: folder({
-                scale1: { value: 2.02, min: 1, max: 5, step: 0.01, label: 'Scale 1' },
-                scale2: { value: 2.03, min: 1, max: 5, step: 0.01, label: 'Scale 2' },
-                scale3: { value: 2.01, min: 1, max: 5, step: 0.01, label: 'Scale 3' },
-            }),
-            fbmNorm: { value: 0.769, min: 0.1, max: 2, step: 0.001, label: 'Normalization' },
+        'FBM Rotation': folder({
+            m00: { value: 0.8, min: -2, max: 2, step: 0.01 },
+            m01: { value: -0.6, min: -2, max: 2, step: 0.01 },
+            m10: { value: 0.6, min: -2, max: 2, step: 0.01 },
+            m11: { value: 0.8, min: -2, max: 2, step: 0.01 },
+        }),
+
+        'FBM Octaves': folder({
+            octave1: { value: 0.5, min: 0, max: 1, step: 0.01 },
+            octave2: { value: 0.25, min: 0, max: 1, step: 0.01 },
+            octave3: { value: 0.125, min: 0, max: 1, step: 0.01 },
+            octave4: { value: 0.0625, min: 0, max: 1, step: 0.01 },
+        }),
+
+        'FBM Scales': folder({
+            scale1: { value: 2.02, min: 0, max: 10, step: 0.01 },
+            scale2: { value: 2.03, min: 0, max: 10, step: 0.01 },
+            scale3: { value: 2.01, min: 0, max: 10, step: 0.01 },
+            fbmNorm: { value: 0.769, min: 0.1, max: 2, step: 0.001 },
         }),
 
         'Pattern Function': folder({
-            patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1, label: 'Offset 1 X' },
-            patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1, label: 'Offset 1 Y' },
-            patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1, label: 'Q Multiplier' },
-            patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1, label: 'Offset 2 X' },
-            patternOffset2Y: { value: 9.2, min: -10, max: 10, step: 0.1, label: 'Offset 2 Y' },
-            patternFinalMult: { value: 1.76, min: 0, max: 5, step: 0.01, label: 'Final Multiplier' },
+            patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1 },
+            patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1 },
+            patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1 },
+            patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1 },
+            patternOffset2Y: { value: 9.2, min: -10, max: 10, step: 0.1 },
+            patternFinalMult: { value: 1.76, min: 0, max: 5, step: 0.01 },
         }),
+
         'Export Values': button(() => {
             const values = {
                 timeSpeed: controls.timeSpeed,
                 uvScale: controls.uvScale,
+                flowDirectionX: controls.flowDirectionX,
+                flowDirectionY: controls.flowDirectionY,
                 enableMouse: controls.enableMouse,
-                // ... all other control values
+                mouseRadius: controls.mouseRadius,
+                mouseStrength: controls.mouseStrength,
+                baseColor: controls.baseColor,
+                glowColor: controls.glowColor,
+                displacementMult: controls.displacementMult,
+                glowStrength: controls.glowStrength,
+                randSeedX: controls.randSeedX,
+                randSeedY: controls.randSeedY,
+                randMultiplier: controls.randMultiplier,
+                noiseSmoothA: controls.noiseSmoothA,
+                noiseSmoothB: controls.noiseSmoothB,
+                m00: controls.m00,
+                m01: controls.m01,
+                m10: controls.m10,
+                m11: controls.m11,
+                octave1: controls.octave1,
+                octave2: controls.octave2,
+                octave3: controls.octave3,
+                octave4: controls.octave4,
+                scale1: controls.scale1,
+                scale2: controls.scale2,
+                scale3: controls.scale3,
+                fbmNorm: controls.fbmNorm,
+                patternOffset1X: controls.patternOffset1X,
+                patternOffset1Y: controls.patternOffset1Y,
+                patternQMult: controls.patternQMult,
+                patternOffset2X: controls.patternOffset2X,
+                patternOffset2Y: controls.patternOffset2Y,
+                patternFinalMult: controls.patternFinalMult,
             };
 
-            // Copy to clipboard
             navigator.clipboard.writeText(JSON.stringify(values, null, 2));
             console.log('Copied to clipboard:', values);
         }),
-        'Screenshot': button(() => {
-            // Make sure to render the scene before capturing
-            gl.render(scene, camera)
-
-            const dataURL = gl.domElement.toDataURL('image/png')
-            const link = document.createElement('a')
-            const now = new Date().toISOString();
-            link.download = `serotonin-${now}.png`
-            link.href = dataURL
-            link.click()
-        }),
     });
-
-
-    // Inside your component
-    const store = useStoreContext();
-    const allValues = store?.getData();
-    console.log('All Leva values:', {allValues});
 
     const [material] = useState(() => {
         console.log('Material: Initing...')
@@ -223,29 +240,24 @@ export const SerotoninPlane = () => {
                 u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
                 u_resolution: { value: new THREE.Vector2(size.width, size.height) },
 
-                // Animation
                 u_uvScale: { value: 4.5 },
                 u_timeSpeed: { value: 0.15 },
+                u_flowDirection: { value: new THREE.Vector2(0.0, 0.0) },  // ✅ Added
 
-                // Mouse
                 u_mouseRadius: { value: 0.5 },
                 u_mouseStrength: { value: 0.3 },
 
-                // Colors
                 u_baseColor: { value: new THREE.Color('#ff33ff') },
                 u_glowColor: { value: new THREE.Color('#1a0d33') },
                 u_displacementMult: { value: 1.2 },
                 u_glowStrength: { value: 2.0 },
 
-                // Rand
                 u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
                 u_randMultiplier: { value: 43758.5453 },
 
-                // Noise
                 u_noiseSmoothA: { value: 3.0 },
                 u_noiseSmoothB: { value: 2.0 },
 
-                // FBM
                 u_fbmRotation: { value: new THREE.Matrix2().set(0.8, -0.6, 0.6, 0.8) },
                 u_fbmOctave1: { value: 0.5 },
                 u_fbmOctave2: { value: 0.25 },
@@ -256,7 +268,6 @@ export const SerotoninPlane = () => {
                 u_fbmScale3: { value: 2.01 },
                 u_fbmNorm: { value: 0.769 },
 
-                // Pattern
                 u_patternOffset1: { value: new THREE.Vector2(0.0, 0.0) },
                 u_patternQMult: { value: 4.0 },
                 u_patternOffset2: { value: new THREE.Vector2(1.7, 9.2) },
@@ -269,12 +280,9 @@ export const SerotoninPlane = () => {
         return mat;
     });
 
-    // Update uniforms from Leva controls
-    // Update uniforms from Leva controls
     useFrame(() => {
         material.uniforms.u_time.value = clock.getElapsedTime();
 
-        // Mouse
         if (controls.enableMouse) {
             material.uniforms.u_mouse.value.set(
                 mouse.x * 0.5 + 0.5,
@@ -286,9 +294,9 @@ export const SerotoninPlane = () => {
 
         material.uniforms.u_resolution.value.set(size.width, size.height);
 
-        // Animation
         material.uniforms.u_uvScale.value = controls.uvScale;
         material.uniforms.u_timeSpeed.value = controls.timeSpeed;
+        material.uniforms.u_flowDirection.value.set(controls.flowDirectionX, controls.flowDirectionY);
 
         // Mouse
         material.uniforms.u_mouseRadius.value = controls.mouseRadius;
@@ -337,5 +345,5 @@ export const SerotoninPlane = () => {
         <mesh ref={meshRef} position={[0, 0, 0]} material={material}>
             <planeGeometry args={[viewport.width, viewport.height, 1, 1]} />
         </mesh>
-    );
+    )
 };
