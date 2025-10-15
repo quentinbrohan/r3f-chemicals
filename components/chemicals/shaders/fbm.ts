@@ -219,6 +219,8 @@ void main() {
     vec2 uv = v_uv;
     float aspect = u_resolution.x / u_resolution.y;
     uv.x *= aspect;
+    // uv.x += 0.2; // biases more high values to the right
+
     uv *= u_uvScale;
 
     // Apply flow direction
@@ -232,7 +234,10 @@ void main() {
 
     // Create displacement pattern
 float displacement = pattern(uv, mouseInfluence);
-    displacement = mix(displacement, displacement * 1.5, mouseInfluence);
+    float gradient = smoothstep(0.0, 1.0, v_uv.x);
+
+//    displacement *= mix(0.8, 1.2, gradient); // weights displacement higher on right
+displacement = mix(displacement, displacement * 1.5, mouseInfluence);
 
     // Blend between two colors based on displacement
     vec3 blendedColor = mix(u_baseColor, u_secondaryColor,

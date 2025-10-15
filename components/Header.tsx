@@ -19,7 +19,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ }) => {
     return (
-        <nav className='absolute inset-0 h-screen w-screen z-1 flex justify-center'>
+        <nav className='absolute w-screen z-1 flex justify-center'>
             {NAV_LINKS.map((link, i) => (
                 <React.Fragment key={link.href}>
                     <Link href={link.href}
