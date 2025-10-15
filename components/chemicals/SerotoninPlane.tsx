@@ -24,7 +24,7 @@ uniform vec2 u_resolution;
 // Animation
 uniform float u_uvScale;
 uniform float u_timeSpeed;
-uniform vec2 u_flowDirection;  // ✅ Added
+uniform vec2 u_flowDirection;
 
 // Mouse
 uniform float u_mouseRadius;
@@ -32,9 +32,12 @@ uniform float u_mouseStrength;
 
 // Colors
 uniform vec3 u_baseColor;
+uniform vec3 u_secondaryColor;  // ✅ Second color
 uniform vec3 u_glowColor;
 uniform float u_displacementMult;
 uniform float u_glowStrength;
+uniform float u_colorSeparation;  // ✅ Controls where colors blend
+uniform float u_colorSharpness;   // ✅ Controls blend sharpness
 
 // Rand function
 uniform vec2 u_randSeed;
@@ -63,6 +66,9 @@ uniform float u_patternFinalMult;
 
 varying vec2 v_uv;
 
+uniform float u_brightnessFloor;  // Minimum brightness (0-1)
+
+
 float rand(vec2 n) {
     return fract(sin(dot(n, u_randSeed)) * u_randMultiplier);
 }
@@ -70,7 +76,7 @@ float rand(vec2 n) {
 float noise(vec2 p) {
     vec2 ip = floor(p);
     vec2 u = fract(p);
-    u = u*u*(u_noiseSmoothA - u_noiseSmoothB*u);
+    u = u*u*(u_noiseSmoothA - u_noiseSmoothB * u);
 
     float res = mix(
         mix(rand(ip), rand(ip+vec2(1.0,0.0)), u.x),
@@ -81,18 +87,19 @@ float noise(vec2 p) {
 
 float fbm(in vec2 p) {
     float f = 0.0;
-    f += u_fbmOctave1*noise(p); p = u_fbmRotation*p*u_fbmScale1;
-    f += u_fbmOctave2*noise(p); p = u_fbmRotation*p*u_fbmScale2;
-    f += u_fbmOctave3*noise(p); p = u_fbmRotation*p*u_fbmScale3;
-    f += u_fbmOctave4*noise(p);
-    return f/u_fbmNorm;
+    f += u_fbmOctave1 * noise(p); p = u_fbmRotation * p * u_fbmScale1;
+    f += u_fbmOctave2 * noise(p); p = u_fbmRotation * p * u_fbmScale2;
+    f += u_fbmOctave3 * noise(p); p = u_fbmRotation * p * u_fbmScale3;
+    f += u_fbmOctave4 * noise(p);
+
+    return f / u_fbmNorm;
 }
 
 float pattern(in vec2 p, float mouseInfluence) {
     vec2 q = vec2(fbm(p + u_patternOffset1));
-    vec2 r = vec2(fbm(p + u_patternQMult*q + u_patternOffset2 + mouseInfluence));
+    vec2 r = vec2(fbm(p + u_patternQMult * q + u_patternOffset2 + mouseInfluence));
     r += u_time * u_timeSpeed;
-    return fbm(p + u_patternFinalMult*r);
+    return fbm(p + u_patternFinalMult * r);
 }
 
 void main() {
@@ -101,18 +108,28 @@ void main() {
     uv.x *= aspect;
     uv *= u_uvScale;
 
-    // ✅ Apply directional flow
+    // Apply flow direction
     uv += u_flowDirection * u_time;
 
+    // Mouse interaction
     vec2 mousePos = u_mouse;
     mousePos.x *= aspect;
-    float mouseDistance = length(mousePos - vec2(v_uv.x * aspect, v_uv.y));
-    float mouseInfluence = smoothstep(u_mouseRadius, 0.0, mouseDistance) * u_mouseStrength;
+    float mouseDist = distance(uv, vec2(mousePos.x * u_uvScale, mousePos.y * u_uvScale));
+    float mouseInfluence = smoothstep(u_mouseRadius, 0.0, mouseDist) * u_mouseStrength;
 
-    float displacement = pattern(uv, mouseInfluence);
+    // Create displacement pattern
+float displacement = pattern(uv, mouseInfluence);
     displacement = mix(displacement, displacement * 1.5, mouseInfluence);
 
-    vec4 color = vec4(displacement * u_displacementMult * u_baseColor, 1.0);
+    // Blend between two colors based on displacement
+    vec3 blendedColor = mix(u_baseColor, u_secondaryColor,
+        smoothstep(u_colorSeparation, u_colorSeparation + u_colorSharpness, displacement));
+
+    // ✅ NEW: Use displacement as a mask with a floor, not a multiplier
+    float brightness = mix(u_brightnessFloor, 1.0, displacement * u_displacementMult);
+    vec4 color = vec4(blendedColor * brightness, 1.0);
+
+    // Add glow near mouse
     color.rgb += u_glowColor * mouseInfluence * u_glowStrength;
 
     gl_FragColor = vec4(color.rgb, 1.0);
@@ -125,23 +142,27 @@ export const SerotoninPlane = () => {
 
     const controls = useControls('Serotonin Shader', {
         Animation: folder({
-            timeSpeed: { value: 0.08, min: 0, max: 1, step: 0.01 },
-            uvScale: { value: 4.5, min: 0.1, max: 10, step: 0.1 },
-            flowDirectionX: { value: 0.0, min: -1, max: 1, step: 0.01, label: 'Flow X' },  // ✅ Added
-            flowDirectionY: { value: 0.0, min: -1, max: 1, step: 0.01, label: 'Flow Y' },  // ✅ Added
+            timeSpeed: { value: 0.03, min: 0, max: 1, step: 0.01 },
+            uvScale: { value: 2.2, min: 0.1, max: 10, step: 0.1 },
+            flowDirectionX: { value: -0.05, min: -1, max: 1, step: 0.01, label: 'Flow X' },
+            flowDirectionY: { value: -0.02, min: -1, max: 1, step: 0.01, label: 'Flow Y' },
         }),
 
         Mouse: folder({
             enableMouse: { value: false },
             mouseRadius: { value: 0.5, min: 0, max: 2, step: 0.01 },
-            mouseStrength: { value: 0.3, min: 0, max: 2, step: 0.01 },
+            mouseStrength: { value: 0.3, min: 0, max: 1, step: 0.01 },
         }),
 
         Colors: folder({
-            baseColor: { value: '#a5c1e8', label: 'Base Color' },
+            baseColor: { value: '#98bae8', label: 'Base Color (Blue)' },
+            secondaryColor: { value: '#6d6aa3', label: 'Secondary Color (Purple)' },
+            colorSeparation: { value: 0.5, min: 0, max: 1, step: 0.01, label: 'Color Split Point' },
+            colorSharpness: { value: 0.2, min: 0.01, max: 0.5, step: 0.01, label: 'Blend Sharpness' },
+            displacementMult: { value: 1.8, min: 0, max: 5, step: 0.1 },
             glowColor: { value: '#1a0d33', label: 'Glow Color' },
-            displacementMult: { value: 1.2, min: 0, max: 5, step: 0.1 },
-            glowStrength: { value: 2.0, min: 0, max: 10, step: 0.1 },
+            brightnessFloor: { value: 0.3, min: 0, max: 1, step: 0.05, label: 'Min Brightness' },  // ✅ NEW
+            glowStrength: { value: 2.0, min: 0, max: 5, step: 0.1 },
         }),
 
         'Rand Function': folder({
@@ -155,7 +176,7 @@ export const SerotoninPlane = () => {
             noiseSmoothB: { value: 2.0, min: 0, max: 10, step: 0.1 },
         }),
 
-        'FBM Rotation': folder({
+        'FBM Rotation Matrix': folder({
             m00: { value: 0.8, min: -2, max: 2, step: 0.01 },
             m01: { value: -0.6, min: -2, max: 2, step: 0.01 },
             m10: { value: 0.6, min: -2, max: 2, step: 0.01 },
@@ -163,68 +184,31 @@ export const SerotoninPlane = () => {
         }),
 
         'FBM Octaves': folder({
-            octave1: { value: 0.5, min: 0, max: 1, step: 0.01 },
-            octave2: { value: 0.25, min: 0, max: 1, step: 0.01 },
-            octave3: { value: 0.125, min: 0, max: 1, step: 0.01 },
-            octave4: { value: 0.0625, min: 0, max: 1, step: 0.01 },
+            octave1: { value: 0.50, min: 0, max: 1, step: 0.01 },
+            octave2: { value: 0.30, min: 0, max: 1, step: 0.01 },
+            octave3: { value: 0.15, min: 0, max: 1, step: 0.01 },
+            octave4: { value: 0.05, min: 0, max: 1, step: 0.01 },
         }),
 
         'FBM Scales': folder({
-            scale1: { value: 2.02, min: 0, max: 10, step: 0.01 },
-            scale2: { value: 2.03, min: 0, max: 10, step: 0.01 },
-            scale3: { value: 2.01, min: 0, max: 10, step: 0.01 },
-            fbmNorm: { value: 0.769, min: 0.1, max: 2, step: 0.001 },
+            scale1: { value: 2.0, min: 1, max: 5, step: 0.01 },
+            scale2: { value: 2.1, min: 1, max: 5, step: 0.01 },
+            scale3: { value: 2.0, min: 1, max: 5, step: 0.01 },
+            fbmNorm: { value: 0.95, min: 0.1, max: 2, step: 0.01 },
         }),
 
         'Pattern Function': folder({
             patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1 },
             patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1 },
-            patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1 },
-            patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1 },
-            patternOffset2Y: { value: 9.2, min: -10, max: 10, step: 0.1 },
-            patternFinalMult: { value: 1.76, min: 0, max: 5, step: 0.01 },
+            patternQMult: { value: 5.5, min: 0, max: 10, step: 0.1 },
+            patternOffset2X: { value: 2.5, min: -10, max: 10, step: 0.1 },
+            patternOffset2Y: { value: 8.0, min: -10, max: 10, step: 0.1 },
+            patternFinalMult: { value: 2.8, min: 0, max: 5, step: 0.1 },
         }),
 
         'Export Values': button(() => {
-            const values = {
-                timeSpeed: controls.timeSpeed,
-                uvScale: controls.uvScale,
-                flowDirectionX: controls.flowDirectionX,
-                flowDirectionY: controls.flowDirectionY,
-                enableMouse: controls.enableMouse,
-                mouseRadius: controls.mouseRadius,
-                mouseStrength: controls.mouseStrength,
-                baseColor: controls.baseColor,
-                glowColor: controls.glowColor,
-                displacementMult: controls.displacementMult,
-                glowStrength: controls.glowStrength,
-                randSeedX: controls.randSeedX,
-                randSeedY: controls.randSeedY,
-                randMultiplier: controls.randMultiplier,
-                noiseSmoothA: controls.noiseSmoothA,
-                noiseSmoothB: controls.noiseSmoothB,
-                m00: controls.m00,
-                m01: controls.m01,
-                m10: controls.m10,
-                m11: controls.m11,
-                octave1: controls.octave1,
-                octave2: controls.octave2,
-                octave3: controls.octave3,
-                octave4: controls.octave4,
-                scale1: controls.scale1,
-                scale2: controls.scale2,
-                scale3: controls.scale3,
-                fbmNorm: controls.fbmNorm,
-                patternOffset1X: controls.patternOffset1X,
-                patternOffset1Y: controls.patternOffset1Y,
-                patternQMult: controls.patternQMult,
-                patternOffset2X: controls.patternOffset2X,
-                patternOffset2Y: controls.patternOffset2Y,
-                patternFinalMult: controls.patternFinalMult,
-            };
-
-            navigator.clipboard.writeText(JSON.stringify(values, null, 2));
-            console.log('Copied to clipboard:', values);
+            navigator.clipboard.writeText(JSON.stringify(controls, null, 2));
+            console.log('Copied to clipboard:', controls);
         }),
     });
 
@@ -240,17 +224,21 @@ export const SerotoninPlane = () => {
                 u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
                 u_resolution: { value: new THREE.Vector2(size.width, size.height) },
 
-                u_uvScale: { value: 4.5 },
-                u_timeSpeed: { value: 0.15 },
-                u_flowDirection: { value: new THREE.Vector2(0.0, 0.0) },  // ✅ Added
+                u_uvScale: { value: 2.2 },
+                u_timeSpeed: { value: 0.03 },
+                u_flowDirection: { value: new THREE.Vector2(0.05, 0.02) },
 
                 u_mouseRadius: { value: 0.5 },
                 u_mouseStrength: { value: 0.3 },
 
-                u_baseColor: { value: new THREE.Color('#ff33ff') },
+                u_baseColor: { value: new THREE.Color('#6B8DD6') },
+                u_secondaryColor: { value: new THREE.Color('#4A3B6B') },
                 u_glowColor: { value: new THREE.Color('#1a0d33') },
-                u_displacementMult: { value: 1.2 },
+                u_displacementMult: { value: 1.8 },
                 u_glowStrength: { value: 2.0 },
+                u_colorSeparation: { value: 0.5 },
+                u_colorSharpness: { value: 0.2 },
+                u_brightnessFloor: { value: 0.2 },  // ✅ NEW
 
                 u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
                 u_randMultiplier: { value: 43758.5453 },
@@ -280,9 +268,11 @@ export const SerotoninPlane = () => {
         return mat;
     });
 
+    // Update uniforms from Leva controls
     useFrame(() => {
         material.uniforms.u_time.value = clock.getElapsedTime();
 
+        // Mouse
         if (controls.enableMouse) {
             material.uniforms.u_mouse.value.set(
                 mouse.x * 0.5 + 0.5,
@@ -294,6 +284,7 @@ export const SerotoninPlane = () => {
 
         material.uniforms.u_resolution.value.set(size.width, size.height);
 
+        // Animation
         material.uniforms.u_uvScale.value = controls.uvScale;
         material.uniforms.u_timeSpeed.value = controls.timeSpeed;
         material.uniforms.u_flowDirection.value.set(controls.flowDirectionX, controls.flowDirectionY);
@@ -304,9 +295,13 @@ export const SerotoninPlane = () => {
 
         // Colors
         material.uniforms.u_baseColor.value.set(controls.baseColor);
+        material.uniforms.u_secondaryColor.value.set(controls.secondaryColor);
         material.uniforms.u_glowColor.value.set(controls.glowColor);
         material.uniforms.u_displacementMult.value = controls.displacementMult;
+        material.uniforms.u_brightnessFloor.value = controls.brightnessFloor;  // ✅ NEW
         material.uniforms.u_glowStrength.value = controls.glowStrength;
+        material.uniforms.u_colorSeparation.value = controls.colorSeparation;
+        material.uniforms.u_colorSharpness.value = controls.colorSharpness;
 
         // Rand function
         material.uniforms.u_randSeed.value.set(controls.randSeedX, controls.randSeedY);
@@ -345,5 +340,4 @@ export const SerotoninPlane = () => {
         <mesh ref={meshRef} position={[0, 0, 0]} material={material}>
             <planeGeometry args={[viewport.width, viewport.height, 1, 1]} />
         </mesh>
-    )
-};
+    )};
