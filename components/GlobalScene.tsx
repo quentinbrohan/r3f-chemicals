@@ -75,8 +75,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = () => {
                 }}
             >
                 {/* <DopaminePlane /> */}
-                <OxytocinPlane />
-                {/* <SerotoninPlane /> */}
+                {/* <OxytocinPlane /> */}
+                <SerotoninPlane />
                 <Stats />
                 {/* <Preload /> */}
             </Canvas>
