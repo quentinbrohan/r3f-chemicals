@@ -13,7 +13,7 @@ export const DopaminePlane = () => {
     const [controls, _setControls] = useControls('Dopamine Shader', () => ({
         Animation: folder({
             uvScale: { value: 0.55, min: 0.1, max: 10, step: 0.1 },
-            timeSpeed: { value: 0.08, min: 0, max: 0.5, step: 0.01 },
+            timeSpeed: { value: 0.06, min: 0, max: 0.5, step: 0.01 },
             flowDirectionX: { value: -0.08, min: -1, max: 1, step: 0.01 },
             flowDirectionY: { value: -0.02, min: -1, max: 1, step: 0.01 },
         }),
@@ -43,7 +43,7 @@ export const DopaminePlane = () => {
         'Rand Function': folder({
             randSeedX: { value: 1.9898, min: 0, max: 20, step: 0.0001 },
             randSeedY: { value: 4.1414, min: 0, max: 20, step: 0.0001 },
-            randMultiplier: { value: 43758.5453, min: 0, max: 100000, step: 0.0001 },
+            randMultiplier: { value: 21573.00, min: 0, max: 100000, step: 0.0001 },
         }),
 
         'Noise Function': folder({
@@ -52,16 +52,16 @@ export const DopaminePlane = () => {
         }),
 
         'FBM Rotation': folder({
-            m00: { value: 0.8, min: -2, max: 2, step: 0.01 },
-            m01: { value: 0.6, min: -2, max: 2, step: 0.01 },
-            m10: { value: -0.6, min: -2, max: 2, step: 0.01 },
-            m11: { value: -0.8, min: -2, max: 2, step: 0.01 },
+            m00: { value: -0.8, min: -2, max: 2, step: 0.01 },
+            m01: { value: -0.6, min: -2, max: 2, step: 0.01 },
+            m10: { value: 0.6, min: -2, max: 2, step: 0.01 },
+            m11: { value: 0.8, min: -2, max: 2, step: 0.01 },
         }),
 
         'FBM Octaves': folder({
-            octave1: { value: 0.7, min: 0, max: 1, step: 0.01 },
+            octave1: { value: 0.65, min: 0, max: 1, step: 0.01 },
             octave2: { value: 0.3, min: 0, max: 1, step: 0.01 },
-            octave3: { value: 0.0, min: 0, max: 1, step: 0.01 },
+            octave3: { value: 0.05, min: 0, max: 1, step: 0.01 },
             octave4: { value: 0.0, min: 0, max: 1, step: 0.01 },
         }),
 
@@ -75,10 +75,10 @@ export const DopaminePlane = () => {
         'Pattern Function': folder({
             patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1 },
             patternOffset1Y: { value: -1.0, min: -10, max: 10, step: 0.1 },
-            patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1 },
+            patternQMult: { value: 5.0, min: 0, max: 10, step: 0.1 },
             patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1 },
             patternOffset2Y: { value: 8.0, min: -10, max: 10, step: 0.1 },
-            patternFinalMult: { value: 4.2, min: 0, max: 5, step: 0.1 },
+            patternFinalMult: { value: 3.5, min: 0, max: 5, step: 0.1 },
         }),
     }));
 
