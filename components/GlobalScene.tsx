@@ -19,9 +19,11 @@ declare module '@react-three/fiber' {
 
 extend(THREE as any)
 
-interface GlobalSceneProps { }
+interface GlobalSceneProps {
+    children: React.ReactElement
+ }
 
-const GlobalScene: React.FC<GlobalSceneProps> = () => {
+const GlobalScene: React.FC<GlobalSceneProps> = ({children}) => {
     const [frameloop, setFrameloop] = useState<CanvasProps['frameloop']>("never");
 
     // TODO: keep only for webgpu later or in prod only. Complex shaders takes almost a minute to compile
@@ -74,9 +76,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = () => {
                     maxHeight: '100vh'
                 }}
             >
+                {children}
                 {/* <DopaminePlane /> */}
                 {/* <OxytocinPlane /> */}
-                <SerotoninPlane />
+                {/* <SerotoninPlane /> */}
                 <Stats />
                 {/* <Preload /> */}
             </Canvas>

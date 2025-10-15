@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { ScrollScene, UseCanvas } from '@14islands/r3f-scroll-rig';
 import { useRef } from 'react';
-import { FBMShaderPlane } from './chemicals/dopamine/webgpu';
 
 interface GalleryProps {
 
@@ -31,10 +29,12 @@ interface DOMProps { }
 
 const DOM: React.FC<DOMProps> = () => {
     return (
+        <>
         <main className='relative h-screen w-full bg-black/90'>
             {/* <Gallery /> */}
             {/* <Dop /> */}
         </main>
+        </>
     )
 }
 
