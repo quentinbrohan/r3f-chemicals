@@ -20,34 +20,28 @@ precision mediump float;
 uniform float u_time;
 uniform vec2 u_mouse;
 uniform vec2 u_resolution;
-
-// Animation
 uniform float u_uvScale;
 uniform float u_timeSpeed;
 uniform vec2 u_flowDirection;
-
-// Mouse
 uniform float u_mouseRadius;
 uniform float u_mouseStrength;
-uniform bool u_enableMouse;
-
-// Colors
-uniform vec3 u_color1;
-uniform float u_color1Intensity;
-uniform vec3 u_color2;
-uniform float u_color2Intensity;
+uniform vec3 u_baseColor;
+uniform vec3 u_secondaryColor;
+uniform vec3 u_glowColor;
+uniform float u_displacementMult;
+uniform float u_glowStrength;
 uniform float u_colorSeparation;
 uniform float u_colorSharpness;
+uniform float u_brightnessFloor;
+uniform float u_colorPower;
+uniform float u_colorVibration;
+uniform float u_turbulence;
 
-// Rand function
+// Rand, noise, fbm parameters
 uniform vec2 u_randSeed;
 uniform float u_randMultiplier;
-
-// Noise function
 uniform float u_noiseSmoothA;
 uniform float u_noiseSmoothB;
-
-// FBM function
 uniform mat2 u_fbmRotation;
 uniform float u_fbmOctave1;
 uniform float u_fbmOctave2;
@@ -57,8 +51,6 @@ uniform float u_fbmScale1;
 uniform float u_fbmScale2;
 uniform float u_fbmScale3;
 uniform float u_fbmNorm;
-
-// Pattern function
 uniform vec2 u_patternOffset1;
 uniform float u_patternQMult;
 uniform vec2 u_patternOffset2;
@@ -78,7 +70,8 @@ float noise(vec2 p) {
     float res = mix(
         mix(rand(ip), rand(ip+vec2(1.0,0.0)), u.x),
         mix(rand(ip+vec2(0.0,1.0)), rand(ip+vec2(1.0,1.0)), u.x),
-        u.y);
+        u.y
+    );
     return res*res;
 }
 
@@ -94,9 +87,14 @@ float fbm(in vec2 p) {
 
 float pattern(in vec2 p, float mouseInfluence) {
     vec2 q = vec2(fbm(p + u_patternOffset1));
-    vec2 r = vec2(fbm(p + u_patternQMult*q + u_patternOffset2 + mouseInfluence));
+    vec2 r = vec2(fbm(p + u_patternQMult * q + u_patternOffset2 + mouseInfluence));
     r += u_time * u_timeSpeed;
-    return fbm(p + u_patternFinalMult*r);
+
+    // Add turbulence
+    float turbulence = fbm(p * 2.0 + r * 0.5);
+    r += turbulence * u_turbulence;
+
+    return fbm(p + u_patternFinalMult * r);
 }
 
 void main() {
@@ -105,127 +103,141 @@ void main() {
     uv.x *= aspect;
     uv *= u_uvScale;
 
-    // Add directional flow
+    // Directional warp
+    float warp = fbm(uv * 0.5 + u_time * 0.1);
+    uv += u_flowDirection * warp * 0.5;
+
     uv += u_flowDirection * u_time;
 
-    // Mouse interaction (optional)
-    float mouseInfluence = 0.0;
-    if (u_enableMouse) {
-        vec2 mousePos = u_mouse;
-        mousePos.x *= aspect;
-        float mouseDistance = length(mousePos - vec2(v_uv.x * aspect, v_uv.y));
-        mouseInfluence = smoothstep(u_mouseRadius, 0.0, mouseDistance) * u_mouseStrength;
-    }
+    // Mouse interaction
+    vec2 mousePos = u_mouse;
+    mousePos.x *= aspect;
+    float mouseDistance = length(mousePos - vec2(v_uv.x * aspect, v_uv.y));
+    float mouseInfluence = smoothstep(u_mouseRadius, 0.0, mouseDistance) * u_mouseStrength;
 
-    // Calculate displacement using original pattern function
     float displacement = pattern(uv, mouseInfluence);
     displacement = mix(displacement, displacement * 1.5, mouseInfluence);
 
-    // Blend colors based on displacement value
-    float colorMask = smoothstep(u_colorSeparation, u_colorSeparation + u_colorSharpness, displacement);
+    // Exponential displacement for more punch
+    float displacementPow = pow(displacement, u_colorPower);
 
-    // Apply intensity separately to each color
-    vec3 color1 = u_color1 * u_color1Intensity;
-    vec3 color2 = u_color2 * u_color2Intensity;
+    vec3 blendedColor = mix(u_baseColor, u_secondaryColor,
+        smoothstep(u_colorSeparation, u_colorSeparation + u_colorSharpness, displacementPow));
 
-    // Blend between the two colors
-    vec3 blendedColor = mix(color1, color2, colorMask);
+    // Color vibration
+    float vibration = sin(u_time * 2.0 + displacement * 10.0) * 0.5 + 0.5;
+    blendedColor *= 1.0 + vibration * u_colorVibration;
 
-    // Apply displacement as a visibility mask (not multiplier)
-    float mask = smoothstep(0.0, 0.3, displacement);
+    // Brightness floor
+    float visibility = smoothstep(0.0, 0.3, displacement);
+    vec3 finalColor = mix(blendedColor * u_brightnessFloor, blendedColor, visibility);
 
-    gl_FragColor = vec4(blendedColor * mask, 1.0);
+    // Glow
+    finalColor += u_glowColor * mouseInfluence * u_glowStrength;
+
+    gl_FragColor = vec4(finalColor, 1.0);
 }
 `;
 
 export const DopaminePlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
-    const { size, mouse, clock, viewport, gl, scene, camera } = useThree();
+    const { size, mouse, clock, viewport } = useThree();
 
     const controls = useControls('Dopamine Shader', {
-        'Animation': folder({
-            timeSpeed: { value: 0.05, min: 0, max: 1, step: 0.01 },
-            uvScale: { value: 2.7, min: 0.1, max: 10, step: 0.1 },
-            flowDirectionX: { value: -0.01, min: -1, max: 1, step: 0.01, label: 'Flow X (Wind)' },
-            flowDirectionY: { value: -0.01, min: -1, max: 1, step: 0.01, label: 'Flow Y' },
+        Animation: folder({
+            uvScale: { value: 0.4, min: 0.1, max: 10, step: 0.1 },
+            timeSpeed: { value: 0.08, min: 0, max: 0.5, step: 0.01 },
+            flowDirectionX: { value: -0.12, min: -1, max: 1, step: 0.01 },
+            flowDirectionY: { value: -0.05, min: -1, max: 1, step: 0.01 },
         }),
 
-        'Colors': folder({
-            color1: { value: '#ae6def', label: 'Color 1 (Water)' },
-            color1Intensity: { value: 0.7, min: 0, max: 3, step: 0.1, label: 'Color 1 Intensity' },
-            color2: { value: '#db996e', label: 'Color 2 (Liquid)' },
-            color2Intensity: { value: 1.4, min: 0, max: 3, step: 0.1, label: 'Color 2 Intensity' },
-            colorSeparation: { value: 0.36, min: -1, max: 1, step: 0.01, label: 'Color Separation' },
-            colorSharpness: { value: 0.34, min: 0.01, max: 0.5, step: 0.01, label: 'Color Sharpness' },
+        Mouse: folder({
+            enableMouse: { value: false },
+            mouseRadius: { value: 0.5, min: 0, max: 1, step: 0.01 },
+            mouseStrength: { value: 0.3, min: 0, max: 1, step: 0.01 },
         }),
 
-        'Mouse': folder({
-            enableMouse: { value: true, label: 'Enable Mouse' },
-            mouseRadius: { value: 0.5, min: 0, max: 2, step: 0.05 },
-            mouseStrength: { value: 0.3, min: 0, max: 1, step: 0.05 },
+        Colors: folder({
+            baseColor: { value: '#d57350', label: 'Base Color (Blue)' },
+            secondaryColor: { value: '#a34fc7', label: 'Secondary Color (Purple)' },
+            glowColor: { value: '#8B008B' },
+            colorSeparation: { value: 0.4, min: 0, max: 1, step: 0.01 },
+            colorSharpness: { value: 0.15, min: 0, max: 1, step: 0.01 },
+            brightnessFloor: { value: 0.2, min: 0, max: 1, step: 0.01 },
+            glowStrength: { value: 3.0, min: 0, max: 10, step: 0.1 },
+        }),
+
+        'New Effects': folder({
+            colorPower: { value: 1.2, min: 0.1, max: 3, step: 0.1, label: 'Color Power (exponential)' },
+            colorVibration: { value: 0.15, min: 0, max: 1, step: 0.01, label: 'Color Vibration' },
+            turbulence: { value: 0.3, min: 0, max: 1, step: 0.01, label: 'Turbulence Strength' },
         }),
 
         'Rand Function': folder({
-            randSeedX: { value: 1.9898, min: 0, max: 10, step: 0.0001, label: 'Seed X' },
-            randSeedY: { value: 4.1414, min: 0, max: 10, step: 0.0001, label: 'Seed Y' },
+            randSeedX: { value: 1.9898, min: 0, max: 20, step: 0.0001 },
+            randSeedY: { value: 4.1414, min: 0, max: 20, step: 0.0001 },
             randMultiplier: { value: 43758.5453, min: 1000, max: 100000, step: 0.0001 },
         }),
 
         'Noise Function': folder({
-            noiseSmoothA: { value: 3.0, min: 0, max: 10, step: 0.1, label: 'Smooth A' },
-            noiseSmoothB: { value: 2.0, min: 0, max: 10, step: 0.1, label: 'Smooth B' },
+            smoothA: { value: 3.0, min: 0, max: 10, step: 0.1 },
+            smoothB: { value: 2.0, min: 0, max: 10, step: 0.1 },
         }),
 
-        'FBM Function': folder({
-            fbmRotation: folder({
-                m00: { value: 0.8, min: -2, max: 2, step: 0.01, label: '[0,0]' },
-                m01: { value: -0.6, min: -2, max: 2, step: 0.01, label: '[0,1]' },
-                m10: { value: 0.6, min: -2, max: 2, step: 0.01, label: '[1,0]' },
-                m11: { value: 0.8, min: -2, max: 2, step: 0.01, label: '[1,1]' },
-            }),
-            octaves: folder({
-                octave1: { value: 0.5, min: 0, max: 1, step: 0.01, label: 'Octave 1 Weight' },
-                octave2: { value: 0.25, min: 0, max: 1, step: 0.01, label: 'Octave 2 Weight' },
-                octave3: { value: 0.125, min: 0, max: 1, step: 0.01, label: 'Octave 3 Weight' },
-                octave4: { value: 0.0625, min: 0, max: 1, step: 0.01, label: 'Octave 4 Weight' },
-            }),
-            scales: folder({
-                scale1: { value: 2.02, min: 1, max: 5, step: 0.01, label: 'Scale 1' },
-                scale2: { value: 2.03, min: 1, max: 5, step: 0.01, label: 'Scale 2' },
-                scale3: { value: 2.01, min: 1, max: 5, step: 0.01, label: 'Scale 3' },
-            }),
-            fbmNorm: { value: 0.769, min: 0.1, max: 2, step: 0.001, label: 'Normalization' },
+        'FBM Rotation': folder({
+            m00: { value: 0.8, min: -2, max: 2, step: 0.01 },
+            m01: { value: -0.6, min: -2, max: 2, step: 0.01 },
+            m10: { value: 0.6, min: -2, max: 2, step: 0.01 },
+            m11: { value: 0.8, min: -2, max: 2, step: 0.01 },
+        }),
+
+        'FBM Octaves': folder({
+            octave1: { value: 0.4, min: 0, max: 1, step: 0.01 },
+            octave2: { value: 0.3, min: 0, max: 1, step: 0.01 },
+            octave3: { value: 0.2, min: 0, max: 1, step: 0.01 },
+            octave4: { value: 0.1, min: 0, max: 1, step: 0.01 },
+        }),
+
+        'FBM Scales': folder({
+            scale1: { value: 2.2, min: 1, max: 5, step: 0.01 },
+            scale2: { value: 2.3, min: 1, max: 5, step: 0.01 },
+            scale3: { value: 2.1, min: 1, max: 5, step: 0.01 },
+            fbmNorm: { value: 0.85, min: 0.1, max: 2, step: 0.01 },
         }),
 
         'Pattern Function': folder({
-            patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1, label: 'Offset 1 X' },
-            patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1, label: 'Offset 1 Y' },
-            patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1, label: 'Q Multiplier' },
-            patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1, label: 'Offset 2 X' },
-            patternOffset2Y: { value: 9.2, min: -10, max: 10, step: 0.1, label: 'Offset 2 Y' },
-            patternFinalMult: { value: 1.76, min: 0, max: 5, step: 0.01, label: 'Final Multiplier' },
+            patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1 },
+            patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1 },
+            patternQMult: { value: 5.0, min: 0, max: 10, step: 0.1 },
+            patternOffset2X: { value: 2.0, min: -10, max: 10, step: 0.1 },
+            patternOffset2Y: { value: 8.5, min: -10, max: 10, step: 0.1 },
+            patternFinalMult: { value: 2.2, min: 0, max: 5, step: 0.1 },
         }),
 
         'Export Values': button(() => {
             const values = {
-                timeSpeed: controls.timeSpeed,
                 uvScale: controls.uvScale,
+                timeSpeed: controls.timeSpeed,
                 flowDirectionX: controls.flowDirectionX,
                 flowDirectionY: controls.flowDirectionY,
                 enableMouse: controls.enableMouse,
                 mouseRadius: controls.mouseRadius,
                 mouseStrength: controls.mouseStrength,
-                color1: controls.color1,
-                color1Intensity: controls.color1Intensity,
-                color2: controls.color2,
-                color2Intensity: controls.color2Intensity,
+                baseColor: controls.baseColor,
+                secondaryColor: controls.secondaryColor,
+                glowColor: controls.glowColor,
                 colorSeparation: controls.colorSeparation,
                 colorSharpness: controls.colorSharpness,
+                brightnessFloor: controls.brightnessFloor,
+                glowStrength: controls.glowStrength,
+                colorPower: controls.colorPower,
+                colorVibration: controls.colorVibration,
+                turbulence: controls.turbulence,
                 randSeedX: controls.randSeedX,
                 randSeedY: controls.randSeedY,
                 randMultiplier: controls.randMultiplier,
-                noiseSmoothA: controls.noiseSmoothA,
-                noiseSmoothB: controls.noiseSmoothB,
+                smoothA: controls.smoothA,
+                smoothB: controls.smoothB,
                 m00: controls.m00,
                 m01: controls.m01,
                 m10: controls.m10,
@@ -245,19 +257,8 @@ export const DopaminePlane = () => {
                 patternOffset2Y: controls.patternOffset2Y,
                 patternFinalMult: controls.patternFinalMult,
             };
-
             navigator.clipboard.writeText(JSON.stringify(values, null, 2));
             console.log('Copied to clipboard:', values);
-        }),
-
-        'Screenshot': button(() => {
-            gl.render(scene, camera);
-            const dataURL = gl.domElement.toDataURL('image/png');
-            const link = document.createElement('a');
-            const now = new Date().toISOString();
-            link.download = `dopamine-${now}.png`;
-            link.href = dataURL;
-            link.click();
         }),
     });
 
@@ -273,33 +274,30 @@ export const DopaminePlane = () => {
                 u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
                 u_resolution: { value: new THREE.Vector2(size.width, size.height) },
 
-                // Animation
-                u_uvScale: { value: 4.5 },
-                u_timeSpeed: { value: 0.15 },
-                u_flowDirection: { value: new THREE.Vector2(0.1, 0.0) },
+                u_uvScale: { value: 3.5 },
+                u_timeSpeed: { value: 0.08 },
+                u_flowDirection: { value: new THREE.Vector2(0.12, 0.05) },
 
-                // Mouse
                 u_mouseRadius: { value: 0.5 },
                 u_mouseStrength: { value: 0.3 },
-                u_enableMouse: { value: true },
 
-                // Colors
-                u_color1: { value: new THREE.Color('#ff33ff') },
-                u_color1Intensity: { value: 1.0 },
-                u_color2: { value: new THREE.Color('#00ffff') },
-                u_color2Intensity: { value: 1.0 },
-                u_colorSeparation: { value: 0.5 },
-                u_colorSharpness: { value: 0.1 },
+                u_baseColor: { value: new THREE.Color('#FF6B35') },
+                u_secondaryColor: { value: new THREE.Color('#C41E3A') },
+                u_glowColor: { value: new THREE.Color('#8B008B') },
+                u_colorSeparation: { value: 0.4 },
+                u_colorSharpness: { value: 0.15 },
+                u_brightnessFloor: { value: 0.2 },
+                u_glowStrength: { value: 3.0 },
+                u_colorPower: { value: 1.5 },
+                u_colorVibration: { value: 0.3 },
+                u_turbulence: { value: 0.3 },
 
-                // Rand function
                 u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
                 u_randMultiplier: { value: 43758.5453 },
 
-                // Noise function
                 u_noiseSmoothA: { value: 3.0 },
                 u_noiseSmoothB: { value: 2.0 },
 
-                // FBM function
                 u_fbmRotation: { value: new THREE.Matrix2().set(0.8, -0.6, 0.6, 0.8) },
                 u_fbmOctave1: { value: 0.5 },
                 u_fbmOctave2: { value: 0.25 },
@@ -310,7 +308,6 @@ export const DopaminePlane = () => {
                 u_fbmScale3: { value: 2.01 },
                 u_fbmNorm: { value: 0.769 },
 
-                // Pattern function
                 u_patternOffset1: { value: new THREE.Vector2(0.0, 0.0) },
                 u_patternQMult: { value: 4.0 },
                 u_patternOffset2: { value: new THREE.Vector2(1.7, 9.2) },
@@ -327,7 +324,6 @@ export const DopaminePlane = () => {
     useFrame(() => {
         material.uniforms.u_time.value = clock.getElapsedTime();
 
-        // Mouse
         if (controls.enableMouse) {
             material.uniforms.u_mouse.value.set(
                 mouse.x * 0.5 + 0.5,
@@ -349,20 +345,24 @@ export const DopaminePlane = () => {
         material.uniforms.u_mouseStrength.value = controls.enableMouse ? controls.mouseStrength : 0;
 
         // Colors
-        material.uniforms.u_color1.value.set(controls.color1);
-        material.uniforms.u_color1Intensity.value = controls.color1Intensity;
-        material.uniforms.u_color2.value.set(controls.color2);
-        material.uniforms.u_color2Intensity.value = controls.color2Intensity;
+        material.uniforms.u_baseColor.value.set(controls.baseColor);
+        material.uniforms.u_secondaryColor.value.set(controls.secondaryColor);
+        material.uniforms.u_glowColor.value.set(controls.glowColor);
         material.uniforms.u_colorSeparation.value = controls.colorSeparation;
         material.uniforms.u_colorSharpness.value = controls.colorSharpness;
+        material.uniforms.u_brightnessFloor.value = controls.brightnessFloor;
+        material.uniforms.u_glowStrength.value = controls.glowStrength;
+        material.uniforms.u_colorPower.value = controls.colorPower;
+        material.uniforms.u_colorVibration.value = controls.colorVibration;
+        material.uniforms.u_turbulence.value = controls.turbulence;
 
         // Rand function
         material.uniforms.u_randSeed.value.set(controls.randSeedX, controls.randSeedY);
         material.uniforms.u_randMultiplier.value = controls.randMultiplier;
 
         // Noise function
-        material.uniforms.u_noiseSmoothA.value = controls.noiseSmoothA;
-        material.uniforms.u_noiseSmoothB.value = controls.noiseSmoothB;
+        material.uniforms.u_noiseSmoothA.value = controls.smoothA;
+        material.uniforms.u_noiseSmoothB.value = controls.smoothB;
 
         // FBM rotation matrix
         material.uniforms.u_fbmRotation.value.set(

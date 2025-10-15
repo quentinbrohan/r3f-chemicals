@@ -73,8 +73,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = () => {
                     maxHeight: '100vh'
                 }}
             >
-                <SerotoninPlane />
-                {/* <DopaminePlane /> */}
+                {/* <SerotoninPlane /> */}
+                <DopaminePlane />
                 <Stats />
                 {/* <Preload /> */}
             </Canvas>
