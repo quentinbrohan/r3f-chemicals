@@ -12,8 +12,8 @@ export const DopaminePlane = () => {
 
     const controls = useControls('Dopamine Shader', {
         Animation: folder({
-            uvScale: { value: 0.4, min: 0.1, max: 10, step: 0.1 },
-            timeSpeed: { value: 0.08, min: 0, max: 0.5, step: 0.01 },
+            uvScale: { value: 3.5, min: 0.1, max: 10, step: 0.1 },
+            timeSpeed: { value: 0.06, min: 0, max: 0.5, step: 0.01 },
             flowDirectionX: { value: -0.12, min: -1, max: 1, step: 0.01 },
             flowDirectionY: { value: -0.05, min: -1, max: 1, step: 0.01 },
         }),
@@ -25,9 +25,9 @@ export const DopaminePlane = () => {
         }),
 
         Colors: folder({
-            baseColor: { value: '#d57350', label: 'Base Color (Blue)' },
-            secondaryColor: { value: '#a34fc7', label: 'Secondary Color (Purple)' },
-            glowColor: { value: '#8B008B' },
+            baseColor: { value: '#9b58b6', label: 'Base Color (Blue)' },
+            secondaryColor: { value: '#db7947', label: 'Secondary Color (Purple)' },
+            glowColor: { value: '#f33946' },
             colorSeparation: { value: 0.4, min: 0, max: 1, step: 0.01 },
             colorSharpness: { value: 0.15, min: 0, max: 1, step: 0.01 },
             brightnessFloor: { value: 0.2, min: 0, max: 1, step: 0.01 },
@@ -35,15 +35,15 @@ export const DopaminePlane = () => {
         }),
 
         'New Effects': folder({
-            colorPower: { value: 1.2, min: 0.1, max: 3, step: 0.1, label: 'Color Power (exponential)' },
-            colorVibration: { value: 0.15, min: 0, max: 1, step: 0.01, label: 'Color Vibration' },
+            colorPower: { value: 1.5, min: 0.1, max: 3, step: 0.1, label: 'Color Power (exponential)' },
+            colorVibration: { value: 0.35, min: 0, max: 1, step: 0.01, label: 'Color Vibration' },
             turbulence: { value: 0.3, min: 0, max: 1, step: 0.01, label: 'Turbulence Strength' },
         }),
 
         'Rand Function': folder({
             randSeedX: { value: 1.9898, min: 0, max: 20, step: 0.0001 },
             randSeedY: { value: 4.1414, min: 0, max: 20, step: 0.0001 },
-            randMultiplier: { value: 43758.5453, min: 1000, max: 100000, step: 0.0001 },
+            randMultiplier: { value: 43758.5453, min: 0, max: 100000, step: 0.0001 },
         }),
 
         'Noise Function': folder({
@@ -52,33 +52,33 @@ export const DopaminePlane = () => {
         }),
 
         'FBM Rotation': folder({
-            m00: { value: 0.8, min: -2, max: 2, step: 0.01 },
+            m00: { value: -0.8, min: -2, max: 2, step: 0.01 },
             m01: { value: -0.6, min: -2, max: 2, step: 0.01 },
             m10: { value: 0.6, min: -2, max: 2, step: 0.01 },
             m11: { value: 0.8, min: -2, max: 2, step: 0.01 },
         }),
 
         'FBM Octaves': folder({
-            octave1: { value: 0.4, min: 0, max: 1, step: 0.01 },
-            octave2: { value: 0.3, min: 0, max: 1, step: 0.01 },
-            octave3: { value: 0.2, min: 0, max: 1, step: 0.01 },
-            octave4: { value: 0.1, min: 0, max: 1, step: 0.01 },
+            octave1: { value: 0.5, min: 0, max: 1, step: 0.01 },
+            octave2: { value: 0.25, min: 0, max: 1, step: 0.01 },
+            octave3: { value: 0.125, min: 0, max: 1, step: 0.01 },
+            octave4: { value: 0.0625, min: 0, max: 1, step: 0.01 },
         }),
 
         'FBM Scales': folder({
-            scale1: { value: 2.2, min: 1, max: 5, step: 0.01 },
-            scale2: { value: 2.3, min: 1, max: 5, step: 0.01 },
-            scale3: { value: 2.1, min: 1, max: 5, step: 0.01 },
-            fbmNorm: { value: 0.85, min: 0.1, max: 2, step: 0.01 },
+            scale1: { value: 2.02, min: 1, max: 5, step: 0.01 },
+            scale2: { value: 2.03, min: 1, max: 5, step: 0.01 },
+            scale3: { value: 2.01, min: 1, max: 5, step: 0.01 },
+            fbmNorm: { value: 0.769, min: 0.1, max: 2, step: 0.01 },
         }),
 
         'Pattern Function': folder({
             patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1 },
             patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1 },
-            patternQMult: { value: 5.0, min: 0, max: 10, step: 0.1 },
-            patternOffset2X: { value: 2.0, min: -10, max: 10, step: 0.1 },
-            patternOffset2Y: { value: 8.5, min: -10, max: 10, step: 0.1 },
-            patternFinalMult: { value: 2.2, min: 0, max: 5, step: 0.1 },
+            patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1 },
+            patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1 },
+            patternOffset2Y: { value: 9.2, min: -10, max: 10, step: 0.1 },
+            patternFinalMult: { value: 1.76, min: 0, max: 5, step: 0.1 },
         }),
 
         'Export Values': button(() => {
