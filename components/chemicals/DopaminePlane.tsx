@@ -10,7 +10,7 @@ export const DopaminePlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
     const { size, mouse, clock, viewport } = useThree();
 
-    const [controls, setControls] = useControls('Dopamine Shader', () => ({
+    const [controls, _setControls] = useControls('Dopamine Shader', () => ({
         Animation: folder({
             uvScale: { value: 0.55, min: 0.1, max: 10, step: 0.1 },
             timeSpeed: { value: 0.08, min: 0, max: 0.5, step: 0.01 },
@@ -29,13 +29,13 @@ export const DopaminePlane = () => {
             secondaryColor: { value: '#6e1e96', label: 'Secondary Color (Purple)' },
             glowColor: { value: '#ffb347' },
             colorSeparation: { value: 0.38, min: 0, max: 1, step: 0.01 },
-            colorSharpness: { value: 0.2, min: 0, max: 1, step: 0.01 },
-            brightnessFloor: { value: 0.25, min: 0, max: 1, step: 0.01 },
+            colorSharpness: { value: 0.15, min: 0, max: 1, step: 0.01 },
+            brightnessFloor: { value: 0.18, min: 0, max: 1, step: 0.01 },
             glowStrength: { value: 3.0, min: 0, max: 10, step: 0.1 },
         }),
 
         'New Effects': folder({
-            colorPower: { value: 0.7, min: 0.1, max: 3, step: 0.1, label: 'Color Power (exponential)' },
+            colorPower: { value: 1.2, min: 0.1, max: 3, step: 0.1, label: 'Color Power (exponential)' },
             colorVibration: { value: 0.35, min: 0, max: 1, step: 0.01, label: 'Color Vibration' },
             turbulence: { value: 0.4, min: 0, max: 1, step: 0.01, label: 'Turbulence Strength' },
         }),
@@ -52,10 +52,10 @@ export const DopaminePlane = () => {
         }),
 
         'FBM Rotation': folder({
-            m00: { value: -0.8, min: -2, max: 2, step: 0.01 },
-            m01: { value: -0.6, min: -2, max: 2, step: 0.01 },
-            m10: { value: 0.6, min: -2, max: 2, step: 0.01 },
-            m11: { value: 0.8, min: -2, max: 2, step: 0.01 },
+            m00: { value: 0.8, min: -2, max: 2, step: 0.01 },
+            m01: { value: 0.6, min: -2, max: 2, step: 0.01 },
+            m10: { value: -0.6, min: -2, max: 2, step: 0.01 },
+            m11: { value: -0.8, min: -2, max: 2, step: 0.01 },
         }),
 
         'FBM Octaves': folder({
@@ -74,58 +74,11 @@ export const DopaminePlane = () => {
 
         'Pattern Function': folder({
             patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1 },
-            patternOffset1Y: { value: -1.5, min: -10, max: 10, step: 0.1 },
+            patternOffset1Y: { value: -1.0, min: -10, max: 10, step: 0.1 },
             patternQMult: { value: 4.0, min: 0, max: 10, step: 0.1 },
             patternOffset2X: { value: 1.7, min: -10, max: 10, step: 0.1 },
-            patternOffset2Y: { value: 9.2, min: -10, max: 10, step: 0.1 },
+            patternOffset2Y: { value: 8.0, min: -10, max: 10, step: 0.1 },
             patternFinalMult: { value: 4.2, min: 0, max: 5, step: 0.1 },
-        }),
-
-        'Export Values': button(() => {
-            const values = {
-                uvScale: controls.uvScale,
-                timeSpeed: controls.timeSpeed,
-                flowDirectionX: controls.flowDirectionX,
-                flowDirectionY: controls.flowDirectionY,
-                enableMouse: controls.enableMouse,
-                mouseRadius: controls.mouseRadius,
-                mouseStrength: controls.mouseStrength,
-                baseColor: controls.baseColor,
-                secondaryColor: controls.secondaryColor,
-                glowColor: controls.glowColor,
-                colorSeparation: controls.colorSeparation,
-                colorSharpness: controls.colorSharpness,
-                brightnessFloor: controls.brightnessFloor,
-                glowStrength: controls.glowStrength,
-                colorPower: controls.colorPower,
-                colorVibration: controls.colorVibration,
-                turbulence: controls.turbulence,
-                randSeedX: controls.randSeedX,
-                randSeedY: controls.randSeedY,
-                randMultiplier: controls.randMultiplier,
-                smoothA: controls.smoothA,
-                smoothB: controls.smoothB,
-                m00: controls.m00,
-                m01: controls.m01,
-                m10: controls.m10,
-                m11: controls.m11,
-                octave1: controls.octave1,
-                octave2: controls.octave2,
-                octave3: controls.octave3,
-                octave4: controls.octave4,
-                scale1: controls.scale1,
-                scale2: controls.scale2,
-                scale3: controls.scale3,
-                fbmNorm: controls.fbmNorm,
-                patternOffset1X: controls.patternOffset1X,
-                patternOffset1Y: controls.patternOffset1Y,
-                patternQMult: controls.patternQMult,
-                patternOffset2X: controls.patternOffset2X,
-                patternOffset2Y: controls.patternOffset2Y,
-                patternFinalMult: controls.patternFinalMult,
-            };
-            navigator.clipboard.writeText(JSON.stringify(values, null, 2));
-            console.log('Copied to clipboard:', values);
         }),
     }));
 
