@@ -1,34 +1,51 @@
-import { useThree, useFrame } from '@react-three/fiber';
-import { useControls, folder } from 'leva';
+import { useFrame, useThree } from '@react-three/fiber';
+import { folder, useControls } from 'leva';
 import { useState } from 'react';
 import * as THREE from 'three';
 import { updateUniformsFromControls } from '../chemicals/shaders/helper';
 import { getDopamineShaderMaterial, getOxytocinShaderMaterial, getSerotoninShaderMaterial } from '../chemicals/shaders/shaderMaterials';
 
+
+const MONITOR_DIMENSIONS = {
+    WIDTH: 2.12,
+    HEIGHT: 3.29
+}
+
 export const useMaterials = () => {
-    const { size, mouse, clock, viewport } = useThree();
+    const { size, mouse, clock } = useThree();
 
     const [dopamineMaterial] = useState<THREE.ShaderMaterial>(() => {
         const mat = getDopamineShaderMaterial({
             uniforms: {
-                u_resolution: { value: new THREE.Vector2(size.width, size.height) },
-            }
+                u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
+                u_flipY: {value: 0},
+                u_useAspect: {value: 0},
+            },
+            side: THREE.DoubleSide,
         });
         return mat;
     });
     const [oxytocinMaterial] = useState<THREE.ShaderMaterial>(() => {
         const mat = getOxytocinShaderMaterial({
             uniforms: {
-                u_resolution: { value: new THREE.Vector2(size.width, size.height) },
-            }
+                u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
+                u_flipY: {value: 1},
+                u_useAspect: {value: 0},
+
+            },
+            side: THREE.DoubleSide,
         });
         return mat;
     });
     const [serotoninMaterial] = useState<THREE.ShaderMaterial>(() => {
         const mat = getSerotoninShaderMaterial({
             uniforms: {
-                u_resolution: { value: new THREE.Vector2(size.width, size.height) },
-            }
+                u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
+                u_flipY: {value: 1},
+                u_useAspect: {value: 0},
+
+            },
+            side: THREE.DoubleSide,
         });
         return mat;
     });
@@ -56,6 +73,7 @@ export const useMaterials = () => {
             colorSharpness: { value: 0.15, min: 0, max: 1, step: 0.01 },
             brightnessFloor: { value: 0.18, min: 0, max: 1, step: 0.01 },
             glowStrength: { value: 3.0, min: 0, max: 10, step: 0.1 },
+            displacementMult: { value: 1.6, min: 0, max: 5, step: 0.1 },
         }),
 
         'New Effects': folder({
@@ -210,8 +228,8 @@ export const useMaterials = () => {
         }),
 
         'Noise Function': folder({
-            noiseSmoothA: { value: 3.5, min: 0, max: 10, step: 0.1 },
-            noiseSmoothB: { value: 2.5, min: 0, max: 10, step: 0.1 },
+            smoothA: { value: 3.5, min: 0, max: 10, step: 0.1 },
+            smoothB: { value: 2.5, min: 0, max: 10, step: 0.1 },
         }),
 
         'FBM Rotation Matrix': folder({

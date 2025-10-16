@@ -142,21 +142,28 @@ export function getSharedUniforms(
     u_patternQMult: { value: c.patternQMult },
     u_patternOffset2: { value: c.patternOffset2 },
     u_patternFinalMult: { value: c.patternFinalMult },
+
+    u_flipY: { value: 0 },
+    u_useAspect: { value: 1 },
+  };
+}
+
+interface ShaderMaterialConfig extends Partial<THREE.ShaderMaterial> {
+  uniforms: THREE.ShaderMaterial["uniforms"] & {
+    u_resolution: THREE.IUniform<any>;
+    u_flipY?: THREE.IUniform<number>;
+    u_useAspect?: THREE.IUniform<number>;
   };
 }
 
 export const getDopamineShaderMaterial = (
-  config: Partial<THREE.ShaderMaterial> & {
-    uniforms: THREE.ShaderMaterial["uniforms"] & {
-      u_resolution: THREE.IUniform<any>;
-    };
-  }
+  config: ShaderMaterialConfig
 ): THREE.ShaderMaterial => {
   return new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
     uniforms: {
-      ...getSharedUniforms('dopamine'),
+      ...getSharedUniforms("dopamine"),
       u_turbulence: { value: 0.3 },
       u_directionalWarp: { value: 0.2 },
       ...(config.uniforms as THREE.ShaderMaterial["uniforms"]),
@@ -166,13 +173,7 @@ export const getDopamineShaderMaterial = (
   });
 };
 
-export const getOxytocinShaderMaterial = (
-  config: Partial<THREE.ShaderMaterial> & {
-    uniforms: THREE.ShaderMaterial["uniforms"] & {
-      u_resolution: THREE.IUniform<any>;
-    };
-  }
-): THREE.ShaderMaterial => {
+export const getOxytocinShaderMaterial = (config: ShaderMaterialConfig): THREE.ShaderMaterial => {
   return new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
@@ -187,13 +188,7 @@ export const getOxytocinShaderMaterial = (
   });
 };
 
-export const getSerotoninShaderMaterial = (
-  config: Partial<THREE.ShaderMaterial> & {
-    uniforms: THREE.ShaderMaterial["uniforms"] & {
-      u_resolution: THREE.IUniform<any>;
-    };
-  }
-): THREE.ShaderMaterial => {
+export const getSerotoninShaderMaterial = (config: ShaderMaterialConfig): THREE.ShaderMaterial => {
   return new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader: serotoninFragmentShader,

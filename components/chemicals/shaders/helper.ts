@@ -15,58 +15,155 @@ export function updateUniformsFromControls({
   mouse,
   size,
 }: UpdateUniformsFromControlsParams) {
-  const uniforms = material.uniforms;
+  material.uniforms.u_time.value = clock.getElapsedTime();
 
-  // Update time
-  if (uniforms.u_time) {
-    uniforms.u_time.value = clock.getElapsedTime();
+  if (controls.enableMouse) {
+    material.uniforms.u_mouse.value.set(
+      mouse.x * 0.5 + 0.5,
+      1.0 - (mouse.y * 0.5 + 0.5)
+    );
+  } else {
+    material.uniforms.u_mouse.value.set(0.5, 0.5);
   }
 
-  // Update resolution
-  if (uniforms.u_resolution) {
-    uniforms.u_resolution.value.set(size.width, size.height);
+  material.uniforms.u_resolution.value.set(size.width, size.height);
+
+  // Animation
+  material.uniforms.u_uvScale.value = controls.uvScale;
+  material.uniforms.u_timeSpeed.value = controls.timeSpeed;
+  material.uniforms.u_flowDirection.value.set(
+    controls.flowDirectionX,
+    controls.flowDirectionY
+  );
+
+  // Mouse
+  material.uniforms.u_mouseRadius.value = controls.mouseRadius;
+  material.uniforms.u_mouseStrength.value = controls.enableMouse
+    ? controls.mouseStrength
+    : 0;
+
+  // Colors
+  material.uniforms.u_baseColor.value.set(controls.baseColor);
+  material.uniforms.u_secondaryColor.value.set(controls.secondaryColor);
+  material.uniforms.u_glowColor.value.set(controls.glowColor);
+  material.uniforms.u_colorSeparation.value = controls.colorSeparation;
+  material.uniforms.u_colorSharpness.value = controls.colorSharpness;
+  material.uniforms.u_brightnessFloor.value = controls.brightnessFloor;
+  material.uniforms.u_glowStrength.value = controls.glowStrength;
+
+  if (controls?.displacementMult) {
+    // material.uniforms.u_displacementMult.value = controls.displacementMult;
   }
+  material.uniforms.u_colorPower.value = controls.colorPower;
+  material.uniforms.u_colorVibration.value = controls.colorVibration;
 
-  // Update mouse
-  if (uniforms.u_mouse) {
-    if (controls.enableMouse) {
-      uniforms.u_mouse.value.set(
-        mouse.x * 0.5 + 0.5,
-        1.0 - (mouse.y * 0.5 + 0.5)
-      );
-    } else {
-      uniforms.u_mouse.value.set(0.5, 0.5);
-    }
+  if (controls?.turbulence) {
+    material.uniforms.u_turbulence.value = controls.turbulence;
   }
+  if (controls?.directionalWarp) {
+    material.uniforms.u_directionalWarp.value = controls.directionalWarp;
+  }
+  // material.uniforms.u_turbulence.value = controls.turbulence;
+  // material.uniforms.u_directionalWarp.value = controls.directionalWarp;
 
-  // Update all other uniforms from controls if they exist
-  Object.entries(controls).forEach(([key, value]) => {
-    const uniform = uniforms[`u_${key}`];
+  // Rand function
+  material.uniforms.u_randSeed.value.set(
+    controls.randSeedX,
+    controls.randSeedY
+  );
+  material.uniforms.u_randMultiplier.value = controls.randMultiplier;
 
-    if (!uniform) return;
+  // Noise function
+  material.uniforms.u_noiseSmoothA.value = controls.smoothA;
+  material.uniforms.u_noiseSmoothB.value = controls.smoothB;
 
-    // Handle different types
-    if (uniform.value instanceof THREE.Color && typeof value === "string") {
-      uniform.value.set(value);
-    } else if (
-      uniform.value instanceof THREE.Vector2 &&
-      value?.x !== undefined &&
-      value?.y !== undefined
-    ) {
-      uniform.value.set(value.x, value.y);
-    } else if (
-      uniform.value instanceof THREE.Vector3 &&
-      value?.x !== undefined &&
-      value?.y !== undefined &&
-      value?.z !== undefined
-    ) {
-      uniform.value.set(value.x, value.y, value.z);
-    } else if (typeof uniform.value === "number") {
-      uniform.value = value;
-    } else if (typeof uniform.value === "boolean") {
-      uniform.value = value;
-    } else if (Array.isArray(uniform.value) && Array.isArray(value)) {
-      uniform.value = value;
-    }
-  });
+  // FBM rotation matrix
+  material.uniforms.u_fbmRotation.value.set(
+    controls.m00,
+    controls.m01,
+    controls.m10,
+    controls.m11
+  );
+
+  // FBM octaves
+  material.uniforms.u_fbmOctave1.value = controls.octave1;
+  material.uniforms.u_fbmOctave2.value = controls.octave2;
+  material.uniforms.u_fbmOctave3.value = controls.octave3;
+  material.uniforms.u_fbmOctave4.value = controls.octave4;
+
+  // FBM scales
+  material.uniforms.u_fbmScale1.value = controls.scale1;
+  material.uniforms.u_fbmScale2.value = controls.scale2;
+  material.uniforms.u_fbmScale3.value = controls.scale3;
+  material.uniforms.u_fbmNorm.value = controls.fbmNorm;
+
+  // Pattern function
+  material.uniforms.u_patternOffset1.value.set(
+    controls.patternOffset1X,
+    controls.patternOffset1Y
+  );
+  material.uniforms.u_patternQMult.value = controls.patternQMult;
+  material.uniforms.u_patternOffset2.value.set(
+    controls.patternOffset2X,
+    controls.patternOffset2Y
+  );
+  material.uniforms.u_patternFinalMult.value = controls.patternFinalMult;
+
+
+
+  //   const uniforms = material.uniforms;
+
+  //   // Update time
+  //   if (uniforms.u_time) {
+  //     uniforms.u_time.value = clock.getElapsedTime();
+  //   }
+
+  //   // Update resolution
+  //   if (uniforms.u_resolution) {
+  //     uniforms.u_resolution.value.set(size.width, size.height);
+  //   }
+
+  //   // Update mouse
+  //   if (uniforms.u_mouse) {
+  //     if (controls.enableMouse) {
+  //       uniforms.u_mouse.value.set(
+  //         mouse.x * 0.5 + 0.5,
+  //         1.0 - (mouse.y * 0.5 + 0.5)
+  //       );
+  //     } else {
+  //       uniforms.u_mouse.value.set(0.5, 0.5);
+  //     }
+  //   }
+
+  //   // Update all other uniforms from controls if they exist
+  //   // FIXME: not 1:1 controls to shaders
+  //   Object.entries(controls).forEach(([key, value]) => {
+  //     const uniform = uniforms[`u_${key}`];
+
+  //     if (!uniform) return;
+
+  //     // Handle different types
+  //     if (uniform.value instanceof THREE.Color && typeof value === "string") {
+  //       uniform.value.set(value);
+  //     } else if (
+  //       uniform.value instanceof THREE.Vector2 &&
+  //       value?.x !== undefined &&
+  //       value?.y !== undefined
+  //     ) {
+  //       uniform.value.set(value.x, value.y);
+  //     } else if (
+  //       uniform.value instanceof THREE.Vector3 &&
+  //       value?.x !== undefined &&
+  //       value?.y !== undefined &&
+  //       value?.z !== undefined
+  //     ) {
+  //       uniform.value.set(value.x, value.y, value.z);
+  //     } else if (typeof uniform.value === "number") {
+  //       uniform.value = value;
+  //     } else if (typeof uniform.value === "boolean") {
+  //       uniform.value = value;
+  //     } else if (Array.isArray(uniform.value) && Array.isArray(value)) {
+  //       uniform.value = value;
+  //     }
+  //   });
 }

@@ -48,8 +48,8 @@ export const SerotoninPlane = () => {
         }),
 
         'Noise Function': folder({
-            noiseSmoothA: { value: 3.5, min: 0, max: 10, step: 0.1 },
-            noiseSmoothB: { value: 2.5, min: 0, max: 10, step: 0.1 },
+            smoothA: { value: 3.5, min: 0, max: 10, step: 0.1 },
+            smoothB: { value: 2.5, min: 0, max: 10, step: 0.1 },
         }),
 
         'FBM Rotation Matrix': folder({
@@ -144,8 +144,8 @@ export const SerotoninPlane = () => {
         material.uniforms.u_randMultiplier.value = controls.randMultiplier;
 
         // Noise function
-        material.uniforms.u_noiseSmoothA.value = controls.noiseSmoothA;
-        material.uniforms.u_noiseSmoothB.value = controls.noiseSmoothB;
+        material.uniforms.u_noiseSmoothA.value = controls.smoothA;
+        material.uniforms.u_noiseSmoothB.value = controls.smoothB;
 
         // FBM rotation matrix
         material.uniforms.u_fbmRotation.value.set(

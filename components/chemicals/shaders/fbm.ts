@@ -50,6 +50,10 @@ uniform float u_patternQMult;
 uniform vec2 u_patternOffset2;
 uniform float u_patternFinalMult;
 
+uniform float u_flipY;  // 0.0 = normal, 1.0 = flipped
+uniform float u_useAspect;  // 0.0 = normal, 1.0 = flipped
+
+
 varying vec2 v_uv;
 
 float rand(vec2 n) {
@@ -97,13 +101,21 @@ float pattern(in vec2 p, float mouseInfluence) {
 
 void main() {
     vec2 uv = v_uv;
+    uv.y = mix(uv.y, 1.0 - uv.y, u_flipY);
+
     float aspect = u_resolution.x / u_resolution.y;
-    uv.x *= aspect;
+    if (u_useAspect > 0.5) {
+        uv.x *= aspect;
+    }
+
     uv *= u_uvScale;
-    uv += u_flowDirection * u_time;
+    // Adjust flow direction based on Y-flip
+    vec2 flowDir = u_flowDirection;
+    flowDir.y = mix(flowDir.y, -flowDir.y, u_flipY);  // Negate Y when flipped
+    uv += flowDir * u_time;
 
     vec2 mousePos = u_mouse;
-    mousePos.x *= aspect;
+    // mousePos.x *= aspect;
     float mouseDistance = length(mousePos - vec2(v_uv.x * aspect, v_uv.y));
     float mouseInfluence = smoothstep(u_mouseRadius, 0.0, mouseDistance) * u_mouseStrength;
 
@@ -178,6 +190,10 @@ uniform float u_patternFinalMult;
 
 uniform float u_brightnessFloor;
 
+uniform float u_flipY;  // 0.0 = normal, 1.0 = flipped
+uniform float u_useAspect;  // 0.0 = ignore aspect, 1.0 = apply aspect
+
+
 varying vec2 v_uv;
 
 float rand(vec2 n) {
@@ -215,15 +231,21 @@ float pattern(in vec2 p, float mouseInfluence) {
 
 void main() {
     vec2 uv = v_uv;
+    uv.y = mix(uv.y, 1.0 - uv.y, u_flipY);
+
     float aspect = u_resolution.x / u_resolution.y;
-    uv.x *= aspect;
+    if (u_useAspect > 0.5) {
+        uv.x *= aspect;
+    }
 
     uv *= u_uvScale;
 
-    uv += u_flowDirection * u_time;
+    vec2 flowDir = u_flowDirection;
+    flowDir.y = mix(flowDir.y, -flowDir.y, u_flipY);  // Negate Y when flipped
+    uv += flowDir * u_time;
 
     vec2 mousePos = u_mouse;
-    mousePos.x *= aspect;
+    // mousePos.x *= aspect;
     float mouseDist = distance(uv, vec2(mousePos.x * u_uvScale, mousePos.y * u_uvScale));
     float mouseInfluence = smoothstep(u_mouseRadius, 0.0, mouseDist) * u_mouseStrength;
 
