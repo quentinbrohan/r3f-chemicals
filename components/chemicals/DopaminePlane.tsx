@@ -1,10 +1,10 @@
 'use client'
 
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { folder, useControls } from 'leva';
+import { useRef, useState } from "react";
 import * as THREE from "three";
-import { useControls, folder, button } from 'leva';
-import { vertexShader, fragmentShader } from "./shaders/fbm";
+import { getDopamineShaderMaterial } from "./shaders/shaderMaterials";
 
 export const DopaminePlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
@@ -83,61 +83,14 @@ export const DopaminePlane = () => {
         }),
     }));
 
-    const [material] = useState(() => {
+    const [material] = useState<THREE.ShaderMaterial>(() => {
         console.log('Material: Initing...')
         console.time('Material: Init took:')
 
-        const mat = new THREE.ShaderMaterial({
-            vertexShader,
-            fragmentShader,
+        const mat = getDopamineShaderMaterial({
             uniforms: {
-                u_time: { value: 0 },
-                u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
                 u_resolution: { value: new THREE.Vector2(size.width, size.height) },
-
-                u_uvScale: { value: 3.5 },
-                u_timeSpeed: { value: 0.08 },
-                u_flowDirection: { value: new THREE.Vector2(0.12, 0.05) },
-
-                u_mouseRadius: { value: 0.5 },
-                u_mouseStrength: { value: 0.3 },
-
-                u_baseColor: { value: new THREE.Color('#FF6B35') },
-                u_secondaryColor: { value: new THREE.Color('#C41E3A') },
-                u_glowColor: { value: new THREE.Color('#8B008B') },
-                u_colorSeparation: { value: 0.4 },
-                u_colorSharpness: { value: 0.15 },
-                u_brightnessFloor: { value: 0.2 },
-                u_glowStrength: { value: 3.0 },
-
-                u_colorPower: { value: 1.5 },
-                u_colorVibration: { value: 0.3 },
-                u_turbulence: { value: 0.3 },
-                u_directionalWarp: { value: 0.2 },
-
-
-                u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
-                u_randMultiplier: { value: 43758.5453 },
-
-                u_noiseSmoothA: { value: 3.0 },
-                u_noiseSmoothB: { value: 2.0 },
-
-                u_fbmRotation: { value: new THREE.Matrix2().set(0.8, -0.6, 0.6, 0.8) },
-                u_fbmOctave1: { value: 0.5 },
-                u_fbmOctave2: { value: 0.25 },
-                u_fbmOctave3: { value: 0.125 },
-                u_fbmOctave4: { value: 0.0625 },
-                u_fbmScale1: { value: 2.02 },
-                u_fbmScale2: { value: 2.03 },
-                u_fbmScale3: { value: 2.01 },
-                u_fbmNorm: { value: 0.769 },
-
-                u_patternOffset1: { value: new THREE.Vector2(0.0, 0.0) },
-                u_patternQMult: { value: 4.0 },
-                u_patternOffset2: { value: new THREE.Vector2(1.7, 9.2) },
-                u_patternFinalMult: { value: 1.76 },
-            },
-            transparent: false
+            }
         });
 
         console.timeEnd('Material: Init took:')
