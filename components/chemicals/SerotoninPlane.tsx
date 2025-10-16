@@ -22,9 +22,9 @@ export const SerotoninPlane = () => {
     const controls = useControls('Serotonin Shader', {
         Animation: folder({
             timeSpeed: { value: 0.03, min: 0, max: 1, step: 0.01 },
-            uvScale: { value: 2.2, min: 0.1, max: 10, step: 0.1 },
-            flowDirectionX: { value: -0.05, min: -1, max: 1, step: 0.01, label: 'Flow X' },
-            flowDirectionY: { value: -0.02, min: -1, max: 1, step: 0.01, label: 'Flow Y' },
+            uvScale: { value: 2.0, min: 0.1, max: 10, step: 0.1 },
+            flowDirectionX: { value: -0.03, min: -1, max: 1, step: 0.01, label: 'Flow X' },
+            flowDirectionY: { value: -0.015, min: -1, max: 1, step: 0.01, label: 'Flow Y' },
         }),
 
         Mouse: folder({
@@ -34,32 +34,32 @@ export const SerotoninPlane = () => {
         }),
 
         Colors: folder({
-            baseColor: { value: '#98bae8', label: 'Base Color (Blue)' },
-            secondaryColor: { value: '#6d6aa3', label: 'Secondary Color (Purple)' },
-            colorSeparation: { value: 0.5, min: 0, max: 1, step: 0.01, label: 'Color Split Point' },
-            colorSharpness: { value: 0.2, min: 0.01, max: 0.5, step: 0.01, label: 'Blend Sharpness' },
-            displacementMult: { value: 1.8, min: 0, max: 5, step: 0.1 },
+            baseColor: { value: '#3b9c9c', label: 'Base Color' },
+            secondaryColor: { value: '#00A86B', label: 'Secondary Color' },
+            colorSeparation: { value: 0.6, min: 0, max: 1, step: 0.01, label: 'Color Split Point' },
+            colorSharpness: { value: 0.3, min: 0.01, max: 0.5, step: 0.01, label: 'Blend Sharpness' },
+            displacementMult: { value: 1.6, min: 0, max: 5, step: 0.1 },
             glowColor: { value: '#1a0d33', label: 'Glow Color' },
-            brightnessFloor: { value: 0.3, min: 0, max: 1, step: 0.05, label: 'Min Brightness' },  // ✅ NEW
+            brightnessFloor: { value: 0.35, min: 0, max: 1, step: 0.05, label: 'Min Brightness' },  // ✅ NEW
             glowStrength: { value: 2.0, min: 0, max: 5, step: 0.1 },
         }),
 
         'Rand Function': folder({
-            randSeedX: { value: 1.9898, min: 0, max: 10, step: 0.0001 },
-            randSeedY: { value: 4.1414, min: 0, max: 10, step: 0.0001 },
+            randSeedX: { value: 3.7124, min: 0, max: 10, step: 0.0001 },
+            randSeedY: { value: 7.1524, min: 0, max: 10, step: 0.0001 },
             randMultiplier: { value: 43758.5453, min: 0, max: 100000, step: 0.0001 },
         }),
 
         'Noise Function': folder({
-            noiseSmoothA: { value: 3.0, min: 0, max: 10, step: 0.1 },
-            noiseSmoothB: { value: 2.0, min: 0, max: 10, step: 0.1 },
+            noiseSmoothA: { value: 3.5, min: 0, max: 10, step: 0.1 },
+            noiseSmoothB: { value: 2.5, min: 0, max: 10, step: 0.1 },
         }),
 
         'FBM Rotation Matrix': folder({
-            m00: { value: 0.8, min: -2, max: 2, step: 0.01 },
-            m01: { value: -0.6, min: -2, max: 2, step: 0.01 },
-            m10: { value: 0.6, min: -2, max: 2, step: 0.01 },
-            m11: { value: 0.8, min: -2, max: 2, step: 0.01 },
+            m00: { value: 0.7, min: -2, max: 2, step: 0.01 },
+            m01: { value: -0.3, min: -2, max: 2, step: 0.01 },
+            m10: { value: 0.3, min: -2, max: 2, step: 0.01 },
+            m11: { value: 0.7, min: -2, max: 2, step: 0.01 },
         }),
 
         'FBM Octaves': folder({
@@ -70,8 +70,8 @@ export const SerotoninPlane = () => {
         }),
 
         'FBM Scales': folder({
-            scale1: { value: 2.0, min: 1, max: 5, step: 0.01 },
-            scale2: { value: 2.1, min: 1, max: 5, step: 0.01 },
+            scale1: { value: 2.1, min: 1, max: 5, step: 0.01 },
+            scale2: { value: 2.2, min: 1, max: 5, step: 0.01 },
             scale3: { value: 2.0, min: 1, max: 5, step: 0.01 },
             fbmNorm: { value: 0.95, min: 0.1, max: 2, step: 0.01 },
         }),
