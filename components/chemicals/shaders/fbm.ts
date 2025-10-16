@@ -127,6 +127,8 @@ void main() {
 }
 `;
 
+/** serotonin with full uniforms & full code (like dopamine) but different pattern & color logic */
+
 export const serotoninFragmentShader = /* glsl */ `
 precision mediump float;
 
@@ -134,16 +136,13 @@ uniform float u_time;
 uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 
-// Animation
 uniform float u_uvScale;
 uniform float u_timeSpeed;
 uniform vec2 u_flowDirection;
 
-// Mouse
 uniform float u_mouseRadius;
 uniform float u_mouseStrength;
 
-// Colors
 uniform vec3 u_baseColor;
 uniform vec3 u_secondaryColor;
 uniform vec3 u_glowColor;
@@ -151,16 +150,17 @@ uniform float u_displacementMult;
 uniform float u_glowStrength;
 uniform float u_colorSeparation;
 uniform float u_colorSharpness;
+uniform float u_colorPower;
+uniform float u_colorVibration;
+uniform float u_turbulence;
+uniform float u_directionalWarp;
 
-// Rand function
 uniform vec2 u_randSeed;
 uniform float u_randMultiplier;
 
-// Noise function
 uniform float u_noiseSmoothA;
 uniform float u_noiseSmoothB;
 
-// FBM function
 uniform mat2 u_fbmRotation;
 uniform float u_fbmOctave1;
 uniform float u_fbmOctave2;
@@ -171,16 +171,14 @@ uniform float u_fbmScale2;
 uniform float u_fbmScale3;
 uniform float u_fbmNorm;
 
-// Pattern function
 uniform vec2 u_patternOffset1;
 uniform float u_patternQMult;
 uniform vec2 u_patternOffset2;
 uniform float u_patternFinalMult;
 
+uniform float u_brightnessFloor;
+
 varying vec2 v_uv;
-
-uniform float u_brightnessFloor;  // Minimum brightness (0-1)
-
 
 float rand(vec2 n) {
     return fract(sin(dot(n, u_randSeed)) * u_randMultiplier);
@@ -189,7 +187,7 @@ float rand(vec2 n) {
 float noise(vec2 p) {
     vec2 ip = floor(p);
     vec2 u = fract(p);
-    u = u*u*(u_noiseSmoothA - u_noiseSmoothB * u);
+    u = u*u*(u_noiseSmoothA - u_noiseSmoothB*u);
 
     float res = mix(
         mix(rand(ip), rand(ip+vec2(1.0,0.0)), u.x),
@@ -219,36 +217,32 @@ void main() {
     vec2 uv = v_uv;
     float aspect = u_resolution.x / u_resolution.y;
     uv.x *= aspect;
-    // uv.x += 0.2; // biases more high values to the right
 
     uv *= u_uvScale;
 
-    // Apply flow direction
     uv += u_flowDirection * u_time;
 
-    // Mouse interaction
     vec2 mousePos = u_mouse;
     mousePos.x *= aspect;
     float mouseDist = distance(uv, vec2(mousePos.x * u_uvScale, mousePos.y * u_uvScale));
     float mouseInfluence = smoothstep(u_mouseRadius, 0.0, mouseDist) * u_mouseStrength;
 
-    // Create displacement pattern
-float displacement = pattern(uv, mouseInfluence);
-    float gradient = smoothstep(0.0, 1.0, v_uv.x);
+    float displacement = pattern(uv, mouseInfluence);
+    displacement = mix(displacement, displacement * 1.5, mouseInfluence);
 
-//    displacement *= mix(0.8, 1.2, gradient); // weights displacement higher on right
-displacement = mix(displacement, displacement * 1.5, mouseInfluence);
+    float displacementPow = pow(displacement, u_colorPower);
 
-    // Blend between two colors based on displacement
     vec3 blendedColor = mix(u_baseColor, u_secondaryColor,
-        smoothstep(u_colorSeparation, u_colorSeparation + u_colorSharpness, displacement));
+        smoothstep(u_colorSeparation, u_colorSeparation + u_colorSharpness, displacementPow));
 
-    float brightness = mix(u_brightnessFloor, 1.0, displacement * u_displacementMult);
-    vec4 color = vec4(blendedColor * brightness, 1.0);
+    float vibration = sin(u_time * 2.0 + displacement * 10.0) * 0.5 + 0.5;
+    blendedColor *= 1.0 + vibration * u_colorVibration;
 
-    // Add glow near mouse
-    color.rgb += u_glowColor * mouseInfluence * u_glowStrength;
+    float visibility = smoothstep(0.0, 0.3, displacement);
+    vec3 finalColor = mix(blendedColor * u_brightnessFloor, blendedColor, visibility);
 
-    gl_FragColor = vec4(color.rgb, 1.0);
+    finalColor += u_glowColor * mouseInfluence * u_glowStrength;
+
+    gl_FragColor = vec4(finalColor, 1.0);
 }
 `;

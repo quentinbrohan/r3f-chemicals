@@ -44,6 +44,12 @@ export const SerotoninPlane = () => {
             glowStrength: { value: 2.0, min: 0, max: 5, step: 0.1 },
         }),
 
+
+        'New Effects': folder({
+            colorPower: { value: 1.2, min: 0.1, max: 3, step: 0.1, label: 'Color Power (exponential)' },
+            colorVibration: { value: 0.4, min: 0, max: 1, step: 0.01, label: 'Color Vibration' },
+        }),
+
         'Rand Function': folder({
             randSeedX: { value: 3.7124, min: 0, max: 10, step: 0.0001 },
             randSeedY: { value: 7.1524, min: 0, max: 10, step: 0.0001 },
@@ -117,7 +123,13 @@ export const SerotoninPlane = () => {
                 u_glowStrength: { value: 2.0 },
                 u_colorSeparation: { value: 0.5 },
                 u_colorSharpness: { value: 0.2 },
-                u_brightnessFloor: { value: 0.2 },  // ✅ NEW
+                u_brightnessFloor: { value: 0.2 },
+
+                u_colorPower: { value: 1.5 },
+                u_colorVibration: { value: 0.3 },
+                u_turbulence: { value: 0.3 },
+                u_directionalWarp: { value: 0.2 },
+
 
                 u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
                 u_randMultiplier: { value: 43758.5453 },
@@ -181,6 +193,9 @@ export const SerotoninPlane = () => {
         material.uniforms.u_glowStrength.value = controls.glowStrength;
         material.uniforms.u_colorSeparation.value = controls.colorSeparation;
         material.uniforms.u_colorSharpness.value = controls.colorSharpness;
+
+        material.uniforms.u_colorPower.value = controls.colorPower;
+        material.uniforms.u_colorVibration.value = controls.colorVibration;
 
         // Rand function
         material.uniforms.u_randSeed.value.set(controls.randSeedX, controls.randSeedY);

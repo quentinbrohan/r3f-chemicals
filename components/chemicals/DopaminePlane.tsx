@@ -109,6 +109,7 @@ export const DopaminePlane = () => {
                 u_colorSharpness: { value: 0.15 },
                 u_brightnessFloor: { value: 0.2 },
                 u_glowStrength: { value: 3.0 },
+
                 u_colorPower: { value: 1.5 },
                 u_colorVibration: { value: 0.3 },
                 u_turbulence: { value: 0.3 },
@@ -175,6 +176,7 @@ export const DopaminePlane = () => {
         material.uniforms.u_colorSharpness.value = controls.colorSharpness;
         material.uniforms.u_brightnessFloor.value = controls.brightnessFloor;
         material.uniforms.u_glowStrength.value = controls.glowStrength;
+
         material.uniforms.u_colorPower.value = controls.colorPower;
         material.uniforms.u_colorVibration.value = controls.colorVibration;
         material.uniforms.u_turbulence.value = controls.turbulence;
