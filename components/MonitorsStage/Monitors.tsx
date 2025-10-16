@@ -99,7 +99,13 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLR.geometry}
                 material={nodes.FrameLR.material}
                 position={getFramePosition(MONITORS_POSITION[0])}
-            />
+            >
+                <meshStandardMaterial
+                    metalness={0.9}
+                    roughness={0.2}
+                    color="#444"
+                />
+            </mesh>
             <mesh
                 ref={dopamineMeshRef}
                 name="MonitorLR"
@@ -116,7 +122,13 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameC.geometry}
                 material={nodes.FrameC.material}
                 position={getFramePosition(MONITORS_POSITION[1])}
-            />
+            >
+                <meshStandardMaterial
+                    metalness={0.9}
+                    roughness={0.2}
+                    color="#444"
+                />
+            </mesh>
             <mesh
                 ref={oxytocinMeshRef}
                 name="MonitorC"
@@ -175,8 +187,13 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLL.geometry}
                 material={nodes.FrameLL.material}
                 position={getFramePosition(MONITORS_POSITION[2])}
-
-            />
+            >
+                <meshStandardMaterial
+                    metalness={0.9}
+                    roughness={0.2}
+                    color="#444"
+                />
+            </mesh>
         </group>
     )
 }

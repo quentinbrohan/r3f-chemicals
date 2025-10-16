@@ -22,6 +22,7 @@ export const useMaterials = () => {
                 u_useAspect: {value: 0},
             },
             side: THREE.DoubleSide,
+
         });
         return mat;
     });
