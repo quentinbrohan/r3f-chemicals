@@ -12,10 +12,10 @@ export const OxytocinPlane = () => {
 
     const controls = useControls('Oxytocin Shader', {
         'Animation': folder({
-            uvScale: { value: 3.0, min: 0.5, max: 10, step: 0.1 },
-            timeSpeed: { value: 0.05, min: 0, max: 0.5, step: 0.01 },
-            flowDirectionX: { value: 0.08, min: -0.5, max: 0.5, step: 0.01 },
-            flowDirectionY: { value: 0.03, min: -0.5, max: 0.5, step: 0.01 },
+            uvScale: { value: 3.5, min: 0.5, max: 10, step: 0.1 },
+            timeSpeed: { value: 0.045, min: 0, max: 0.5, step: 0.01 },
+            flowDirectionX: { value: 0.06, min: -0.5, max: 0.5, step: 0.01 },
+            flowDirectionY: { value: -0.02, min: -0.5, max: 0.5, step: 0.01 },
         }),
         'Mouse': folder({
             enableMouse: { value: false },
@@ -23,55 +23,55 @@ export const OxytocinPlane = () => {
             mouseStrength: { value: 0.3, min: 0, max: 1, step: 0.01 },
         }),
         'Colors': folder({
-            baseColor: { value: '#FF6B00' },
-            secondaryColor: { value: '#8B00FF' },
-            colorSeparation: { value: 0.5, min: 0, max: 1, step: 0.01 },
-            colorSharpness: { value: 0.08, min: 0, max: 0.5, step: 0.01 },
-            brightnessFloor: { value: 0.15, min: 0, max: 1, step: 0.01 },
+            baseColor: { value: '#c93a3a' },
+            secondaryColor: { value: '#f2b40c' },
+            colorSeparation: { value: 0.17, min: 0, max: 1, step: 0.01 },
+            colorSharpness: { value: 0.3, min: 0, max: 0.5, step: 0.01 },
+            brightnessFloor: { value: 0.35, min: 0, max: 1, step: 0.01 },
             glowColor: { value: '#FF1493' },
             glowStrength: { value: 2.5, min: 0, max: 5, step: 0.1 },
         }),
         'Effects': folder({
-            turbulence: { value: 0.4, min: 0, max: 1, step: 0.01 },
-            directionalWarp: { value: 0.25, min: 0, max: 1, step: 0.01 },
-            colorPower: { value: 1.3, min: 0.5, max: 3, step: 0.1 },
-            colorVibration: { value: 0.15, min: 0, max: 0.5, step: 0.01 },
-            displacementMult: { value: 1.6, min: 0, max: 5, step: 0.1 },
+            turbulence: { value: 0.35, min: 0, max: 1, step: 0.01 },
+            directionalWarp: { value: 0.26, min: 0, max: 1, step: 0.01 },
+            colorPower: { value: 1.4, min: 0.5, max: 3, step: 0.1 },
+            colorVibration: { value: 0.1, min: 0, max: 0.5, step: 0.01 },
+            displacementMult: { value: 1.8, min: 0, max: 5, step: 0.1 },
         }),
         'Rand Function': folder({
-            randSeedX: { value: 1.9898, min: 0, max: 20, step: 0.0001 },
-            randSeedY: { value: 4.1414, min: 0, max: 20, step: 0.0001 },
-            randMultiplier: { value: 43758.5453, min: 1000, max: 100000, step: 0.0001 },
+            randSeedX: { value: 6.289, min: 0, max: 20, step: 0.0001 },
+            randSeedY: { value: 2.471, min: 0, max: 20, step: 0.0001 },
+            randMultiplier: { value: 62458.2341, min: 1000, max: 100000, step: 0.0001 },
         }),
         'Noise Function': folder({
-            smoothA: { value: 3.0, min: 0, max: 10, step: 0.1 },
-            smoothB: { value: 2.0, min: 0, max: 10, step: 0.1 },
+            smoothA: { value: 3.8, min: 0, max: 10, step: 0.1 },
+            smoothB: { value: 2.8, min: 0, max: 10, step: 0.1 },
         }),
         'FBM Rotation': folder({
-            m00: { value: 0.75, min: -2, max: 2, step: 0.01 },
-            m01: { value: -0.65, min: -2, max: 2, step: 0.01 },
-            m10: { value: 0.65, min: -2, max: 2, step: 0.01 },
-            m11: { value: 0.75, min: -2, max: 2, step: 0.01 },
+            m00: { value: 0.72, min: -2, max: 2, step: 0.01 },
+            m01: { value: -0.58, min: -2, max: 2, step: 0.01 },
+            m10: { value: 0.58, min: -2, max: 2, step: 0.01 },
+            m11: { value: 0.72, min: -2, max: 2, step: 0.01 },
         }),
         'FBM Octaves': folder({
             octave1: { value: 0.50, min: 0, max: 1, step: 0.01 },
-            octave2: { value: 0.28, min: 0, max: 1, step: 0.01 },
-            octave3: { value: 0.16, min: 0, max: 1, step: 0.01 },
-            octave4: { value: 0.08, min: 0, max: 1, step: 0.01 },
+            octave2: { value: 0.3, min: 0, max: 1, step: 0.01 },
+            octave3: { value: 0.15, min: 0, max: 1, step: 0.01 },
+            octave4: { value: 0.05, min: 0, max: 1, step: 0.01 },
         }),
         'FBM Scales': folder({
-            scale1: { value: 2.05, min: 1, max: 5, step: 0.01 },
-            scale2: { value: 2.08, min: 1, max: 5, step: 0.01 },
-            scale3: { value: 2.03, min: 1, max: 5, step: 0.01 },
-            fbmNorm: { value: 0.85, min: 0.1, max: 2, step: 0.01 },
+            scale1: { value: 2.1, min: 1, max: 5, step: 0.01 },
+            scale2: { value: 2.05, min: 1, max: 5, step: 0.01 },
+            scale3: { value: 2.15, min: 1, max: 5, step: 0.01 },
+            fbmNorm: { value: 0.92, min: 0.1, max: 2, step: 0.01 },
         }),
         'Pattern Function': folder({
             patternOffset1X: { value: 0.0, min: -10, max: 10, step: 0.1 },
             patternOffset1Y: { value: 0.0, min: -10, max: 10, step: 0.1 },
-            patternQMult: { value: 4.5, min: 0, max: 10, step: 0.1 },
-            patternOffset2X: { value: 2.0, min: -10, max: 10, step: 0.1 },
-            patternOffset2Y: { value: 8.5, min: -10, max: 10, step: 0.1 },
-            patternFinalMult: { value: 2.0, min: 0, max: 5, step: 0.01 },
+            patternQMult: { value: 4.8, min: 0, max: 10, step: 0.1 },
+            patternOffset2X: { value: 2.4, min: -10, max: 10, step: 0.1 },
+            patternOffset2Y: { value: 7.9, min: -10, max: 10, step: 0.1 },
+            patternFinalMult: { value: 2.3, min: 0, max: 5, step: 0.01 },
         }),
         'Export': folder({
             'Copy Values': button(() => {
@@ -108,6 +108,11 @@ export const OxytocinPlane = () => {
                 u_colorSharpness: { value: 0.08 },
                 u_brightnessFloor: { value: 0.15 },
                 u_glowStrength: { value: 2.5 },
+                u_colorPower: { value: 1.5 },
+                u_colorVibration: { value: 0.3 },
+                u_turbulence: { value: 0.3 },
+                u_directionalWarp: { value: 0.2 },
+
 
                 u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
                 u_randMultiplier: { value: 43758.5453 },
@@ -169,6 +174,10 @@ export const OxytocinPlane = () => {
         material.uniforms.u_colorSharpness.value = controls.colorSharpness;
         material.uniforms.u_brightnessFloor.value = controls.brightnessFloor;
         material.uniforms.u_glowStrength.value = controls.glowStrength;
+        material.uniforms.u_colorPower.value = controls.colorPower;
+        material.uniforms.u_colorVibration.value = controls.colorVibration;
+        material.uniforms.u_turbulence.value = controls.turbulence;
+        material.uniforms.u_directionalWarp.value = controls.directionalWarp;
 
         // Rand function
         material.uniforms.u_randSeed.value.set(controls.randSeedX, controls.randSeedY);
