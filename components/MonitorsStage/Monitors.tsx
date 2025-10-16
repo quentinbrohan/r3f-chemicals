@@ -38,7 +38,7 @@ function getFramePosition(monitorPosition: THREE.Vector3Tuple): THREE.Vector3Tup
     ];
 }
 
-const MODEL_PATH = '/webgl/models/mg-monitors.glb'
+const MODEL_PATH = '/webgl/models/mg-monitors-compressed.glb'
 
 const MONITORS_POSITION: THREE.Vector3Tuple[] = [
     [-2, 0, -1],

@@ -26,7 +26,7 @@ type GLTFResult = GLTF & {
     materials: {}
 }
 
-const MODEL_PATH = '/webgl/models/mg-cables-floor.glb'
+const MODEL_PATH = '/webgl/models/mg-cables-floor-compressed.glb'
 export function CablesFloor(props: React.JSX.IntrinsicElements['group']) {
     const { nodes, materials } = useGLTF(MODEL_PATH) as any as GLTFResult
     return (
