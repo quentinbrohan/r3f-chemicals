@@ -38,6 +38,7 @@ export const DopaminePlane = () => {
             colorPower: { value: 1.2, min: 0.1, max: 3, step: 0.1, label: 'Color Power (exponential)' },
             colorVibration: { value: 0.35, min: 0, max: 1, step: 0.01, label: 'Color Vibration' },
             turbulence: { value: 0.4, min: 0, max: 1, step: 0.01, label: 'Turbulence Strength' },
+            directionalWarp: { value: 0.18, min: 0, max: 1, step: 0.01 },
         }),
 
         'Rand Function': folder({
@@ -111,6 +112,8 @@ export const DopaminePlane = () => {
                 u_colorPower: { value: 1.5 },
                 u_colorVibration: { value: 0.3 },
                 u_turbulence: { value: 0.3 },
+                u_directionalWarp: { value: 0.2 },
+
 
                 u_randSeed: { value: new THREE.Vector2(1.9898, 4.1414) },
                 u_randMultiplier: { value: 43758.5453 },
@@ -175,6 +178,7 @@ export const DopaminePlane = () => {
         material.uniforms.u_colorPower.value = controls.colorPower;
         material.uniforms.u_colorVibration.value = controls.colorVibration;
         material.uniforms.u_turbulence.value = controls.turbulence;
+        material.uniforms.u_directionalWarp.value = controls.directionalWarp;
 
         // Rand function
         material.uniforms.u_randSeed.value.set(controls.randSeedX, controls.randSeedY);
