@@ -1,17 +1,13 @@
 'use client'
 
-import { Canvas, CanvasProps, GLProps, ThreeToJSXElements } from "@react-three/fiber";
-import React, { useCallback, useState } from 'react';
+import { Canvas, CanvasProps, ThreeToJSXElements } from "@react-three/fiber";
+import React, { useState } from 'react';
 
+import { Stats } from "@react-three/drei";
 import { extend } from '@react-three/fiber';
 import * as THREE from 'three/webgpu';
-import { WebGPURenderer } from "three/webgpu";
-import { SerotoninPlane } from "./chemicals/SerotoninPlane";
-import { GlobalCanvas } from "@14islands/r3f-scroll-rig";
-import { Stats } from "@react-three/drei";
-import { Preload } from "./Preload";
-import { DopaminePlane } from "./chemicals/DopaminePlane";
-import { OxytocinPlane } from "./chemicals/OxytocinPlane";
+import { usePathname, useSearchParams, } from "next/navigation";
+import { Leva } from "leva";
 
 declare module '@react-three/fiber' {
     interface ThreeElements extends ThreeToJSXElements<typeof THREE> { }
@@ -21,9 +17,9 @@ extend(THREE as any)
 
 interface GlobalSceneProps {
     children: React.ReactElement
- }
+}
 
-const GlobalScene: React.FC<GlobalSceneProps> = ({children}) => {
+const GlobalScene: React.FC<GlobalSceneProps> = ({ children }) => {
     const [frameloop, setFrameloop] = useState<CanvasProps['frameloop']>("never");
 
     // TODO: keep only for webgpu later or in prod only. Complex shaders takes almost a minute to compile
@@ -52,7 +48,12 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({children}) => {
     // }, []); // Empty deps - only create once
 
     const postprocessing = false;
-    const alpha= false;
+    const alpha = false;
+
+    const params = useSearchParams();
+
+    const showDebug = params.get('debug') === 'true'
+
     return (
         <>
             <Canvas
@@ -68,9 +69,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({children}) => {
                     alpha,
                     ...((postprocessing ? { stencil: false, depth: false } : {})),
                 }}
-                dpr={[1,2]}
+                dpr={[1, 2]}
                 style={{
-                    position:'fixed',
+                    position: 'fixed',
                     inset: 0,
                     maxWidth: '100vw',
                     maxHeight: '100vh'
@@ -80,9 +81,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({children}) => {
                 {/* <DopaminePlane /> */}
                 {/* <OxytocinPlane /> */}
                 {/* <SerotoninPlane /> */}
-                <Stats />
+                {showDebug && <Stats />}
                 {/* <Preload /> */}
             </Canvas>
+            <Leva hidden={!showDebug} />
         </>
     );
 }
