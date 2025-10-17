@@ -55,8 +55,7 @@ export const useMaterials = () => {
     const [dopamineControls, _setControls] = useControls('Scene/Shaders/Dopamine', () => ({
         Animation: folder({
             uvScale: {
-                // TODO: 1.6?
-                value: 0.55,
+                value: 1.14,
                 min: 0.1, max: 10, step: 0.1
             },
             timeSpeed: { value: 0.06, min: 0, max: 0.5, step: 0.01 },
