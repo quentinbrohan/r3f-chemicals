@@ -34,14 +34,12 @@ export const CameraRig = () => {
     useFrame((state, delta) => {
         const pointer = state.pointer
 
-        // Camera movement based on pointer
         const factor = 3
         const desiredX = THREE.MathUtils.clamp(pointer.x * factor, -horizontalLimit, horizontalLimit)
 
-        // Clamp Y so camera doesn't go below ground/monitors
         let desiredY = pointer.y * factor
         desiredY = THREE.MathUtils.clamp(desiredY, -verticalLimit, verticalLimit)
-        desiredY = Math.max(minY, desiredY) // Force it above ground
+        desiredY = Math.max(minY, desiredY)
 
         const desiredPosition = new THREE.Vector3(
             desiredX,
@@ -52,10 +50,13 @@ export const CameraRig = () => {
         // Smooth movement
         easing.damp3(camera.position, desiredPosition.toArray(), 0.3, delta)
 
-        // Always look at monitor center
-        camera.position.y = 2 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1
-        // camera.lookAt(0, 2, 0)
-        camera.lookAt(target)
+        // Apply subtle sine wave to look-at target instead
+        const lookAtTarget = new THREE.Vector3(
+            0,
+            2 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1,
+            0
+        )
+        camera.lookAt(lookAtTarget)
     })
 
     return null

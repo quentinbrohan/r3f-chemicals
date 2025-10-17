@@ -1,11 +1,11 @@
 "use client"
 
-import { MeshReflectorMaterial, OrbitControls, PresentationControls, Environment, Preload } from "@react-three/drei"
+import { Environment, MeshReflectorMaterial, Preload } from "@react-three/drei"
+import { Suspense } from "react"
 import { CableCeilings } from "./CablesCeiling"
 import { CablesFloor } from "./CablesFloor"
-import { Monitors } from "./Monitors"
 import { CameraRig } from "./CameraRig"
-import { Suspense } from "react"
+import { Monitors } from "./Monitors"
 
 export const MonitorsStage = () => {
     // todo: leva controls for scene
@@ -65,7 +65,7 @@ export const MonitorsStage = () => {
             <fog attach="fog" args={['#000000', 8, 25]} />
             <Environment
                 files="/webgl/hdri/studio_small_03_1k.hdr"
-                environmentIntensity={0.1} />
+                environmentIntensity={0.15} />
             <Preload />
         </Suspense>
 

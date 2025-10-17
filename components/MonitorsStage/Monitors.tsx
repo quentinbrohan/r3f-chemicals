@@ -193,9 +193,27 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
             >
                 <MonitorFrameMaterial />
             </mesh>
-            <pointLight position={MONITORS_POSITION[0]} color="#ff6b9d" intensity={0.3} distance={3} />
-            <pointLight position={MONITORS_POSITION[1]} color="#ff8844" intensity={0.3} distance={3} />
-            <pointLight position={MONITORS_POSITION[2]} color="#6b7aff" intensity={0.3} distance={3} />
+            <pointLight
+                position={MONITORS_POSITION[0]}
+                color="#ff6b9d"
+                intensity={1.5}  // Increased from 0.3
+                distance={6}     // Increased from 3
+                decay={2}        // Add decay for realistic falloff
+            />
+            <pointLight
+                position={MONITORS_POSITION[1]}
+                color="#ff8844"
+                intensity={1.5}
+                distance={6}
+                decay={2}
+            />
+            <pointLight
+                position={MONITORS_POSITION[2]}
+                color="#6b7aff"
+                intensity={1.5}
+                distance={6}
+                decay={2}
+            />
         </group>
     )
 }
