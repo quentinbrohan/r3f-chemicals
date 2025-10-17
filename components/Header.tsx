@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({ }) => {
     })
 
     return (
-        <header ref={containerRef} className='absolute p-4 w-screen z-1 justify-between text-white grid grid-cols-3'>
+        <header ref={containerRef} className='z-2 absolute p-4 w-screen justify-between text-white grid grid-cols-3'>
             <Link data-main-link href="/" className='col-start-2 col-end-3 uppercase font-bold text-2xl text-center opacity-0'>Chemicals</Link>
             <nav className='self-center col-start-3 col-end-4 text-right'>
                 {NAV_LINKS.map((link, i) => (
