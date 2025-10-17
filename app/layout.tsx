@@ -4,9 +4,10 @@ import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Header from '@/components/Header'
+import { inter } from './fonts'
 
 export const metadata: Metadata = {
-  title: 'R3F Chemicals',
+  title: 'Chemicals',
 }
 
 export default function RootLayout({
@@ -16,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className={`font-inter ${GeistSans.variable} ${GeistMono.variable} ${inter.variable}`}>
         <Header />
         {children}
         <Analytics />
