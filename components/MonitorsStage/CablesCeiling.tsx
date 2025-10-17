@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { useControls } from 'leva'
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -30,18 +31,27 @@ type GLTFResult = GLTF & {
     materials: {}
 }
 
-const CableMaterial = () => {
+const CableMaterial:React.FC = () => {
+    const materialProps = useControls("Scene/Objects/CablesCeiling/Material", {
+        color: "#0d0d0d",
+        metalness: { value: 0.1, min: 0, max: 1, step: 0.01 },
+        roughness: { value: 0.95, min: 0, max: 1, step: 0.01 },
+        opacity: { value: 1, min: 0, max: 1, step: 0.01 },
+        transparent: false,
+        envMapIntensity: { value: 1, min: 0, max: 5, step: 0.1 },
+        emissive: "#000000",
+        emissiveIntensity: { value: 1, min: 0, max: 10 },
+    })
+
     return (
-        <meshStandardMaterial
-            color="#0d0d0d"
-            metalness={0.1}
-            roughness={0.95} />
+        <meshStandardMaterial {...materialProps} />
     )
 }
 
 const MODEL_PATH = '/webgl/models/mg-cables-ceiling-compressed.glb'
 export function CableCeilings(props: React.JSX.IntrinsicElements['group']) {
-    const { nodes, materials } = useGLTF(MODEL_PATH) as any as GLTFResult
+    const { nodes, _materials } = useGLTF(MODEL_PATH) as any as GLTFResult
+
     return (
         <group {...props} dispose={null}>
             <mesh

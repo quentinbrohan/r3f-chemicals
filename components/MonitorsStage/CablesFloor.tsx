@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { useControls } from 'leva'
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -26,14 +27,20 @@ type GLTFResult = GLTF & {
     materials: {}
 }
 
-const CableMaterial = () => {
+const CableMaterial: React.FC = () => {
+    const materialProps = useControls("Scene/Objects/CablesFloor/Material", {
+        color: "#1a1a1a",
+        metalness: { value: 0.2, min: 0, max: 1, step: 0.01 },
+        roughness: { value: 0.8, min: 0, max: 1, step: 0.01 },
+        opacity: { value: 1, min: 0, max: 1, step: 0.01 },
+        transparent: false,
+        envMapIntensity: { value: 0.3, min: 0, max: 5, step: 0.1 },
+        emissive: "#000000",
+        emissiveIntensity: { value: 1, min: 0, max: 10 },
+    })
+
     return (
-        <meshStandardMaterial
-            color="#1a1a1a"
-            metalness={0.2}
-            roughness={0.8}
-            envMapIntensity={0.3}
-            />
+        <meshStandardMaterial {...materialProps} />
     )
 }
 

@@ -10,7 +10,7 @@ export const SerotoninPlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
     const { size, mouse, clock, viewport } = useThree();
 
-    const controls = useControls('Serotonin Shader', {
+    const controls = useControls('Shaders/Serotonin', {
         Animation: folder({
             timeSpeed: { value: 0.03, min: 0, max: 1, step: 0.01 },
             uvScale: { value: 2.0, min: 0.1, max: 10, step: 0.1 },

@@ -10,7 +10,7 @@ export const OxytocinPlane = () => {
     const meshRef = useRef<THREE.Mesh>(null);
     const { size, mouse, clock, viewport } = useThree();
 
-    const controls = useControls('Oxytocin Shader', {
+    const controls = useControls('Shaders/Oxytocin', {
         'Animation': folder({
             uvScale: { value: 3.5, min: 0.5, max: 10, step: 0.1 },
             timeSpeed: { value: 0.045, min: 0, max: 0.5, step: 0.01 },
