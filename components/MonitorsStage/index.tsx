@@ -147,7 +147,7 @@ export const MonitorsStage = () => {
                 environmentIntensity={environment.environmentIntensity}
             />
 
-            <Preload />
+            {/* <Preload all /> */}
             <BakeShadows />
         </Suspense>
     )

@@ -18,8 +18,8 @@ export const useMaterials = () => {
         const mat = getDopamineShaderMaterial({
             uniforms: {
                 u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
-                u_flipY: {value: 0},
-                u_useAspect: {value: 0},
+                u_flipY: { value: 0 },
+                u_useAspect: { value: 0 },
             },
             side: THREE.DoubleSide,
 
@@ -30,8 +30,8 @@ export const useMaterials = () => {
         const mat = getOxytocinShaderMaterial({
             uniforms: {
                 u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
-                u_flipY: {value: 1},
-                u_useAspect: {value: 0},
+                u_flipY: { value: 1 },
+                u_useAspect: { value: 0 },
 
             },
             side: THREE.DoubleSide,
@@ -42,8 +42,8 @@ export const useMaterials = () => {
         const mat = getSerotoninShaderMaterial({
             uniforms: {
                 u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
-                u_flipY: {value: 1},
-                u_useAspect: {value: 0},
+                u_flipY: { value: 1 },
+                u_useAspect: { value: 0 },
 
             },
             side: THREE.DoubleSide,
@@ -54,7 +54,11 @@ export const useMaterials = () => {
 
     const [dopamineControls, _setControls] = useControls('Scene/Shaders/Dopamine', () => ({
         Animation: folder({
-            uvScale: { value: 0.55, min: 0.1, max: 10, step: 0.1 },
+            uvScale: {
+                // TODO: 1.6?
+                value: 0.55,
+                min: 0.1, max: 10, step: 0.1
+            },
             timeSpeed: { value: 0.06, min: 0, max: 0.5, step: 0.01 },
             flowDirectionX: { value: -0.08, min: -1, max: 1, step: 0.01 },
             flowDirectionY: { value: -0.02, min: -1, max: 1, step: 0.01 },

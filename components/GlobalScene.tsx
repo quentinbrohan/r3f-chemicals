@@ -8,6 +8,7 @@ import { extend } from '@react-three/fiber';
 import * as THREE from 'three/webgpu';
 import { usePathname, useSearchParams, } from "next/navigation";
 import { Leva } from "leva";
+import { Preload } from "./Preload";
 
 declare module '@react-three/fiber' {
     interface ThreeElements extends ThreeToJSXElements<typeof THREE> { }
@@ -78,11 +79,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children }) => {
                 }}
             >
                 {children}
-                {/* <DopaminePlane /> */}
-                {/* <OxytocinPlane /> */}
-                {/* <SerotoninPlane /> */}
                 {showDebug && <Stats />}
-                {/* <Preload /> */}
+                {/* TODO: state/store to trigger timeline play in / */}
+                <Preload />
             </Canvas>
             <Leva hidden={!showDebug} />
         </>

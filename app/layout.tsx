@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Header from '@/components/Header'
 import { inter } from './fonts'
+import { GSAP } from '@/components/GSAP'
 
 export const metadata: Metadata = {
   title: 'Chemicals',
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-inter ${GeistSans.variable} ${GeistMono.variable} ${inter.variable}`}>
         <Header />
+        <GSAP />
         {children}
         <Analytics />
       </body>
