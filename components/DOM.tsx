@@ -78,7 +78,7 @@ const DOM: React.FC = () => {
     }, [showAboutPanel])
 
     return (
-        <main ref={containerRef} className="relative h-screen w-full z-1">
+        <main ref={containerRef} className="relative h-screen w-full z-1 pointer-events-none">
             <div className='invisible md:visible pointer-events-none' >
                 <p data-helper className="absolute left-4 top-1/3 text-white/70 uppercase text-xs">
                     [ Click on a monitor to view fullscreen ]
