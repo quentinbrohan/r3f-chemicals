@@ -5,6 +5,7 @@ import {
     Environment,
     MeshReflectorMaterial,
     Preload,
+    useTexture,
 } from "@react-three/drei"
 import { Suspense } from "react"
 import { useControls } from "leva"
@@ -53,16 +54,16 @@ export const MonitorsStage = () => {
 
     // GROUND
     const ground = useControls("Scene/Ground", {
-        blurX: { value: 80, min: 0, max: 200 },
-        blurY: { value: 40, min: 0, max: 200 },
+        blurX: { value: 300, min: 0, max: 200 },
+        blurY: { value: 100, min: 0, max: 200 },
         resolution: 1024,
         mixBlur: { value: 0.6, min: 0, max: 1 },
         mixStrength: { value: 40, min: 0, max: 100 },
-        depthScale: { value: 4, min: 0, max: 10 },
-        minDepthThreshold: { value: 0.6, min: 0, max: 1 },
-        maxDepthThreshold: { value: 1.0, min: 0, max: 1 },
-        color: "#0a0a0a",
-        metalness: { value: 0.4, min: 0, max: 1 },
+        depthScale: { value: 1.2, min: 0, max: 10 },
+        minDepthThreshold: { value: 0.4, min: 0, max: 1 },
+        maxDepthThreshold: { value: 1.4, min: 0, max: 1 },
+        color: "#050505",
+        metalness: { value: 0.5, min: 0, max: 1 },
         roughness: { value: 0.3, min: 0, max: 1 },
         mirror: { value: 0.5, min: 0, max: 1 },
     })
@@ -88,6 +89,16 @@ export const MonitorsStage = () => {
         position: { value: [0, 2, 0] },
         scale: { value: 1, min: 0.1, max: 2 },
     })
+
+    const [
+        // normalMap,
+        roughnessMap, colorMap] = useTexture([
+            // '/webgl/textures/floor/concrete_floor_worn_001_nor_gl_1k.jpg',
+            '/webgl/textures/floor/concrete_floor_worn_001_rough_1k.jpg',
+            '/webgl/textures/floor/concrete_floor_worn_001_col_1k.jpg',
+        ])
+
+
 
     return (
         <Suspense>
@@ -123,6 +134,9 @@ export const MonitorsStage = () => {
                         roughness: ground.roughness,
                         mirror: ground.mirror,
                     }}
+                    roughnessMap={roughnessMap}
+                    // normalMap={normalMap}
+                    map={colorMap}
                 />
             </mesh>
 
