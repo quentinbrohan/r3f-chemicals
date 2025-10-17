@@ -4,99 +4,99 @@ import * as THREE from "three";
 
 type ShaderType = "dopamine" | "oxytocin" | "serotonin";
 
+export const shaderUniformConfigs = {
+  dopamine: {
+    uvScale: 0.55,
+    timeSpeed: 0.06,
+    flowDirection: new THREE.Vector2(-0.08, -0.02),
+    mouseRadius: 0.5,
+    mouseStrength: 0.3,
+    baseColor: "#ffb347",
+    secondaryColor: "#6e1e96",
+    glowColor: "#ffb347",
+    colorSeparation: 0.38,
+    colorSharpness: 0.15,
+    brightnessFloor: 0.18,
+    glowStrength: 3.0,
+    colorPower: 1.2,
+    colorVibration: 0.35,
+    randSeed: new THREE.Vector2(1.9898, 4.1414),
+    randMultiplier: 21573.0,
+    noiseSmoothA: 3.0,
+    noiseSmoothB: 2.0,
+    fbmRotation: new THREE.Matrix2().set(-0.8, -0.6, 0.6, 0.8),
+    fbmOctaves: [0.65, 0.3, 0.05, 0.0],
+    fbmScales: [1.5, 1.2, 1.0],
+    fbmNorm: 1.0,
+    patternOffset1: new THREE.Vector2(0.0, -1.0),
+    patternQMult: 5.0,
+    patternOffset2: new THREE.Vector2(1.7, 8.0),
+    patternFinalMult: 3.5,
+  },
+
+  oxytocin: {
+    uvScale: 3.5,
+    timeSpeed: 0.045,
+    flowDirection: new THREE.Vector2(0.06, -0.02),
+    mouseRadius: 0.5,
+    mouseStrength: 0.3,
+    baseColor: "#c93a3a",
+    secondaryColor: "#f2b40c",
+    glowColor: "#FF1493",
+    colorSeparation: 0.17,
+    colorSharpness: 0.3,
+    brightnessFloor: 0.35,
+    glowStrength: 2.5,
+    colorPower: 1.4,
+    colorVibration: 0.1,
+    randSeed: new THREE.Vector2(6.289, 2.471),
+    randMultiplier: 62458.2341,
+    noiseSmoothA: 3.8,
+    noiseSmoothB: 2.8,
+    fbmRotation: new THREE.Matrix2().set(0.72, -0.58, 0.58, 0.72),
+    fbmOctaves: [0.5, 0.3, 0.15, 0.05],
+    fbmScales: [2.1, 2.05, 2.15],
+    fbmNorm: 0.92,
+    patternOffset1: new THREE.Vector2(0.0, 0.0),
+    patternQMult: 4.8,
+    patternOffset2: new THREE.Vector2(2.4, 7.9),
+    patternFinalMult: 2.3,
+  },
+
+  serotonin: {
+    uvScale: 2.0,
+    timeSpeed: 0.03,
+    flowDirection: new THREE.Vector2(-0.03, -0.015),
+    mouseRadius: 0.5,
+    mouseStrength: 0.3,
+    baseColor: "#3b9c9c",
+    secondaryColor: "#00A86B",
+    glowColor: "#1a0d33",
+    colorSeparation: 0.6,
+    colorSharpness: 0.3,
+    brightnessFloor: 0.35,
+    glowStrength: 2.0,
+    colorPower: 1.2,
+    colorVibration: 0.4,
+    randSeed: new THREE.Vector2(3.7124, 7.1524),
+    randMultiplier: 43758.5453,
+    noiseSmoothA: 3.5,
+    noiseSmoothB: 2.5,
+    fbmRotation: new THREE.Matrix2().set(0.7, -0.3, 0.3, 0.7),
+    fbmOctaves: [0.5, 0.3, 0.15, 0.05],
+    fbmScales: [2.1, 2.2, 2.0],
+    fbmNorm: 0.95,
+    patternOffset1: new THREE.Vector2(0.0, 0.0),
+    patternQMult: 5.5,
+    patternOffset2: new THREE.Vector2(2.5, 8.0),
+    patternFinalMult: 2.8,
+  },
+};
+
 export function getSharedUniforms(
   type: ShaderType
 ): THREE.ShaderMaterial["uniforms"] {
-  const configs = {
-    dopamine: {
-      uvScale: 0.55,
-      timeSpeed: 0.06,
-      flowDirection: new THREE.Vector2(-0.08, -0.02),
-      mouseRadius: 0.5,
-      mouseStrength: 0.3,
-      baseColor: "#ffb347",
-      secondaryColor: "#6e1e96",
-      glowColor: "#ffb347",
-      colorSeparation: 0.38,
-      colorSharpness: 0.15,
-      brightnessFloor: 0.18,
-      glowStrength: 3.0,
-      colorPower: 1.2,
-      colorVibration: 0.35,
-      randSeed: new THREE.Vector2(1.9898, 4.1414),
-      randMultiplier: 21573.0,
-      noiseSmoothA: 3.0,
-      noiseSmoothB: 2.0,
-      fbmRotation: new THREE.Matrix2().set(-0.8, -0.6, 0.6, 0.8),
-      fbmOctaves: [0.65, 0.3, 0.05, 0.0],
-      fbmScales: [1.5, 1.2, 1.0],
-      fbmNorm: 1.0,
-      patternOffset1: new THREE.Vector2(0.0, -1.0),
-      patternQMult: 5.0,
-      patternOffset2: new THREE.Vector2(1.7, 8.0),
-      patternFinalMult: 3.5,
-    },
-
-    oxytocin: {
-      uvScale: 3.5,
-      timeSpeed: 0.045,
-      flowDirection: new THREE.Vector2(0.06, -0.02),
-      mouseRadius: 0.5,
-      mouseStrength: 0.3,
-      baseColor: "#c93a3a",
-      secondaryColor: "#f2b40c",
-      glowColor: "#FF1493",
-      colorSeparation: 0.17,
-      colorSharpness: 0.3,
-      brightnessFloor: 0.35,
-      glowStrength: 2.5,
-      colorPower: 1.4,
-      colorVibration: 0.1,
-      randSeed: new THREE.Vector2(6.289, 2.471),
-      randMultiplier: 62458.2341,
-      noiseSmoothA: 3.8,
-      noiseSmoothB: 2.8,
-      fbmRotation: new THREE.Matrix2().set(0.72, -0.58, 0.58, 0.72),
-      fbmOctaves: [0.5, 0.3, 0.15, 0.05],
-      fbmScales: [2.1, 2.05, 2.15],
-      fbmNorm: 0.92,
-      patternOffset1: new THREE.Vector2(0.0, 0.0),
-      patternQMult: 4.8,
-      patternOffset2: new THREE.Vector2(2.4, 7.9),
-      patternFinalMult: 2.3,
-    },
-
-    serotonin: {
-      uvScale: 2.0,
-      timeSpeed: 0.03,
-      flowDirection: new THREE.Vector2(-0.03, -0.015),
-      mouseRadius: 0.5,
-      mouseStrength: 0.3,
-      baseColor: "#3b9c9c",
-      secondaryColor: "#00A86B",
-      glowColor: "#1a0d33",
-      colorSeparation: 0.6,
-      colorSharpness: 0.3,
-      brightnessFloor: 0.35,
-      glowStrength: 2.0,
-      colorPower: 1.2,
-      colorVibration: 0.4,
-      randSeed: new THREE.Vector2(3.7124, 7.1524),
-      randMultiplier: 43758.5453,
-      noiseSmoothA: 3.5,
-      noiseSmoothB: 2.5,
-      fbmRotation: new THREE.Matrix2().set(0.7, -0.3, 0.3, 0.7),
-      fbmOctaves: [0.5, 0.3, 0.15, 0.05],
-      fbmScales: [2.1, 2.2, 2.0],
-      fbmNorm: 0.95,
-      patternOffset1: new THREE.Vector2(0.0, 0.0),
-      patternQMult: 5.5,
-      patternOffset2: new THREE.Vector2(2.5, 8.0),
-      patternFinalMult: 2.8,
-    },
-  };
-
-  const c = configs[type];
+  const c = shaderUniformConfigs[type];
 
   return {
     u_time: { value: 0 },
@@ -173,7 +173,9 @@ export const getDopamineShaderMaterial = (
   });
 };
 
-export const getOxytocinShaderMaterial = (config: ShaderMaterialConfig): THREE.ShaderMaterial => {
+export const getOxytocinShaderMaterial = (
+  config: ShaderMaterialConfig
+): THREE.ShaderMaterial => {
   return new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
@@ -188,7 +190,9 @@ export const getOxytocinShaderMaterial = (config: ShaderMaterialConfig): THREE.S
   });
 };
 
-export const getSerotoninShaderMaterial = (config: ShaderMaterialConfig): THREE.ShaderMaterial => {
+export const getSerotoninShaderMaterial = (
+  config: ShaderMaterialConfig
+): THREE.ShaderMaterial => {
   return new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader: serotoninFragmentShader,

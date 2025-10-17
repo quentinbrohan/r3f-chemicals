@@ -6,8 +6,9 @@ import { Text, TextProps, useCursor, useGLTF, useTexture } from '@react-three/dr
 import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { GLTF } from 'three-stdlib'
-import { getSharedUniforms } from '../chemicals/shaders/shaderMaterials'
-import { useMaterials } from './useMaterials'
+import { getSharedUniforms, shaderUniformConfigs } from '../chemicals/shaders/shaderMaterials'
+import { MONITOR_DIMENSIONS, useMaterials } from './useMaterials'
+import { useControls } from 'leva'
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -54,16 +55,24 @@ const MonitorFrameMaterial = () => {
         '/webgl/textures/monitors/Metal011_1K-JPG_Metalness.jpg',
     ])
 
+    const materialProps = useControls("Scene/Objects/Monitors/Frame Material", {
+        color: "#2a2a2a",
+        metalness: { value: 0.6, min: 0, max: 1, step: 0.01 },
+        roughness: { value: 0.4, min: 0, max: 1, step: 0.01 },
+        opacity: { value: 1, min: 0, max: 1, step: 0.01 },
+        transparent: false,
+        envMapIntensity: { value: 0.5, min: 0, max: 5, step: 0.1 },
+        emissive: "#000000",
+        emissiveIntensity: { value: 1, min: 0, max: 10 },
+    })
+
     return (
         <meshStandardMaterial
-            metalness={0.6}
-            roughness={0.4}
-            color="#2a2a2a"
-            envMapIntensity={0.5}
             map={colorMap}
             normalMap={normalMap}
             roughnessMap={roughnessMap}
             metalnessMap={metalnessMap}
+            {...materialProps}
         />
     )
 }
@@ -130,6 +139,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
 
     const { dopamineMaterial, oxytocinMaterial, serotoninMaterial } = useMaterials()
 
+    // TODO: move to useFrame???
     //  correct the inverted UV coordinates in model
     useEffect(() => {
         // Fix dopamine monitor (MonitorLR)
@@ -176,7 +186,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
     const monitorData: MonitorData[] = [
         {
             name: 'DOPAMINE',
-            color: getSharedUniforms('dopamine').u_baseColor.value,
+            color: shaderUniformConfigs.dopamine.baseColor,
             position: MONITORS_POSITION[0],
             description: 'Excitement • Reward • Motivation',
             ref: dopamineMeshRef,
@@ -184,7 +194,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         },
         {
             name: 'OXYTOCIN',
-            color: getSharedUniforms('oxytocin').u_baseColor.value,
+            color: shaderUniformConfigs.oxytocin.baseColor,
             position: MONITORS_POSITION[1],
             description: 'Connection • Warmth • Love',
             ref: oxytocinMeshRef,
@@ -192,13 +202,53 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         },
         {
             name: 'SEROTONIN',
-            color: getSharedUniforms('serotonin').u_baseColor.value,
+            color: shaderUniformConfigs.serotonin.baseColor,
             position: MONITORS_POSITION[2],
             description: 'Calmness • Well-being • Introspection',
             ref: serotoninMeshRef,
             material: serotoninMaterial
         }
     ]
+
+
+
+    const getCenteredPos = (position: THREE.Vector3Tuple, monitorPosition: 'left' | 'middle' | 'right'): THREE.Vector3Tuple => {
+        const [x, y, z] = position;
+        const monitorCenter = MONITOR_DIMENSIONS.WIDTH / 2
+
+        let centeredX = x;
+        if (monitorPosition === 'left') centeredX = x - monitorCenter;
+        else if (monitorPosition === 'right') centeredX = x + monitorCenter;  // ✅ Add instead of subtract
+
+        return [centeredX, y, z]
+    }
+
+    const pointLightDopamine = useControls("Scene/Lights/Point Dopamine", {
+        position: { value: getCenteredPos(monitorData[0].position, 'left') },
+        intensity: { value: 1.5, min: 0, max: 2 },
+        distance: { value: 6, min: 0, max: 50 },
+        decay: { value: 2, min: 0, max: 10 },
+        castShadow: true,
+        color: monitorData[0].color,
+    })
+
+    const pointLightOxytocin = useControls("Scene/Lights/Point Oxytocin", {
+        position: { value: monitorData[1].position },
+        intensity: { value: 1.5, min: 0, max: 2 },
+        distance: { value: 6, min: 0, max: 50 },
+        decay: { value: 2, min: 0, max: 10 },
+        castShadow: true,
+        color: monitorData[1].color,
+    })
+    
+    const pointLightSerotonin = useControls("Scene/Lights/Point Serotonin", {
+        position: { value: getCenteredPos(monitorData[2].position, 'right') },
+        intensity: { value: 1.5, min: 0, max: 2 },
+        distance: { value: 6, min: 0, max: 50 },
+        decay: { value: 2, min: 0, max: 10 },
+        castShadow: true,
+        color: monitorData[2].color,
+    })
 
     return (
         <group
@@ -315,25 +365,13 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
             )} */}
 
             <pointLight
-                position={MONITORS_POSITION[0]}
-                color="#ff6b9d"
-                intensity={1.5}  // Increased from 0.3
-                distance={6}     // Increased from 3
-                decay={2}        // Add decay for realistic falloff
+                {...pointLightDopamine}
             />
             <pointLight
-                position={MONITORS_POSITION[1]}
-                color="#ff8844"
-                intensity={1.5}
-                distance={6}
-                decay={2}
+                {...pointLightOxytocin}
             />
             <pointLight
-                position={MONITORS_POSITION[2]}
-                color="#6b7aff"
-                intensity={1.5}
-                distance={6}
-                decay={2}
+                {...pointLightSerotonin}
             />
         </group >
     )

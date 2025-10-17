@@ -4,6 +4,7 @@ import {
     BakeShadows,
     Environment,
     MeshReflectorMaterial,
+    OrbitControls,
     Preload,
     useTexture,
 } from "@react-three/drei"
@@ -102,6 +103,7 @@ export const MonitorsStage = () => {
     return (
         <Suspense>
             <CameraRig />
+            {/* <OrbitControls /> */}
 
             {/* Lights */}
             <ambientLight {...ambientLight} />

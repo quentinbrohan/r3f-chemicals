@@ -6,7 +6,7 @@ import { updateUniformsFromControls } from '../chemicals/shaders/helper';
 import { getDopamineShaderMaterial, getOxytocinShaderMaterial, getSerotoninShaderMaterial } from '../chemicals/shaders/shaderMaterials';
 
 
-const MONITOR_DIMENSIONS = {
+export const MONITOR_DIMENSIONS = {
     WIDTH: 2.12,
     HEIGHT: 3.29
 }
