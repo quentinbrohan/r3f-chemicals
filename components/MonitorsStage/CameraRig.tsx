@@ -53,6 +53,8 @@ export const CameraRig = () => {
         easing.damp3(camera.position, desiredPosition.toArray(), 0.3, delta)
 
         // Always look at monitor center
+        camera.position.y = 2 + Math.sin(state.clock.elapsedTime * 0.2) * 0.1
+        // camera.lookAt(0, 2, 0)
         camera.lookAt(target)
     })
 

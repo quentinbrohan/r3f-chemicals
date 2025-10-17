@@ -26,6 +26,17 @@ type GLTFResult = GLTF & {
     materials: {}
 }
 
+const CableMaterial = () => {
+    return (
+        <meshStandardMaterial
+            color="#1a1a1a"
+            metalness={0.2}
+            roughness={0.8}
+            envMapIntensity={0.3}
+            />
+    )
+}
+
 const MODEL_PATH = '/webgl/models/mg-cables-floor-compressed.glb'
 export function CablesFloor(props: React.JSX.IntrinsicElements['group']) {
     const { nodes, materials } = useGLTF(MODEL_PATH) as any as GLTFResult
@@ -35,93 +46,119 @@ export function CablesFloor(props: React.JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={nodes.AnimatedCable001.geometry}
-                material={nodes.AnimatedCable001.material}
+                // material={nodes.AnimatedCable001.material}
                 position={[-5.264, 0.077, 5.037]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.AnimatedCable002.geometry}
-                material={nodes.AnimatedCable002.material}
+                // material={nodes.AnimatedCable002.material}
                 position={[4.562, 0.099, 0.972]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.AnimatedCable003.geometry}
-                material={nodes.AnimatedCable003.material}
+                // material={nodes.AnimatedCable003.material}
                 position={[4.498, 0.115, -4.721]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.AnimatedCable004.geometry}
-                material={nodes.AnimatedCable004.material}
+                // material={nodes.AnimatedCable004.material}
                 position={[-4.475, 0.141, -3.531]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable009.geometry}
-                material={nodes.StaticCable009.material}
+                // material={nodes.StaticCable009.material}
                 position={[-0.274, 0.098, -0.464]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable001.geometry}
-                material={nodes.StaticCable001.material}
+                // material={nodes.StaticCable001.material}
                 position={[-3.988, 0.086, 0.582]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable002.geometry}
-                material={nodes.StaticCable002.material}
+                // material={nodes.StaticCable002.material}
                 position={[5.755, 0.074, 0.405]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable003.geometry}
-                material={nodes.StaticCable003.material}
+                // material={nodes.StaticCable003.material}
                 position={[2.273, 0.086, 0.27]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable004.geometry}
-                material={nodes.StaticCable004.material}
+                // material={nodes.StaticCable004.material}
                 position={[-2.817, 0.093, 0.417]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable005.geometry}
-                material={nodes.StaticCable005.material}
+                // material={nodes.StaticCable005.material}
                 position={[1.32, 0.144, 1.335]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable006.geometry}
-                material={nodes.StaticCable006.material}
+                // material={nodes.StaticCable006.material}
                 position={[3.015, 0.078, 1.376]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable007.geometry}
-                material={nodes.StaticCable007.material}
+                // material={nodes.StaticCable007.material}
                 position={[-2.661, 0.076, 1.088]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={nodes.StaticCable008.geometry}
-                material={nodes.StaticCable008.material}
+                // material={nodes.StaticCable008.material}
                 position={[-1.626, 0.133, 1.657]}
-            />
+            >
+                <CableMaterial />
+            </mesh>
         </group>
     )
 }

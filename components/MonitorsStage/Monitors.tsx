@@ -46,6 +46,17 @@ const MONITORS_POSITION: THREE.Vector3Tuple[] = [
     [2, 0, -1],
 ]
 
+const MonitorFrameMaterial = () => {
+    return (
+        <meshStandardMaterial
+            metalness={0.6}
+            roughness={0.4}
+            color="#2a2a2a"
+            envMapIntensity={0.5}
+        />
+    )
+}
+
 export function Monitors(props: React.JSX.IntrinsicElements['group']) {
     const { nodes } = useGLTF(MODEL_PATH) as any as GLTFResult
 
@@ -100,11 +111,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 material={nodes.FrameLR.material}
                 position={getFramePosition(MONITORS_POSITION[0])}
             >
-                <meshStandardMaterial
-                    metalness={0.9}
-                    roughness={0.2}
-                    color="#444"
-                />
+                <MonitorFrameMaterial />
             </mesh>
             <mesh
                 ref={dopamineMeshRef}
@@ -123,11 +130,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 material={nodes.FrameC.material}
                 position={getFramePosition(MONITORS_POSITION[1])}
             >
-                <meshStandardMaterial
-                    metalness={0.9}
-                    roughness={0.2}
-                    color="#444"
-                />
+                <MonitorFrameMaterial />
             </mesh>
             <mesh
                 ref={oxytocinMeshRef}
@@ -188,12 +191,11 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 material={nodes.FrameLL.material}
                 position={getFramePosition(MONITORS_POSITION[2])}
             >
-                <meshStandardMaterial
-                    metalness={0.9}
-                    roughness={0.2}
-                    color="#444"
-                />
+                <MonitorFrameMaterial />
             </mesh>
+            <pointLight position={MONITORS_POSITION[0]} color="#ff6b9d" intensity={0.3} distance={3} />
+            <pointLight position={MONITORS_POSITION[1]} color="#ff8844" intensity={0.3} distance={3} />
+            <pointLight position={MONITORS_POSITION[2]} color="#6b7aff" intensity={0.3} distance={3} />
         </group>
     )
 }
