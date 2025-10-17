@@ -1,6 +1,6 @@
 "use client"
 
-import { Environment, MeshReflectorMaterial, Preload } from "@react-three/drei"
+import { BakeShadows, Environment, MeshReflectorMaterial, Preload } from "@react-three/drei"
 import { Suspense } from "react"
 import { CableCeilings } from "./CablesCeiling"
 import { CablesFloor } from "./CablesFloor"
@@ -65,9 +65,11 @@ export const MonitorsStage = () => {
             <fog attach="fog" args={['#000000', 8, 25]} />
             <Environment
                 files="/webgl/hdri/studio_small_03_1k.hdr"
-                environmentIntensity={0.15} />
-            <Preload />
-        </Suspense>
+                environmentIntensity={0.25}
 
+                />
+            <Preload />
+            <BakeShadows />
+        </Suspense>
     )
 }
