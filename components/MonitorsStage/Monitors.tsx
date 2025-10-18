@@ -140,6 +140,7 @@ const HormoneLabel: React.FC<HormoneLabelProps> = ({
             anchorX="center"
             anchorY="middle"
             raycast={() => null}
+            letterSpacing={-0.05}
             castShadow
             receiveShadow
             {...controls}
