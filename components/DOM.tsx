@@ -80,14 +80,30 @@ const DOM: React.FC = () => {
         if (!aboutTlRef.current) {
             const tl = gsap.timeline({ paused: true })
 
+            const container = gsap.utils.selector(aboutPanelRef)
+            const paragraphs = container('p')
+
+
             tl.fromTo(
                 aboutPanelRef.current,
+                { opacity: 0, visibility: 'hidden' },
+                {
+                    opacity: 1,
+                    autoAlpha: 1,
+                    visibility: 'visible',
+                    duration: 0.001,
+                }
+            )
+            tl.fromTo(
+                paragraphs,
                 { opacity: 0, y: MOTION_CONFIG.Y_OFFSET.MD, visibility: 'hidden' },
                 {
                     opacity: 1, y: 0,
                     autoAlpha: 1,
-                    visibility: 'visible'
+                    visibility: 'visible',
+                    stagger: MOTION_CONFIG.STAGGER.MD
                 }
+
             )
 
             aboutTlRef.current = tl
@@ -124,13 +140,13 @@ const DOM: React.FC = () => {
     return (
         <main ref={containerRef} className="relative h-screen w-full z-1 pointer-events-none">
             <div className='invisible md:visible pointer-events-none' >
-                <p data-helper className="absolute left-4 top-1/3 text-white/70 uppercase text-xs">
+                <p data-helper className="absolute left-4 top-1/3 text-white/70 uppercase text-xs opacity-0">
                     [ Double-Click on a monitor to view fullscreen ]
                 </p>
-                <p data-helper className="absolute right-4 bottom-1/3 text-white/70 uppercase text-xs">
+                <p data-helper className="absolute right-4 bottom-1/3 text-white/70 uppercase text-xs opacity-0">
                     [ Scroll to get closer ]
                 </p>
-                <p data-helper className="absolute right-4 bottom-1/6 text-white/70 uppercase text-xs">
+                <p data-helper className="absolute right-4 bottom-1/6 text-white/70 uppercase text-xs opacity-0">
                     [ Move your mouse to rotate ]
                 </p>
             </div>
@@ -138,7 +154,7 @@ const DOM: React.FC = () => {
             <button
                 ref={aboutButtonRef}
                 onClick={() => setShowAboutPanel(!showAboutPanel)}
-                className="absolute left-4 bottom-4 pointer-events-auto text-white hover:opacity-60! transition cursor-pointer text-xs uppercase z-1"
+                className="absolute left-4 bottom-4 pointer-events-auto text-white hover:opacity-60! transition cursor-pointer text-xs uppercase z-1 opacity-0"
             >
                 {showAboutPanel ? '( Close )' : '( About )'}
             </button>
@@ -147,10 +163,10 @@ const DOM: React.FC = () => {
                 ref={aboutPanelRef}
                 className="absolute left-4 bottom-[calc(1rem+2rem)] pointer-events-auto text-white max-w-md flex flex-col gap-1"
             >
-                <p className="text-xs">
+                <p className="text-xs opacity-0">
                     Visualizing hormones with procedural shaders: dopamine, oxytocin, serotonin. R3F.
                 </p>
-                <p className="text-xs">
+                <p className="text-xs opacity-0">
                     Each monitor displays a unique shader pattern representing the chemical identity
                     and emotional associations of key neurotransmitters.
                 </p>
