@@ -1,18 +1,21 @@
 'use client'
 
+import { useStore } from '@/lib/store'
 import { useThree } from '@react-three/fiber'
 import { useEffect } from 'react'
 import type * as THREE from 'three'
 import { CubeCamera, WebGLCubeRenderTarget } from 'three'
+import { useShallow } from 'zustand/react/shallow'
 
 export function Preload() {
     const gl = useThree((state) => state.gl)
     const camera = useThree((state) => state.camera)
     const scene = useThree((state) => state.scene)
-    // const loaderLoaded = useStore((state) => state.loaderLoaded)
+    const [isLoaderLoaded, setIsLoaderLoader] = useStore(useShallow((state) => [state.isLoaderLoaded, state.setIsLoaderLoaded]))
 
     useEffect(() => {
-        // if (!loaderLoaded) return
+        if (isLoaderLoaded) return
+
 
         async function load() {
             console.log('WebGL: Preloading...')
@@ -35,6 +38,7 @@ export function Preload() {
                 object.visible = false
             }
 
+            setIsLoaderLoader(true)
             console.timeEnd('WebGL: Preload took:')
         }
 
@@ -43,6 +47,8 @@ export function Preload() {
         camera,
         gl,
         scene,
+        isLoaderLoaded,
+        setIsLoaderLoader,
     ])
 
     return null

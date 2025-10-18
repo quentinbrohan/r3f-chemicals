@@ -32,10 +32,12 @@ const DOM: React.FC = () => {
     const aboutPanelRef = useRef<HTMLDivElement>(null)
 
     const aboutTlRef = useRef<gsap.core.Timeline | null>(null)
-
+    const isLoaderLoaded = useStore((state) => state.isLoaderLoaded)
+    const mainTlRef = useRef<gsap.core.Timeline | null>(null)
 
     useGSAP(() => {
-        const tl = gsap.timeline()
+        if (!isLoaderLoaded) return;
+        const tl = gsap.timeline({ id: 'dom', paused: true })
 
         const container = gsap.utils.selector(containerRef)
 
@@ -53,9 +55,10 @@ const DOM: React.FC = () => {
             .add(
 
                 gsap.to(helperEls, {
+                    opacity: 1,
                     scrambleText: {
                         text: '{original}',
-                        chars: 'DAOTSHCN5-',
+                        chars: MOTION_CONFIG.SCRAMBLE.CHARSET,
                         revealDelay: 0.4,
                     },
                     stagger: MOTION_CONFIG.STAGGER.LG,
@@ -72,7 +75,17 @@ const DOM: React.FC = () => {
                 }
             ), '<+=0.6')
 
-    }, { scope: containerRef })
+        mainTlRef.current = tl;
+
+    }, { scope: containerRef, dependencies: [isLoaderLoaded] })
+
+
+    useEffect(() => {
+        if (isLoaderLoaded && mainTlRef.current)
+            mainTlRef.current.play()
+    }, [isLoaderLoaded])
+
+
 
     useEffect(() => {
         if (!aboutPanelRef.current) return

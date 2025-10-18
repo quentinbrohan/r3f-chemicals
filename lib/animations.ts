@@ -16,6 +16,9 @@ export const MOTION_CONFIG = {
     DEFAULT: 0.5,
     SCRAMBLE: 1,
   },
+  SCRAMBLE: {
+    CHARSET: "DAOTSHCN5-",
+  },
 };
 
 export const animatePageFadeIn = () => {

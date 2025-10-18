@@ -185,9 +185,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         }
     }, [nodes])
 
-    console.log({ nodes, fixedGeometries });
-
-
     const [isHovered, setIsHovered] = useState(false)
     useCursor(isHovered)
     const [hoveredName, setHoveredName] = useStore(useShallow((state) => [state.hoveredName, state.setHoveredName]))
