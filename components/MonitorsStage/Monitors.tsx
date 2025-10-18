@@ -105,7 +105,6 @@ const HormoneLabel: React.FC<HormoneLabelProps> = ({
 }) => {
     const [x, y, z] = monitor.position;
     const position: THREE.Vector3Tuple = [x, y, z + 0.25]
-    console.log('label text visible', monitor.name, isHovered);
 
     const getTextRotation = (monitorName: string): THREE.Vector3Tuple => {
         if (monitorName === 'DOPAMINE') return [0, -0.2, 0]
@@ -220,10 +219,36 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         animateNavToPageFadeOut(router, `/${name.toLowerCase()}`)
     }
 
+    const lastTapTimeRef = useRef<Record<string, number>>({})
+    const DOUBLE_TAP_DELAY = 300
     const monitorHandlers = (name: MonitorData['name']) => ({
         onPointerEnter: () => onPointerEnterMonitor(name),
         onPointerLeave: () => onPointerLeaveMonitor(),
-        onDoubleClick: () => onDoubleClick(name)
+        onDoubleClick: () => onDoubleClick(name),
+
+        // touch events for mobile
+        onPointerDown: (event: ThreeEvent<PointerEvent>) => {
+            if (event.pointerType === 'touch') {
+                onPointerEnterMonitor(name)
+
+                // Double-tap detection
+                const now = Date.now()
+                const lastTap = lastTapTimeRef.current[name] || 0
+
+                if (now - lastTap < DOUBLE_TAP_DELAY) {
+                    // Double-tap detected!
+                    onDoubleClick(name)
+                    lastTapTimeRef.current[name] = 0 // Reset
+                } else {
+                    lastTapTimeRef.current[name] = now
+                }
+            }
+        },
+        onPointerUp: (event: ThreeEvent<PointerEvent>) => {
+            if (event.pointerType === 'touch') {
+                onPointerLeaveMonitor()
+            }
+        }
     })
 
     const monitorData: MonitorData[] = [

@@ -53,8 +53,11 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
                     position: 'fixed',
                     inset: 0,
                     maxWidth: '100vw',
-                    maxHeight: '100vh'
+                    maxHeight: '100vh',
+                    pointerEvents: 'all'
                 }}
+                eventSource={document.documentElement}
+                eventPrefix="client"
             >
                 {children}
                 {showDebug && <Stats />}

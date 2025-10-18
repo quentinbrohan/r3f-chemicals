@@ -46,11 +46,11 @@ const Header: React.FC<HeaderProps> = ({ }) => {
             .add(
                 gsap.fromTo([navLinkEls, splitEls], {
                     opacity: 0,
-                    y: MOTION_CONFIG.Y_OFFSET.MD,
+                    y: MOTION_CONFIG.Y_OFFSET.lg,
 
                 }, {
                     opacity: 1,
-                    stagger: MOTION_CONFIG.STAGGER.MD,
+                    stagger: MOTION_CONFIG.STAGGER.lg,
                 }), '<+=0.25')
 
 
@@ -69,11 +69,11 @@ const Header: React.FC<HeaderProps> = ({ }) => {
     }
 
     return (
-        <header ref={containerRef} className='z-2 absolute p-4 w-screen justify-between text-white grid grid-cols-3'>
+        <header ref={containerRef} className='z-2 absolute p-2 md:p-4 w-screen justify-between text-white grid grid-cols-2 md:grid-cols-3'>
             <Link data-main-link href="/"
                 onClick={(event) => onNavClick(event, '/')}
-                className='col-start-2 col-end-3 uppercase font-bold text-2xl text-center opacity-0'>Chemicals</Link>
-            <nav className='self-center col-start-3 col-end-4 text-right'>
+                className='col-start-1 col-end-2  md:col-start-2 md:col-end-3 uppercase font-bold text-2xl text-left md:text-center opacity-0'>Chemicals</Link>
+            <nav className='col-start-2 col-end-3 md:col-start-3 md:col-end-4 self-start md:self-center justify-end text-right flex flex-col md:flex-row'>
                 {NAV_LINKS.map((link, i) => (
                     <React.Fragment key={link.href}>
                         <Link href={link.href}
@@ -82,9 +82,8 @@ const Header: React.FC<HeaderProps> = ({ }) => {
                         >
                             {link.label}
                         </Link>
-                        {i < NAV_LINKS.length - 1 && <span className='opacity-0'>, </span>}
+                        {i < NAV_LINKS.length - 1 && <span className='opacity-0 md:mr-1 hidden md:inline-block'>, </span>}
                     </React.Fragment>
-
                 ))}
             </nav>
         </header>

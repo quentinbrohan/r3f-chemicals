@@ -6,6 +6,7 @@ import { useGSAP } from '@gsap/react'
 import { HormoneNames, useStore } from '@/lib/store'
 import { animatePageFadeIn, MOTION_CONFIG } from '@/lib/animations'
 import Link from 'next/link'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 const HORMONES_DESCRIPTIONS: Record<HormoneNames, {
     description: string;
@@ -151,16 +152,18 @@ const DOM: React.FC = () => {
         }
     }, [hoveredName])
 
+    const isMobile = useIsMobile();
+
     return (
-        <main ref={containerRef} className="relative h-screen w-full z-1 pointer-events-none">
-            <div className='invisible md:visible pointer-events-none' >
-                <p data-helper className="absolute left-4 top-1/3 text-white/70 uppercase text-xs opacity-0">
-                    [ Double-Click on a monitor to view fullscreen ]
+        <main ref={containerRef} className="relative h-[100svh] w-full z-1">
+            <div className='md:visible pointer-events-none' >
+                <p data-helper className="absolute  left-2 top-1/6 md:left-4 md:top-1/5 text-white/70 uppercase text-xs opacity-0">
+                    [ {isMobile ? 'Double-tap' : `Double-click`} on a monitor to view fullscreen ]
                 </p>
-                <p data-helper className="absolute right-4 bottom-1/3 text-white/70 uppercase text-xs opacity-0">
+                <p data-helper className="invisible md:visible absolute right-4 bottom-1/3 text-white/70 uppercase text-xs opacity-0">
                     [ Scroll to get closer ]
                 </p>
-                <p data-helper className="absolute right-4 bottom-1/6 text-white/70 uppercase text-xs opacity-0">
+                <p data-helper className="invisible md:visible absolute right-4 bottom-1/6 text-white/70 uppercase text-xs opacity-0">
                     [ Move your mouse to rotate ]
                 </p>
             </div>
@@ -168,14 +171,14 @@ const DOM: React.FC = () => {
             <button
                 ref={aboutButtonRef}
                 onClick={() => setShowAboutPanel(!showAboutPanel)}
-                className="absolute left-4 bottom-4 pointer-events-auto text-white hover:opacity-60! transition cursor-pointer text-xs uppercase z-1 opacity-0"
+                className="absolute left-2 md:left-4 bottom-2 md:bottom-4 pointer-events-auto text-white hover:opacity-60! transition cursor-pointer text-xs uppercase z-1 opacity-0"
             >
                 {showAboutPanel ? '( Close )' : '( About )'}
             </button>
 
             <div
                 ref={aboutPanelRef}
-                className="absolute left-4 bottom-[calc(1rem+2rem)] pointer-events-auto text-white max-w-md flex flex-col gap-1"
+                className="absolute left-2 md:left-4 right-2 md:right-4 bottom-[calc(1rem+1.5rem)] md:bottom-[calc(1rem+2rem)] pointer-events-auto text-white max-w-md flex flex-col gap-1"
             >
                 <p className="text-xs opacity-0">
                     Real-time visualization of hormones with procedural shaders using WebGL and React Three Fiber.
@@ -191,7 +194,7 @@ const DOM: React.FC = () => {
 
             <div
                 ref={descriptionRef}
-                className="absolute right-4 bottom-4 text-sm text-white max-w-md flex flex-col gap-1"
+                className="absolute  left-2 md:left-auto right-2 md:right-4 bottom-2/6 md:bottom-4 text-sm text-white max-w-sm flex flex-col gap-1 pointer-events-none"
             >
                 {
                     hoveredName && (
