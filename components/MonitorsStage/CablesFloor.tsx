@@ -40,7 +40,7 @@ const CableMaterial: React.FC = () => {
         envMapIntensity: { value: 0.3, min: 0, max: 5, step: 0.1 },
         emissive: "#1a1a1a",
         emissiveIntensity: { value: 2, min: 0, max: 10 },
-        displacementScale: {value: 0.02, min: 0, max: 5 }
+        displacementScale: {value: 0.015, min: 0, max: 5 }
     })
 
     return (

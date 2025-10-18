@@ -91,12 +91,12 @@ export const MonitorsStage = () => {
     // OBJECTS: POS + SCALE
     const cablesCeiling = useControls("Scene/Objects/CablesCeiling", {
         position: { value: [0, 4.5, 0.5] },
-        scale: { value: 0.45, min: 0.1, max: 2 },
+        scale: { value: 0.6, min: 0.1, max: 2 },
     })
 
     const cablesFloor = useControls("Scene/Objects/CablesFloor", {
         position: { value: [0, 0, 0] },
-        scale: { value: 0.45, min: 0.1, max: 2 },
+        scale: { value: 0.6, min: 0.1, max: 2 },
     })
 
     const monitors = useControls("Scene/Objects/Monitors", {
@@ -187,9 +187,6 @@ export const MonitorsStage = () => {
                 environmentIntensity={environment.environmentIntensity}
             />
 
-
-
-            {/* <Preload all /> */}
             <BakeShadows />
 
             {postProcessingControls.effectComposerEnabled && (
