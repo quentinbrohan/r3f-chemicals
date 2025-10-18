@@ -9,7 +9,7 @@ import * as THREE from 'three'
 import { GLTF } from 'three-stdlib'
 import { shaderUniformConfigs } from '../chemicals/shaders/shaderMaterials'
 import { useMaterials } from './useMaterials'
-import { useFrame } from '@react-three/fiber'
+import { ThreeEvent, useFrame } from '@react-three/fiber'
 import { easing } from 'maath'
 import { HormoneNames, useStore } from '@/lib/store'
 import { useShallow } from 'zustand/react/shallow'
@@ -35,6 +35,7 @@ type GLTFResult = GLTF & {
 
 
 // Fixed offset from monitor to frame
+// const frameOffset: THREE.Vector3Tuple = [0.016, 0.002, -0.038]; // Example: from LR
 const frameOffset: THREE.Vector3Tuple = [0.016, 0.002, -0.038]; // Example: from LR
 
 function getFramePosition(monitorPosition: THREE.Vector3Tuple): THREE.Vector3Tuple {
@@ -104,6 +105,7 @@ const HormoneLabel: React.FC<HormoneLabelProps> = ({
 }) => {
     const [x, y, z] = monitor.position;
     const position: THREE.Vector3Tuple = [x, y, z + 0.25]
+    console.log('label text visible', monitor.name, isHovered);
 
     const getTextRotation = (monitorName: string): THREE.Vector3Tuple => {
         if (monitorName === 'DOPAMINE') return [0, -0.2, 0]
@@ -196,14 +198,33 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
     useCursor(isHovered)
     const [hoveredName, setHoveredName] = useStore(useShallow((state) => [state.hoveredName, state.setHoveredName]))
 
+    const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
     const onPointerEnterMonitor = (name: MonitorData['name']) => {
-        setIsHovered(true);
-        setHoveredName(name)
+        clearTimeout(hoverTimeoutRef.current!)
+        hoverTimeoutRef.current = setTimeout(() => {
+            setIsHovered(true)
+            setHoveredName(name)
+        }, 50)
     }
     const onPointerLeaveMonitor = () => {
-        setIsHovered(false);
-        setHoveredName(null)
+        clearTimeout(hoverTimeoutRef.current!)
+        hoverTimeoutRef.current = setTimeout(() => {
+            setIsHovered(false)
+            setHoveredName(null)
+        }, 50)
     }
+
+    const onDoubleClick = (name: HormoneNames) => {
+        setHoveredName(null);
+        animateNavToPageFadeOut(router, `/${name.toLowerCase()}`)
+    }
+
+    const monitorHandlers = (name: MonitorData['name']) => ({
+        onPointerEnter: () => onPointerEnterMonitor(name),
+        onPointerLeave: () => onPointerLeaveMonitor(),
+        onDoubleClick: () => onDoubleClick(name)
+    })
 
     const monitorData: MonitorData[] = [
         {
@@ -270,10 +291,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
     })
 
     const router = useRouter();
-    const onDoubleClick = (name: HormoneNames) => {
-        setHoveredName(null);
-        animateNavToPageFadeOut(router, `/${name.toLowerCase()}`)
-    }
 
     return (
         <group
@@ -289,6 +306,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 material={nodes.FrameLR.material}
                 position={getFramePosition(MONITORS_POSITION[0])}
                 raycast={() => null}
+                renderOrder={0}
+                {...monitorHandlers('DOPAMINE')}
             >
                 <MonitorFrameMaterial />
             </mesh>
@@ -300,10 +319,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorLR!}
                 material={dopamineMaterial!}
                 position={MONITORS_POSITION[0]}
-                // TODO:FIXME: double check raycast of stage elements, cursor seems to pass through sometimes
-                onPointerEnter={() => onPointerEnterMonitor('DOPAMINE')}
-                onPointerLeave={() => onPointerLeaveMonitor()}
-                onDoubleClick={() => onDoubleClick('DOPAMINE')}
+                renderOrder={1}
+                {...monitorHandlers('DOPAMINE')}
             />
             <mesh
                 name="FrameC"
@@ -313,7 +330,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 material={nodes.FrameC.material}
                 position={getFramePosition(MONITORS_POSITION[1])}
                 raycast={() => null}
-
+                renderOrder={0}
+                {...monitorHandlers('OXYTOCIN')}
             >
                 <MonitorFrameMaterial />
             </mesh>
@@ -325,9 +343,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorC!}
                 material={oxytocinMaterial!}
                 position={MONITORS_POSITION[1]}
-                onPointerEnter={() => onPointerEnterMonitor('OXYTOCIN')}
-                onPointerLeave={() => onPointerLeaveMonitor()}
-                onDoubleClick={() => onDoubleClick('OXYTOCIN')}
+                renderOrder={1}
+                {...monitorHandlers('OXYTOCIN')}
 
             />
             {/* <mesh
@@ -370,9 +387,9 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorLL!}
                 material={serotoninMaterial!}
                 position={MONITORS_POSITION[2]}
-                onPointerEnter={() => onPointerEnterMonitor('SEROTONIN')}
-                onPointerLeave={() => onPointerLeaveMonitor()}
-                onDoubleClick={() => onDoubleClick('SEROTONIN')}
+                renderOrder={1}
+                {...monitorHandlers('SEROTONIN')}
+
             />
             <mesh
                 name="FrameLL"
@@ -382,6 +399,10 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 material={nodes.FrameLL.material}
                 position={getFramePosition(MONITORS_POSITION[2])}
                 raycast={() => null}
+                renderOrder={0}
+                {...monitorHandlers('SEROTONIN')}
+
+
             >
                 <MonitorFrameMaterial />
             </mesh>
