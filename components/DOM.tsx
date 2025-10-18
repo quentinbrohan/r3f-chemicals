@@ -5,6 +5,7 @@ import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { HormoneNames, useStore } from '@/lib/store'
 import { animatePageFadeIn, MOTION_CONFIG } from '@/lib/animations'
+import Link from 'next/link'
 
 const HORMONES_DESCRIPTIONS: Record<HormoneNames, {
     description: string;
@@ -177,11 +178,14 @@ const DOM: React.FC = () => {
                 className="absolute left-4 bottom-[calc(1rem+2rem)] pointer-events-auto text-white max-w-md flex flex-col gap-1"
             >
                 <p className="text-xs opacity-0">
-                    Visualizing hormones with procedural shaders: dopamine, oxytocin, serotonin. R3F.
+                    Real-time visualization of hormones with procedural shaders: dopamine, oxytocin, serotonin.
                 </p>
                 <p className="text-xs opacity-0">
                     Each monitor displays a unique shader pattern representing the chemical identity
                     and emotional associations of key neurotransmitters.
+                </p>
+                <p className="text-xs opacity-0">
+                    For more information or to explore other projects, visit <a className='link hover:underline transition' href="https://quentinbrohan.fr/" target="_blank" rel="noopener noreferrer">quentinbrohan.fr</a>.
                 </p>
             </div>
 
