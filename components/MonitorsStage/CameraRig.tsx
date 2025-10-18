@@ -15,7 +15,7 @@ export const CameraRig = () => {
 
     const minZoom = 3
     // const maxZoom = 7
-    const maxZoom = 10
+    const maxZoom = 9
 
     const horizontalLimit = 2.5  // How far left/right camera can move
     const verticalLimit = 1.5    // How far up it can go from center

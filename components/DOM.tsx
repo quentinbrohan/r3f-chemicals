@@ -150,7 +150,7 @@ const DOM: React.FC = () => {
                 <p className="text-xs">
                     Visualizing hormones with procedural shaders: dopamine, oxytocin, serotonin. R3F.
                 </p>
-                <p className="text-xs italic">
+                <p className="text-xs">
                     Each monitor displays a unique shader pattern representing the chemical identity
                     and emotional associations of key neurotransmitters.
                 </p>
@@ -164,7 +164,7 @@ const DOM: React.FC = () => {
                     hoveredName && (
                         <>
                             <p className="text-xs">{HORMONES_DESCRIPTIONS[hoveredName].description}</p>
-                            <p className="text-xs">{HORMONES_DESCRIPTIONS[hoveredName].shaderDescription}</p>
+                            <p className="text-xs italic">{HORMONES_DESCRIPTIONS[hoveredName].shaderDescription}</p>
                         </>
 
                     )

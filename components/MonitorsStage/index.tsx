@@ -21,7 +21,7 @@ import { Canvas } from '@react-three/fiber'
 export const MonitorsStage = () => {
     // LIGHTS
     const ambientLight = useControls("Scene/Lights/Ambient", {
-        intensity: { value: 0.3, min: 0, max: 2 },
+        intensity: { value: 0.7, min: 0, max: 2 },
         color: "#ffffff",
     })
 
@@ -49,11 +49,19 @@ export const MonitorsStage = () => {
         castShadow: true,
     })
 
+    const ceilingLight = useControls("Scene/Lights/Ceiling", {
+        position: { value: [0, 4, 0] },
+        intensity: { value: 0.8, min: 0, max: 2 },
+        distance: { value: 8, min: 0, max: 20 },
+        color: '#ffffff',
+})
+
     // FOG
     const fog = useControls("Scene/Fog", {
+        enabled: true,
         color: "#000000",
-        near: { value: 8, min: 0, max: 50 },
-        far: { value: 25, min: 0, max: 100 },
+        near: { value: 12, min: 0, max: 50 },
+        far: { value: 30, min: 0, max: 100 },
     })
 
     // GROUND
@@ -70,12 +78,14 @@ export const MonitorsStage = () => {
         metalness: { value: 0.0, min: 0, max: 1 },
         roughness: { value: 0.7, min: 0, max: 1 },
         mirror: { value: 0.5, min: 0, max: 1 },
+        displacementScale: { value: 1, min: 0, max: 5 }
+
     })
 
     // ENVIRONMENT
     const environment = useControls("Scene/Environment", {
         files: "/webgl/hdri/studio_small_03_1k.hdr",
-        environmentIntensity: { value: 0.25, min: 0, max: 2 },
+        environmentIntensity: { value: 0.5, min: 0, max: 2 },
     })
 
     // OBJECTS: POS + SCALE
@@ -95,10 +105,11 @@ export const MonitorsStage = () => {
     })
 
     const [
-        normalMap, roughnessMap, colorMap] = useTexture([
+        normalMap, roughnessMap, colorMap, displacementMap] = useTexture([
             '/webgl/textures/floor/concrete_floor_worn_001_nor_gl_1k.jpg',
             '/webgl/textures/floor/concrete_floor_worn_001_rough_1k.jpg',
             '/webgl/textures/floor/concrete_floor_worn_001_col_1k.jpg',
+            '/webgl/textures/floor/concrete_floor_worn_001_disp_1k.png',
         ])
 
     const postProcessingControls = useControls('Scene/Postprocessing', {
@@ -137,6 +148,7 @@ export const MonitorsStage = () => {
                 <spotLight {...spotMain} shadow-mapSize={[1024, 1024]} />
                 <spotLight {...spotFill} />
                 <directionalLight {...directionalLight} shadow-mapSize={[1024, 1024]} />
+                <pointLight {...ceilingLight} />
 
                 {/* Scene Objects */}
                 <group>
@@ -165,6 +177,7 @@ export const MonitorsStage = () => {
                         roughnessMap={roughnessMap}
                         normalMap={normalMap}
                         map={colorMap}
+                        displacementMap={displacementMap}
                     />
                 </mesh>
 

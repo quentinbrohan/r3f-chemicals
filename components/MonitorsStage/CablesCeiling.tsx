@@ -7,6 +7,7 @@ import React, { useRef } from 'react'
 import { useGLTF, useTexture } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useControls } from 'leva'
+import { useCablesTextures } from './useCableTextures'
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -32,26 +33,26 @@ type GLTFResult = GLTF & {
 }
 
 const CableMaterial: React.FC = () => {
-    const [normalMap, roughnessMap] = useTexture([
-        '/webgl/textures/cables/Rubber004_1K-JPG_NormalGL.jpg',
-        '/webgl/textures/cables/Rubber004_1K-JPG_Roughness.jpg',
-    ])
+    const [colorMap, normalMap, roughnessMap, displacementMap] = useCablesTextures()
 
     const materialProps = useControls("Scene/Objects/CablesCeiling/Material", {
         color: "#0d0d0d",
-        metalness: { value: 0.1, min: 0, max: 1, step: 0.01 },
-        roughness: { value: 0.75, min: 0, max: 1, step: 0.01 },
+        metalness: { value: 0.0, min: 0, max: 1, step: 0.01 },
+        roughness: { value: 0.6, min: 0, max: 1, step: 0.01 },
         opacity: { value: 1, min: 0, max: 1, step: 0.01 },
         transparent: false,
         envMapIntensity: { value: 1, min: 0, max: 5, step: 0.1 },
-        emissive: "#000000",
-        emissiveIntensity: { value: 1, min: 0, max: 10 },
+        emissive: "#1a1a1a",
+        emissiveIntensity: { value: 2, min: 0, max: 10 },
+        displacementScale: { value: 0.02, min: 0, max: 5 }
     })
 
     return (
         <meshStandardMaterial
+            map={colorMap}
             normalMap={normalMap}
             roughnessMap={roughnessMap}
+            displacementMap={displacementMap}
 
             {...materialProps} />
     )
