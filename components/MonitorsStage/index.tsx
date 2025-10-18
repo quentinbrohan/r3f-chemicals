@@ -9,7 +9,7 @@ import {
     useTexture,
 } from "@react-three/drei"
 import { Suspense } from "react"
-import { useControls } from "leva"
+import { folder, useControls } from "leva"
 import { CableCeilings } from "./CablesCeiling"
 import { CablesFloor } from "./CablesFloor"
 import { CameraRig } from "./CameraRig"
@@ -101,6 +101,31 @@ export const MonitorsStage = () => {
             '/webgl/textures/floor/concrete_floor_worn_001_col_1k.jpg',
         ])
 
+    const postProcessingControls = useControls('Scene/Postprocessing', {
+        effectComposerEnabled: { value: true, label: 'Enabled' },
+
+        Bloom: folder({
+            bloomEnabled: { value: true },
+            bloomLuminanceThreshold: { value: 0.9, min: 0, max: 1 },
+            bloomLuminanceSmoothing: { value: 0.9, min: 0, max: 1 },
+            bloomIntensity: { value: 0.5, min: 0, max: 5 },
+            bloomHeight: { value: 300, min: 1, max: 1080, step: 1 },
+        }),
+
+        Noise: folder({
+            noiseEnabled: { value: true },
+            noiseOpacity: { value: 0.015, min: 0, max: 1 },
+        }),
+
+        Vignette: folder({
+            vignetteEnabled: { value: true },
+            vignetteEskil: { value: false },
+            vignetteOffset: { value: 0.3, min: 0, max: 1 },
+            vignetteDarkness: { value: 0.5, min: 0, max: 1 },
+        }),
+    })
+
+
     return (
         <>
             <Suspense>
@@ -156,20 +181,30 @@ export const MonitorsStage = () => {
                 <BakeShadows />
             </Suspense>
 
-            <EffectComposer>
-                <Bloom
-                    luminanceThreshold={0.9}
-                    luminanceSmoothing={0.9}
-                    intensity={0.5}
-                    height={300}
-                />
-                <Noise opacity={0.015} />
-                <Vignette
-                    eskil={false}
-                    offset={0.3}
-                    darkness={0.5}
-                />
-            </EffectComposer>
+            {postProcessingControls.effectComposerEnabled && (
+                <EffectComposer>
+                    <>
+                        {postProcessingControls.bloomEnabled && (
+                            <Bloom
+                                luminanceThreshold={postProcessingControls.bloomLuminanceThreshold}
+                                luminanceSmoothing={postProcessingControls.bloomLuminanceSmoothing}
+                                intensity={postProcessingControls.bloomIntensity}
+                                height={postProcessingControls.bloomHeight}
+                            />
+                        )}
+                        {postProcessingControls.noiseEnabled && (
+                            <Noise opacity={postProcessingControls.noiseOpacity} />
+                        )}
+                        {postProcessingControls.vignetteEnabled && (
+                            <Vignette
+                                eskil={postProcessingControls.vignetteEskil}
+                                offset={postProcessingControls.vignetteOffset}
+                                darkness={postProcessingControls.vignetteDarkness}
+                            />
+                        )}
+                    </>
+                </EffectComposer>
+            )}
         </>
     )
 }

@@ -59,7 +59,7 @@ const CableMaterial: React.FC = () => {
 
 const MODEL_PATH = '/webgl/models/mg-cables-ceiling-compressed.glb'
 export function CableCeilings(props: React.JSX.IntrinsicElements['group']) {
-    const { nodes, _materials } = useGLTF(MODEL_PATH) as any as GLTFResult
+    const { nodes } = useGLTF(MODEL_PATH) as any as GLTFResult
 
     return (
         <group {...props} dispose={null}>

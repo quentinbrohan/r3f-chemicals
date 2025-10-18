@@ -9,8 +9,6 @@ import * as THREE from 'three/webgpu';
 import { usePathname, useSearchParams, } from "next/navigation";
 import { Leva } from "leva";
 import { Preload } from "./Preload";
-import { PostProcessing } from "./PostProcessing";
-import PostProcessingEffects from "./PostProcessingEffects";
 
 declare module '@react-three/fiber' {
     interface ThreeElements extends ThreeToJSXElements<typeof THREE> { }
