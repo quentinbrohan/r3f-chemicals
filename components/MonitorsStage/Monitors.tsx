@@ -9,6 +9,10 @@ import * as THREE from 'three'
 import { GLTF } from 'three-stdlib'
 import { shaderUniformConfigs } from '../chemicals/shaders/shaderMaterials'
 import { MONITOR_DIMENSIONS, useMaterials } from './useMaterials'
+import { useFrame } from '@react-three/fiber'
+import { easing } from 'maath'
+import { HormoneNames, useStore } from '@/lib/store'
+import { useShallow } from 'zustand/react/shallow'
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -78,7 +82,7 @@ const MonitorFrameMaterial = () => {
 }
 
 interface MonitorData {
-    name: 'DOPAMINE' | 'OXYTOCIN' | 'SEROTONIN';
+    name: HormoneNames;
     color: string;
     position: THREE.Vector3Tuple;
     description: string;
@@ -87,45 +91,64 @@ interface MonitorData {
 }
 
 
-interface HormoneTextProps {
+interface HormoneLabelProps {
     monitor: MonitorData,
-    type?: 'title' | 'description'
+    isHovered: boolean;
 }
 
-const HormoneText: React.FC<HormoneTextProps> = ({
+const HormoneLabel: React.FC<HormoneLabelProps> = ({
     monitor,
-    type = 'title'
+    isHovered,
 }) => {
-    const sharedProps: Omit<TextProps, 'children'> = {
-        font: "/fonts/Inter-Medium.woff",
-        castShadow: true
+    const [x, y, z] = monitor.position;
+    const position: THREE.Vector3Tuple = [x, y, z + 0.25]
+
+    const getTextRotation = (monitorName: string): THREE.Vector3Tuple => {
+        if (monitorName === 'DOPAMINE') return [0, -0.2, 0]
+        if (monitorName === 'SEROTONIN') return [0, 0.2, 0]
+        return [0, 0, 0]
     }
 
-    const props: Omit<TextProps, 'children'> = type === 'title' ? {
-        ...sharedProps,
-        fontSize: 0.25,
-        anchorX: 'center',
-        anchorY: 'middle',
-        color: monitor.color,
-        position: [monitor.position[0], monitor.position[1] + (monitor.name === 'OXYTOCIN' ? 2.25 : 2), monitor.position[2]]
-    }
-        : {
-            ...sharedProps,
-            fontSize: 0.12,
-            color: '#fff',
-            maxWidth: 2,
-            textAlign: 'center',
-            position: [monitor.position[0], monitor.position[1] - 1.5, monitor.position[2] + 1.5]
+    const meshRef = useRef<THREE.Mesh>(null)
+    const targetOpacity = useRef(0)
+
+    const controls = useControls(`Scene/Texts/Label/${monitor.name}`, {
+        rotation: { value: getTextRotation(monitor.name) },
+        position: { value: position },
+    })
+
+    useFrame((_state, delta) => {
+        if (!meshRef.current) return
+
+        const target = isHovered ? 1 : 0
+        easing.damp(targetOpacity, 'current', target, 0.3, delta)
+
+        if (meshRef.current.material) {
+            // @ts-ignore TODO: fix type
+            meshRef.current.material.opacity = targetOpacity.current
+            meshRef.current.visible = targetOpacity.current > 0.01
         }
-
-    const text = type === "title" ? monitor.name : monitor.description
+    })
 
     return (
         <Text
-            {...props}
+            ref={meshRef}
+            font="/fonts/Inter-Medium.woff"
+            fontSize={0.25}
+            anchorX="center"
+            anchorY="middle"
+            raycast={() => null}
+            castShadow
+            receiveShadow
+            {...controls}
         >
-            {text}
-            <meshBasicMaterial color={monitor.color} toneMapped={false} />
+            {monitor.name}
+            <meshBasicMaterial
+                color="#ffffff"
+                toneMapped={false}
+                transparent
+                opacity={0}
+            />
         </Text>
     )
 }
@@ -160,17 +183,20 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         }
     }, [nodes])
 
+    console.log({ nodes, fixedGeometries });
+
+
     const [isHovered, setIsHovered] = useState(false)
-    const [hoveredMonitorName, setHoveredMonitorName] = useState<MonitorData['name'] | null>(null)
     useCursor(isHovered)
+    const [hoveredName, setHoveredName] = useStore(useShallow((state) => [state.hoveredName, state.setHoveredName]))
 
     const onPointerEnterMonitor = (name: MonitorData['name']) => {
         setIsHovered(true);
-        setHoveredMonitorName(name)
+        setHoveredName(name)
     }
-    const onPointerLeaveMonitor = (name: MonitorData['name']) => {
+    const onPointerLeaveMonitor = () => {
         setIsHovered(false);
-        setHoveredMonitorName(null)
+        setHoveredName(null)
     }
 
     const monitorData: MonitorData[] = [
@@ -264,8 +290,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorLR!}
                 material={dopamineMaterial}
                 position={MONITORS_POSITION[0]}
-            // onPointerEnter={() => onPointerEnterMonitor('DOPAMINE')}
-            // onPointerLeave={() => onPointerLeaveMonitor}
+                onPointerEnter={() => onPointerEnterMonitor('DOPAMINE')}
+                onPointerLeave={() => onPointerLeaveMonitor()}
             />
             <mesh
                 name="FrameC"
@@ -285,10 +311,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorC!}
                 material={oxytocinMaterial}
                 position={MONITORS_POSITION[1]}
-            // onPointerEnter={() => onPointerEnterMonitor('OXYTOCIN')}
-            // onPointerLeave={() => onPointerLeaveMonitor}
-
-            // rotation={[Math.PI, 0, 0]}  // fix geometry, need side: DoubleSide in material
+                onPointerEnter={() => onPointerEnterMonitor('OXYTOCIN')}
+                onPointerLeave={() => onPointerLeaveMonitor()}
             />
             {/* <mesh
                 name="FrameTL"
@@ -330,8 +354,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorLL!}
                 material={serotoninMaterial}
                 position={MONITORS_POSITION[2]}
-            // onPointerEnter={() => onPointerEnterMonitor('SEROTONIN')}
-            // onPointerLeave={() => onPointerLeaveMonitor}
+                onPointerEnter={() => onPointerEnterMonitor('SEROTONIN')}
+                onPointerLeave={() => onPointerLeaveMonitor()}
 
             />
             <mesh
@@ -345,24 +369,26 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 <MonitorFrameMaterial />
             </mesh>
 
+            <group name="Labels">
+                {monitorData.map((monitor) => (
+                    <HormoneLabel key={monitor.name} monitor={monitor} isHovered={
+                        hoveredName === monitor.name
+                    } />
+                ))}
+            </group>
 
 
-            {/* {monitorData.map((monitor) => (
-                <HormoneText key={monitor.name} monitor={monitor} />
-            ))}
-            {hoveredMonitorName && (
-                <HormoneText monitor={monitorData.find((monitor) => monitor.name === hoveredMonitorName)!} type="description" />
-            )} */}
-
-            <pointLight
-                {...pointLightDopamine}
-            />
-            <pointLight
-                {...pointLightOxytocin}
-            />
-            <pointLight
-                {...pointLightSerotonin}
-            />
+            <group name="PointLights">
+                <pointLight
+                    {...pointLightDopamine}
+                />
+                <pointLight
+                    {...pointLightOxytocin}
+                />
+                <pointLight
+                    {...pointLightSerotonin}
+                />
+            </group>
         </group >
     )
 }

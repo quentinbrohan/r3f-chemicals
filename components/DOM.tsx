@@ -3,6 +3,25 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
+import { HormoneNames, useStore } from '@/lib/store'
+
+const HORMONES_DESCRIPTIONS: Record<HormoneNames, {
+    description: string;
+    shaderDescription: string;
+}> = {
+    'DOPAMINE': {
+        description: `Known as the "reward" chemical, dopamine drives motivation, pleasure, and the anticipation of rewards.`,
+        shaderDescription: `Molten energy pulses through in sudden, electric bursts.`
+    },
+    'OXYTOCIN': {
+        description: `Called the "love hormone," oxytocin fosters trust, bonding, and emotional connection in relationships.`,
+        shaderDescription: `Warm spirals flow like a heartbeat shared between souls.`
+    },
+    'SEROTONIN': {
+        description: `Often called the "feel-good" hormone, serotonin helps regulate mood, sleep, and emotional well-being.`,
+        shaderDescription: `Drifts in soft waves — a calm, introspective rhythm.`
+    }
+}
 
 const DOM: React.FC = () => {
     const [showAboutPanel, setShowAboutPanel] = useState(false)
@@ -77,6 +96,27 @@ const DOM: React.FC = () => {
         }
     }, [showAboutPanel])
 
+    const hoveredName = useStore((state) => state.hoveredName)
+    const descriptionRef = useRef<HTMLDivElement>(null)
+
+    useGSAP(() => {
+        if (hoveredName && descriptionRef.current) {
+            const container = gsap.utils.selector(descriptionRef)
+            const paragraphs = container('p')
+
+            gsap.fromTo(
+                paragraphs,
+                { opacity: 0, y: 32 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.3, // same as in <HormoneLabel />
+                    stagger: 0.1
+                }
+            )
+        }
+    }, [hoveredName])
+
     return (
         <main ref={containerRef} className="relative h-screen w-full z-1 pointer-events-none">
             <div className='invisible md:visible pointer-events-none' >
@@ -106,10 +146,25 @@ const DOM: React.FC = () => {
                 <p className="text-xs">
                     Visualizing hormones with procedural shaders: dopamine, oxytocin, serotonin. R3F.
                 </p>
-                <p className="text-xs">
+                <p className="text-xs italic">
                     Each monitor displays a unique shader pattern representing the chemical identity
                     and emotional associations of key neurotransmitters.
                 </p>
+            </div>
+
+            <div
+                ref={descriptionRef}
+                className="absolute right-4 bottom-4 text-sm text-white max-w-md flex flex-col gap-1"
+            >
+                {
+                    hoveredName && (
+                        <>
+                            <p className="text-xs">{HORMONES_DESCRIPTIONS[hoveredName].description}</p>
+                            <p className="text-xs">{HORMONES_DESCRIPTIONS[hoveredName].shaderDescription}</p>
+                        </>
+
+                    )
+                }
             </div>
         </main>
     )

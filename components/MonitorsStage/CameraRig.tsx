@@ -12,7 +12,8 @@ export const CameraRig = () => {
     const target = new THREE.Vector3(0, 2, 0) // Camera always looks at monitor group
 
     const minZoom = 3
-    const maxZoom = 7
+    // const maxZoom = 7
+    const maxZoom = 10
 
     const horizontalLimit = 2.5  // How far left/right camera can move
     const verticalLimit = 1.5    // How far up it can go from center

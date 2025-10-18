@@ -149,7 +149,7 @@ export const MonitorsStage = () => {
             />
 
             {/* <Preload all /> */}
-            <BakeShadows />
+            {/* <BakeShadows /> */}
         </Suspense>
     )
 }
