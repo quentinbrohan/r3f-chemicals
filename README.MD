@@ -1,6 +1,8 @@
-# R3F Scroll Gallery
+# R3F Chemicals
 
 ![Screenshot](./screenshot.png)
+
+Real-time visualization of hormones with procedural shaders.
 
 ## Getting Started with Next.js
 
