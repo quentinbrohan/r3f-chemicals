@@ -98,8 +98,6 @@ export const MonitorsStage = () => {
             '/webgl/textures/floor/concrete_floor_worn_001_col_1k.jpg',
         ])
 
-
-
     return (
         <Suspense>
             <CameraRig />

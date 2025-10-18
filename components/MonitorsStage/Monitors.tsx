@@ -13,6 +13,9 @@ import { useFrame } from '@react-three/fiber'
 import { easing } from 'maath'
 import { HormoneNames, useStore } from '@/lib/store'
 import { useShallow } from 'zustand/react/shallow'
+import { useRouter } from 'next/navigation'
+import { gsap } from 'gsap'
+import { animateNavToPageFadeOut } from '@/lib/animations'
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -85,7 +88,6 @@ interface MonitorData {
     name: HormoneNames;
     color: string;
     position: THREE.Vector3Tuple;
-    description: string;
     ref: React.RefObject<THREE.Mesh<THREE.BufferGeometry<THREE.NormalBufferAttributes, THREE.BufferGeometryEventMap>, THREE.Material | THREE.Material[], THREE.Object3DEventMap> | null>;
     material: THREE.ShaderMaterial;
 }
@@ -204,7 +206,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
             name: 'DOPAMINE',
             color: shaderUniformConfigs.dopamine.baseColor,
             position: MONITORS_POSITION[0],
-            description: 'Excitement • Reward • Motivation',
             ref: dopamineMeshRef,
             material: dopamineMaterial
         },
@@ -212,7 +213,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
             name: 'OXYTOCIN',
             color: shaderUniformConfigs.oxytocin.baseColor,
             position: MONITORS_POSITION[1],
-            description: 'Connection • Warmth • Love',
             ref: oxytocinMeshRef,
             material: oxytocinMaterial
         },
@@ -220,7 +220,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
             name: 'SEROTONIN',
             color: shaderUniformConfigs.serotonin.baseColor,
             position: MONITORS_POSITION[2],
-            description: 'Calmness • Well-being • Introspection',
             ref: serotoninMeshRef,
             material: serotoninMaterial
         }
@@ -266,6 +265,12 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         color: monitorData[2].color,
     })
 
+    const router = useRouter();
+    const onDoubleClick = (name: HormoneNames) => {
+        animateNavToPageFadeOut(router, `/${name.toLowerCase()}`)
+        const tl = gsap.timeline()
+    }
+
     return (
         <group
             position={[0, 2, 0]}
@@ -292,6 +297,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 position={MONITORS_POSITION[0]}
                 onPointerEnter={() => onPointerEnterMonitor('DOPAMINE')}
                 onPointerLeave={() => onPointerLeaveMonitor()}
+                onDoubleClick={() => onDoubleClick('DOPAMINE')}
             />
             <mesh
                 name="FrameC"
@@ -313,6 +319,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 position={MONITORS_POSITION[1]}
                 onPointerEnter={() => onPointerEnterMonitor('OXYTOCIN')}
                 onPointerLeave={() => onPointerLeaveMonitor()}
+                onDoubleClick={() => onDoubleClick('OXYTOCIN')}
+
             />
             {/* <mesh
                 name="FrameTL"
@@ -356,6 +364,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 position={MONITORS_POSITION[2]}
                 onPointerEnter={() => onPointerEnterMonitor('SEROTONIN')}
                 onPointerLeave={() => onPointerLeaveMonitor()}
+                onDoubleClick={() => onDoubleClick('SEROTONIN')}
+
 
             />
             <mesh

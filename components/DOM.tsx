@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { HormoneNames, useStore } from '@/lib/store'
+import { animatePageFadeIn, MOTION_CONFIG } from '@/lib/animations'
 
 const HORMONES_DESCRIPTIONS: Record<HormoneNames, {
     description: string;
@@ -40,12 +41,15 @@ const DOM: React.FC = () => {
 
         const helperEls = container('[data-helper]')
 
-        tl.add(gsap.from(helperEls, {
-            opacity: 0,
-            y: 32,
-            duration: 0.8,
-            stagger: 0.2,
-        }), '<+=0.6')
+        tl.add(
+            animatePageFadeIn(),
+            '<+=0.6')
+            .add(gsap.from(helperEls, {
+                opacity: 0,
+                y: MOTION_CONFIG.Y_OFFSET.MD,
+                duration: MOTION_CONFIG.DURATION.TRANSITION,
+                stagger: MOTION_CONFIG.STAGGER.LG,
+            }))
             .add(
 
                 gsap.to(helperEls, {
@@ -54,17 +58,17 @@ const DOM: React.FC = () => {
                         chars: 'DAOTSHCN5-',
                         revealDelay: 0.4,
                     },
-                    stagger: 0.2,
+                    stagger: MOTION_CONFIG.STAGGER.LG,
                     repeat: -1,
                     repeatDelay: 5,
-                    duration: 1
+                    duration: MOTION_CONFIG.DURATION.SCRAMBLE
                 }), '<')
             .add(gsap.fromTo(aboutButtonRef.current,
-                { autoAlpha: 0, y: 32 },
+                { autoAlpha: 0, y: MOTION_CONFIG.Y_OFFSET.MD },
                 {
                     autoAlpha: 1,
                     y: 0,
-                    duration: 0.3,
+                    duration: MOTION_CONFIG.DURATION.CTA,
                 }
             ), '<+=0.6')
 
@@ -78,9 +82,9 @@ const DOM: React.FC = () => {
 
             tl.fromTo(
                 aboutPanelRef.current,
-                { opacity: 0, y: 32, visibility: 'hidden' },
+                { opacity: 0, y: MOTION_CONFIG.Y_OFFSET.MD, visibility: 'hidden' },
                 {
-                    opacity: 1, y: 0, duration: 0.5,
+                    opacity: 1, y: 0,
                     autoAlpha: 1,
                     visibility: 'visible'
                 }
@@ -106,12 +110,12 @@ const DOM: React.FC = () => {
 
             gsap.fromTo(
                 paragraphs,
-                { opacity: 0, y: 32 },
+                { opacity: 0, y: MOTION_CONFIG.Y_OFFSET.MD },
                 {
                     opacity: 1,
                     y: 0,
-                    duration: 0.3, // same as in <HormoneLabel />
-                    stagger: 0.1
+                    duration: MOTION_CONFIG.DURATION.CTA, // same as in <HormoneLabel />
+                    stagger: MOTION_CONFIG.STAGGER.MD
                 }
             )
         }
@@ -121,7 +125,7 @@ const DOM: React.FC = () => {
         <main ref={containerRef} className="relative h-screen w-full z-1 pointer-events-none">
             <div className='invisible md:visible pointer-events-none' >
                 <p data-helper className="absolute left-4 top-1/3 text-white/70 uppercase text-xs">
-                    [ Click on a monitor to view fullscreen ]
+                    [ Double-Click on a monitor to view fullscreen ]
                 </p>
                 <p data-helper className="absolute right-4 bottom-1/3 text-white/70 uppercase text-xs">
                     [ Scroll to get closer ]

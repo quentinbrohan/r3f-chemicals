@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-inter ${GeistSans.variable} ${GeistMono.variable} ${inter.variable}`}>
+      <body className={`font-inter dark ${GeistSans.variable} ${GeistMono.variable} ${inter.variable}`}>
         <Header />
         <GSAP />
         {children}
