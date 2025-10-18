@@ -4,6 +4,8 @@
 
 Real-time visualization of hormones with procedural shaders.
 
+Add `?debug=true` to the URL of any page for Leva controls.
+
 ## Getting Started with Next.js
 
 1. **Install dependencies:**

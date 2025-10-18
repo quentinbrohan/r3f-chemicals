@@ -1,6 +1,4 @@
 import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Header from '@/components/Header'
@@ -9,6 +7,13 @@ import { GSAP } from '@/components/GSAP'
 
 export const metadata: Metadata = {
   title: 'Chemicals',
+  description: 'Real-time visualization of hormones with procedural shaders. R3F.',
+  authors: [
+    {
+      name: 'Quentin Brohan',
+      url: 'https://www.quentinbrohan.fr/'
+    }
+  ]
 }
 
 export default function RootLayout({
@@ -18,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-inter dark ${GeistSans.variable} ${GeistMono.variable} ${inter.variable}`}>
+      <body className={`font-inter dark ${inter.variable}`}>
         <Header />
         <GSAP />
         {children}

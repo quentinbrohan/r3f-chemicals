@@ -1,12 +1,16 @@
 'use client'
 
 import { OxytocinPlane } from "@/components/chemicals/OxytocinPlane"
-import GlobalScene from "@/components/GlobalScene"
 import { animatePageFadeIn } from "@/lib/animations"
 import { useStore } from "@/lib/store"
 import { useGSAP } from "@gsap/react"
 import gsap from 'gsap'
-import { useEffect, useRef } from "react"
+import dynamic from "next/dynamic"
+import { Suspense, useEffect, useRef } from "react"
+
+const GlobalScene = dynamic(() => import('@/components/GlobalScene'), {
+    ssr: false,
+})
 
 const Oxytocin = () => {
     const tlRef = useRef<gsap.core.Timeline | null>(null)
@@ -32,9 +36,11 @@ const Oxytocin = () => {
     }, [isLoaderLoaded])
 
     return (
-        <GlobalScene>
-            <OxytocinPlane />
-        </GlobalScene>
+        <Suspense>
+            <GlobalScene>
+                <OxytocinPlane />
+            </GlobalScene>
+        </Suspense>
     )
 }
 

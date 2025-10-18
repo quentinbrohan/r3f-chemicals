@@ -1,12 +1,16 @@
 'use client'
 
 import { DopaminePlane } from "@/components/chemicals/DopaminePlane"
-import GlobalScene from "@/components/GlobalScene"
 import { animatePageFadeIn } from "@/lib/animations"
 import { useStore } from "@/lib/store"
 import { useGSAP } from '@gsap/react'
-import { useEffect, useRef } from "react"
+import { Suspense, useEffect, useRef } from "react"
 import gsap from 'gsap'
+import dynamic from "next/dynamic"
+
+const GlobalScene = dynamic(() => import('@/components/GlobalScene'), {
+    ssr: false,
+})
 
 const Dopamine = () => {
     const tlRef = useRef<gsap.core.Timeline | null>(null)
@@ -32,9 +36,11 @@ const Dopamine = () => {
     }, [isLoaderLoaded])
 
     return (
-        <GlobalScene>
-            <DopaminePlane />
-        </GlobalScene>
+        <Suspense>
+            <GlobalScene>
+                <DopaminePlane />
+            </GlobalScene>
+        </Suspense>
     )
 }
 

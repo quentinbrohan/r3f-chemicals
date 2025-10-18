@@ -1,12 +1,16 @@
 'use client'
 
 import { SerotoninPlane } from "@/components/chemicals/SerotoninPlane"
-import GlobalScene from "@/components/GlobalScene"
 import { animatePageFadeIn } from "@/lib/animations"
 import { useStore } from "@/lib/store"
 import { useGSAP } from "@gsap/react"
 import gsap from 'gsap'
-import { useEffect, useRef } from "react"
+import dynamic from "next/dynamic"
+import { Suspense, useEffect, useRef } from "react"
+
+const GlobalScene = dynamic(() => import('@/components/GlobalScene'), {
+    ssr: false,
+})
 
 const Serotonin = () => {
     const tlRef = useRef<gsap.core.Timeline | null>(null)
@@ -32,9 +36,11 @@ const Serotonin = () => {
     }, [isLoaderLoaded])
 
     return (
-        <GlobalScene>
-            <SerotoninPlane />
-        </GlobalScene>
+        <Suspense>
+            <GlobalScene>
+                <SerotoninPlane />
+            </GlobalScene>
+        </Suspense>
     )
 }
 
