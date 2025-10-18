@@ -9,6 +9,8 @@ import * as THREE from 'three/webgpu';
 import { usePathname, useSearchParams, } from "next/navigation";
 import { Leva } from "leva";
 import { Preload } from "./Preload";
+import { PostProcessing } from "./PostProcessing";
+import PostProcessingEffects from "./PostProcessingEffects";
 
 declare module '@react-three/fiber' {
     interface ThreeElements extends ThreeToJSXElements<typeof THREE> { }
@@ -18,9 +20,10 @@ extend(THREE as any)
 
 interface GlobalSceneProps {
     children: React.ReactElement
+    postprocessing?: boolean
 }
 
-const GlobalScene: React.FC<GlobalSceneProps> = ({ children }) => {
+const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = false }) => {
     const [frameloop, setFrameloop] = useState<CanvasProps['frameloop']>("never");
 
     // TODO: keep only for webgpu later or in prod only. Complex shaders takes almost a minute to compile
@@ -48,7 +51,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children }) => {
     //     return renderer;
     // }, []); // Empty deps - only create once
 
-    const postprocessing = false;
     const alpha = false;
 
     const params = useSearchParams();
@@ -62,13 +64,18 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children }) => {
                 camera={{ position: [0, 0, 5], fov: 45 }}
                 // frameloop={frameloop}
                 // gl={glCallback}
+                flat
                 gl={{
                     precision: 'highp',
                     powerPreference: 'high-performance',
                     // Disable MSAA when DPR is high to avoid redundant work
                     // antialias: !postprocessing && window?.devicePixelRatio < 2,
                     alpha,
-                    ...((postprocessing ? { stencil: false, depth: false } : {})),
+                    ...((postprocessing ? {
+                        stencil: false, depth: false,
+                        toneMapping: THREE.NoToneMapping,  // Disable tone mapping
+                        outputColorSpace: THREE.LinearSRGBColorSpace,  // Linear color space
+                    } : {})),
                 }}
                 dpr={[1, 2]}
                 style={{
@@ -80,6 +87,14 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children }) => {
             >
                 {children}
                 {showDebug && <Stats />}
+
+                {/* {<>
+                    <PostProcessing />
+                    <PostProcessingEffects />
+                </>
+                } */}
+
+
                 {/* TODO: state/store to trigger timeline play in / */}
                 <Preload />
             </Canvas>

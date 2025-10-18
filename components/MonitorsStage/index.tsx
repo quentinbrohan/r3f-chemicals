@@ -14,6 +14,9 @@ import { CableCeilings } from "./CablesCeiling"
 import { CablesFloor } from "./CablesFloor"
 import { CameraRig } from "./CameraRig"
 import { Monitors } from "./Monitors"
+import React from 'react'
+import { Bloom, DepthOfField, EffectComposer, Noise, Vignette } from '@react-three/postprocessing'
+import { Canvas } from '@react-three/fiber'
 
 export const MonitorsStage = () => {
     // LIGHTS
@@ -99,55 +102,74 @@ export const MonitorsStage = () => {
         ])
 
     return (
-        <Suspense>
-            <CameraRig />
-            {/* <OrbitControls /> */}
+        <>
+            <Suspense>
+                <CameraRig />
+                {/* <OrbitControls /> */}
 
-            {/* Lights */}
-            <ambientLight {...ambientLight} />
-            <spotLight {...spotMain} shadow-mapSize={[1024, 1024]} />
-            <spotLight {...spotFill} />
-            <directionalLight {...directionalLight} shadow-mapSize={[1024, 1024]} />
+                {/* Lights */}
+                <ambientLight {...ambientLight} />
+                <spotLight {...spotMain} shadow-mapSize={[1024, 1024]} />
+                <spotLight {...spotFill} />
+                <directionalLight {...directionalLight} shadow-mapSize={[1024, 1024]} />
 
-            {/* Scene Objects */}
-            <group>
-                <CableCeilings {...cablesCeiling} />
-                <Monitors {...monitors} />
-                <CablesFloor {...cablesFloor} />
-            </group>
+                {/* Scene Objects */}
+                <group>
+                    <CableCeilings {...cablesCeiling} />
+                    <Monitors {...monitors} />
+                    <CablesFloor {...cablesFloor} />
+                </group>
 
-            {/* Ground */}
-            <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[40, 40]} />
-                <MeshReflectorMaterial
-                    {...{
-                        blur: [ground.blurX, ground.blurY],
-                        resolution: ground.resolution,
-                        mixBlur: ground.mixBlur,
-                        mixStrength: ground.mixStrength,
-                        depthScale: ground.depthScale,
-                        minDepthThreshold: ground.minDepthThreshold,
-                        maxDepthThreshold: ground.maxDepthThreshold,
-                        color: ground.color,
-                        metalness: ground.metalness,
-                        roughness: ground.roughness,
-                        mirror: ground.mirror,
-                    }}
-                    roughnessMap={roughnessMap}
-                    normalMap={normalMap}
-                    map={colorMap}
+                {/* Ground */}
+                <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <planeGeometry args={[40, 40]} />
+                    <MeshReflectorMaterial
+                        {...{
+                            blur: [ground.blurX, ground.blurY],
+                            resolution: ground.resolution,
+                            mixBlur: ground.mixBlur,
+                            mixStrength: ground.mixStrength,
+                            depthScale: ground.depthScale,
+                            minDepthThreshold: ground.minDepthThreshold,
+                            maxDepthThreshold: ground.maxDepthThreshold,
+                            color: ground.color,
+                            metalness: ground.metalness,
+                            roughness: ground.roughness,
+                            mirror: ground.mirror,
+                        }}
+                        roughnessMap={roughnessMap}
+                        normalMap={normalMap}
+                        map={colorMap}
+                    />
+                </mesh>
+
+                {/* Fog & Environment */}
+                <fog attach="fog" args={[fog.color, fog.near, fog.far]} />
+                <Environment
+                    files={environment.files}
+                    environmentIntensity={environment.environmentIntensity}
                 />
-            </mesh>
 
-            {/* Fog & Environment */}
-            <fog attach="fog" args={[fog.color, fog.near, fog.far]} />
-            <Environment
-                files={environment.files}
-                environmentIntensity={environment.environmentIntensity}
-            />
 
-            {/* <Preload all /> */}
-            {/* <BakeShadows /> */}
-        </Suspense>
+
+                {/* <Preload all /> */}
+                <BakeShadows />
+            </Suspense>
+
+            <EffectComposer>
+                <Bloom
+                    luminanceThreshold={0.9}
+                    luminanceSmoothing={0.9}
+                    intensity={0.5}
+                    height={300}
+                />
+                <Noise opacity={0.015} />
+                <Vignette
+                    eskil={false}
+                    offset={0.3}
+                    darkness={0.5}
+                />
+            </EffectComposer>
+        </>
     )
 }
