@@ -178,7 +178,7 @@ const DOM: React.FC = () => {
                 className="absolute left-4 bottom-[calc(1rem+2rem)] pointer-events-auto text-white max-w-md flex flex-col gap-1"
             >
                 <p className="text-xs opacity-0">
-                    Real-time visualization of hormones with procedural shaders: dopamine, oxytocin, serotonin.
+                    Real-time visualization of hormones with procedural shaders using WebGL and React Three Fiber.
                 </p>
                 <p className="text-xs opacity-0">
                     Each monitor displays a unique shader pattern representing the chemical identity

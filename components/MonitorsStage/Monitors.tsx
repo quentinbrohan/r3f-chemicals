@@ -8,7 +8,7 @@ import React, { useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { GLTF } from 'three-stdlib'
 import { shaderUniformConfigs } from '../chemicals/shaders/shaderMaterials'
-import { MONITOR_DIMENSIONS, useMaterials } from './useMaterials'
+import { useMaterials } from './useMaterials'
 import { useFrame } from '@react-three/fiber'
 import { easing } from 'maath'
 import { HormoneNames, useStore } from '@/lib/store'
@@ -156,6 +156,10 @@ const HormoneLabel: React.FC<HormoneLabelProps> = ({
     )
 }
 
+const MONITOR_DIMENSIONS = {
+    WIDTH: 2.12,
+    HEIGHT: 3.29
+}
 export function Monitors(props: React.JSX.IntrinsicElements['group']) {
     const { nodes } = useGLTF(MODEL_PATH) as any as GLTFResult
 
@@ -163,7 +167,10 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
     const oxytocinMeshRef = useRef<THREE.Mesh>(null);
     const serotoninMeshRef = useRef<THREE.Mesh>(null);
 
-    const { dopamineMaterial, oxytocinMaterial, serotoninMaterial } = useMaterials()
+    const { dopamineMaterial, oxytocinMaterial, serotoninMaterial } = useMaterials({
+        enabled: ['DOPAMINE', 'OXYTOCIN', 'SEROTONIN'],
+        resolution: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT)
+    })
 
     // TODO: move to useFrame???
     //  correct the inverted UV coordinates in model
@@ -205,21 +212,21 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
             color: shaderUniformConfigs.dopamine.baseColor,
             position: MONITORS_POSITION[0],
             ref: dopamineMeshRef,
-            material: dopamineMaterial
+            material: dopamineMaterial!
         },
         {
             name: 'OXYTOCIN',
             color: shaderUniformConfigs.oxytocin.baseColor,
             position: MONITORS_POSITION[1],
             ref: oxytocinMeshRef,
-            material: oxytocinMaterial
+            material: oxytocinMaterial!
         },
         {
             name: 'SEROTONIN',
             color: shaderUniformConfigs.serotonin.baseColor,
             position: MONITORS_POSITION[2],
             ref: serotoninMeshRef,
-            material: serotoninMaterial
+            material: serotoninMaterial!
         }
     ]
 
@@ -282,6 +289,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLR.geometry}
                 material={nodes.FrameLR.material}
                 position={getFramePosition(MONITORS_POSITION[0])}
+                raycast={() => null}
             >
                 <MonitorFrameMaterial />
             </mesh>
@@ -291,7 +299,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={fixedGeometries.MonitorLR!}
-                material={dopamineMaterial}
+                material={dopamineMaterial!}
                 position={MONITORS_POSITION[0]}
                 onPointerEnter={() => onPointerEnterMonitor('DOPAMINE')}
                 onPointerLeave={() => onPointerLeaveMonitor()}
@@ -304,6 +312,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameC.geometry}
                 material={nodes.FrameC.material}
                 position={getFramePosition(MONITORS_POSITION[1])}
+                raycast={() => null}
+
             >
                 <MonitorFrameMaterial />
             </mesh>
@@ -313,7 +323,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={fixedGeometries.MonitorC!}
-                material={oxytocinMaterial}
+                material={oxytocinMaterial!}
                 position={MONITORS_POSITION[1]}
                 onPointerEnter={() => onPointerEnterMonitor('OXYTOCIN')}
                 onPointerLeave={() => onPointerLeaveMonitor()}
@@ -358,13 +368,11 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={fixedGeometries.MonitorLL!}
-                material={serotoninMaterial}
+                material={serotoninMaterial!}
                 position={MONITORS_POSITION[2]}
                 onPointerEnter={() => onPointerEnterMonitor('SEROTONIN')}
                 onPointerLeave={() => onPointerLeaveMonitor()}
                 onDoubleClick={() => onDoubleClick('SEROTONIN')}
-
-
             />
             <mesh
                 name="FrameLL"
@@ -373,6 +381,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLL.geometry}
                 material={nodes.FrameLL.material}
                 position={getFramePosition(MONITORS_POSITION[2])}
+                raycast={() => null}
             >
                 <MonitorFrameMaterial />
             </mesh>

@@ -1,6 +1,13 @@
 import { create } from "zustand";
 
-export type HormoneNames = 'DOPAMINE' | 'OXYTOCIN' | 'SEROTONIN'
+
+export const HORMONE_NAMES = {
+  DOPAMINE: "DOPAMINE",
+  OXYTOCIN: "OXYTOCIN",
+  SEROTONIN: "SEROTONIN",
+} as const;
+
+export type HormoneNames = keyof typeof HORMONE_NAMES;
 
 type Store = {
   isLoaderLoaded: boolean;

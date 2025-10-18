@@ -1,23 +1,37 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { folder, useControls } from 'leva';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { updateUniformsFromControls } from '../chemicals/shaders/helper';
 import { getDopamineShaderMaterial, getOxytocinShaderMaterial, getSerotoninShaderMaterial } from '../chemicals/shaders/shaderMaterials';
+import { HORMONE_NAMES, HormoneNames } from '@/lib/store';
 
 
-export const MONITOR_DIMENSIONS = {
-    WIDTH: 2.12,
-    HEIGHT: 3.29
-}
-
-export const useMaterials = () => {
+// TODO: move file
+export const useMaterials = ({
+    // TODO: condition returned data based on enabled
+    enabled = ['DOPAMINE', 'OXYTOCIN', 'SEROTONIN'],
+    resolution,
+}: {
+    enabled?: HormoneNames[]
+    /** default: `size` from `useThree` */
+    resolution?: THREE.Vector2
+}) => {
     const { size, mouse, clock } = useThree();
 
-    const [dopamineMaterial] = useState<THREE.ShaderMaterial>(() => {
+    const u_resolution = useMemo(() => {
+        return {
+            value: resolution ?? new THREE.Vector2(size.width, size.height)
+        }
+    }, [])
+
+    // TODO subfile for each hormone (material + controls)
+    const [dopamineMaterial] = useState<THREE.ShaderMaterial | null>(() => {
+        if (!enabled.includes(HORMONE_NAMES.DOPAMINE)) return null
+
         const mat = getDopamineShaderMaterial({
             uniforms: {
-                u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
+                u_resolution,
                 u_flipY: { value: 0 },
                 u_useAspect: { value: 0 },
             },
@@ -26,10 +40,12 @@ export const useMaterials = () => {
         });
         return mat;
     });
-    const [oxytocinMaterial] = useState<THREE.ShaderMaterial>(() => {
+    const [oxytocinMaterial] = useState<THREE.ShaderMaterial | null>(() => {
+        if (!enabled.includes(HORMONE_NAMES.OXYTOCIN)) return null
+
         const mat = getOxytocinShaderMaterial({
             uniforms: {
-                u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
+                u_resolution,
                 u_flipY: { value: 1 },
                 u_useAspect: { value: 0 },
 
@@ -38,10 +54,12 @@ export const useMaterials = () => {
         });
         return mat;
     });
-    const [serotoninMaterial] = useState<THREE.ShaderMaterial>(() => {
+    const [serotoninMaterial] = useState<THREE.ShaderMaterial | null>(() => {
+        if (!enabled.includes(HORMONE_NAMES.SEROTONIN)) return null
+
         const mat = getSerotoninShaderMaterial({
             uniforms: {
-                u_resolution: { value: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT) },
+                u_resolution,
                 u_flipY: { value: 1 },
                 u_useAspect: { value: 0 },
 
@@ -52,7 +70,7 @@ export const useMaterials = () => {
     });
 
 
-    const [dopamineControls, _setControls] = useControls('Scene/Shaders/Dopamine', () => ({
+    const dopamineControls = enabled.includes(HORMONE_NAMES.DOPAMINE) ? useControls('Scene/Shaders/Dopamine', {
         Animation: folder({
             uvScale: {
                 value: 1.14,
@@ -127,9 +145,9 @@ export const useMaterials = () => {
             patternOffset2Y: { value: 8.0, min: -10, max: 10, step: 0.1 },
             patternFinalMult: { value: 3.5, min: 0, max: 5, step: 0.1 },
         }),
-    }));
+    }) : null;
 
-    const oxytocinControls = useControls('Scene/Shaders/Oxytocin', {
+    const oxytocinControls = enabled.includes(HORMONE_NAMES.OXYTOCIN) ? useControls('Scene/Shaders/Oxytocin', {
         'Animation': folder({
             uvScale: { value: 3.5, min: 0.5, max: 10, step: 0.1 },
             timeSpeed: { value: 0.045, min: 0, max: 0.5, step: 0.01 },
@@ -192,9 +210,9 @@ export const useMaterials = () => {
             patternOffset2Y: { value: 7.9, min: -10, max: 10, step: 0.1 },
             patternFinalMult: { value: 2.3, min: 0, max: 5, step: 0.01 },
         }),
-    });
+    }) : null;
 
-    const serotoninControls = useControls('Scene/Shaders/Serotonin', {
+    const serotoninControls = enabled.includes(HORMONE_NAMES.SEROTONIN) ? useControls('Scene/Shaders/Serotonin', {
         Animation: folder({
             timeSpeed: { value: 0.03, min: 0, max: 1, step: 0.01 },
             uvScale: { value: 2.0, min: 0.1, max: 10, step: 0.1 },
@@ -265,30 +283,25 @@ export const useMaterials = () => {
             patternOffset2Y: { value: 8.0, min: -10, max: 10, step: 0.1 },
             patternFinalMult: { value: 2.8, min: 0, max: 5, step: 0.1 },
         }),
-    });
+    }) : null;
 
     useFrame(() => {
         const data = [
-            {
-                material: dopamineMaterial,
-                controls: dopamineControls
-            },
-            {
-                material: oxytocinMaterial,
-                controls: oxytocinControls
-            },
-            {
-                material: serotoninMaterial,
-                controls: serotoninControls
-            },
-        ];
+            enabled.includes(HORMONE_NAMES.DOPAMINE) && { material: dopamineMaterial, controls: dopamineControls },
+            enabled.includes(HORMONE_NAMES.OXYTOCIN) && { material: oxytocinMaterial, controls: oxytocinControls },
+            enabled.includes(HORMONE_NAMES.SEROTONIN) && { material: serotoninMaterial, controls: serotoninControls },
+        ].filter(Boolean) as {
+            material: THREE.ShaderMaterial,
+            controls: Record<string, any>
+        }[]
+
         data.forEach((hormone) => {
             updateUniformsFromControls({
                 material: hormone.material,
                 controls: hormone.controls,
                 clock,
                 mouse,
-                size,
+                size: resolution ? { width: resolution.x, height: resolution.y } : size,
             });
         });
     });
@@ -297,6 +310,8 @@ export const useMaterials = () => {
         dopamineMaterial,
         oxytocinMaterial,
         serotoninMaterial,
+        dopamineControls,
+        oxytocinControls,
+        serotoninControls,
     };
-
 };
