@@ -63,7 +63,9 @@ const Header: React.FC<HeaderProps> = ({ }) => {
 
     const onNavClick = (e: React.MouseEvent, href: string) => {
         e.preventDefault()
-        animateNavToPageFadeOut(router, href)
+        const isSamePage = pathname === href;
+        if (!isSamePage)
+            animateNavToPageFadeOut(router, href)
     }
 
     return (
