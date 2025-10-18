@@ -172,8 +172,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         resolution: new THREE.Vector2(MONITOR_DIMENSIONS.WIDTH, MONITOR_DIMENSIONS.HEIGHT)
     })
 
-    // TODO: move to useFrame???
-    //  correct the inverted UV coordinates in model
+    // correct the inverted UV coordinates in model
     // Clone and fix UVs immediately - runs once when nodes change
     const fixedGeometries = useMemo(() => {
         const fixUVs = (geometry: THREE.BufferGeometry) => {
@@ -301,6 +300,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorLR!}
                 material={dopamineMaterial!}
                 position={MONITORS_POSITION[0]}
+                // TODO:FIXME: double check raycast of stage elements, cursor seems to pass through sometimes
                 onPointerEnter={() => onPointerEnterMonitor('DOPAMINE')}
                 onPointerLeave={() => onPointerLeaveMonitor()}
                 onDoubleClick={() => onDoubleClick('DOPAMINE')}

@@ -42,7 +42,7 @@ const CableMaterial: React.FC = () => {
         opacity: { value: 1, min: 0, max: 1, step: 0.01 },
         transparent: false,
         envMapIntensity: { value: 1, min: 0, max: 5, step: 0.1 },
-        emissive: "#1a1a1a",
+        emissive: "#0d0d0d",
         emissiveIntensity: { value: 2, min: 0, max: 10 },
         displacementScale: { value: 0.015, min: 0, max: 5 }
     })
