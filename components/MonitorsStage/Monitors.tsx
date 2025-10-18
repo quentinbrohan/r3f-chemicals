@@ -267,8 +267,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
 
     const router = useRouter();
     const onDoubleClick = (name: HormoneNames) => {
+        setHoveredName(null);
         animateNavToPageFadeOut(router, `/${name.toLowerCase()}`)
-        const tl = gsap.timeline()
     }
 
     return (
