@@ -3,7 +3,7 @@
 import { Canvas, CanvasProps, ThreeToJSXElements } from "@react-three/fiber";
 import React, { useState } from 'react';
 
-import { Stats } from "@react-three/drei";
+import { PerformanceMonitor, Stats } from "@react-three/drei";
 import { extend } from '@react-three/fiber';
 import * as THREE from 'three/webgpu';
 import { usePathname, useSearchParams, } from "next/navigation";
@@ -23,7 +23,7 @@ interface GlobalSceneProps {
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = false }) => {
     const [frameloop, setFrameloop] = useState<CanvasProps['frameloop']>("never");
-
+    const [dpr, setDpr] = useState(1.5)
     // TODO: keep only for webgpu later or in prod only. Complex shaders takes almost a minute to compile
     // const glCallback = useCallback(async (props: GLProps) => {
     //     console.log('WebGL: Initing...')
@@ -75,7 +75,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
                         outputColorSpace: THREE.LinearSRGBColorSpace,  // Linear color space
                     } : {})),
                 }}
-                dpr={[1, 2]}
+                dpr={dpr}
                 style={{
                     position: 'fixed',
                     inset: 0,
@@ -85,13 +85,15 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
             >
                 {children}
                 {showDebug && <Stats />}
+                <PerformanceMonitor
+                    bounds={(refreshrate) => [59, refreshrate]}
+                    onChange={({ factor }) => {
 
-                {/* {<>
-                    <PostProcessing />
-                    <PostProcessingEffects />
-                </>
-                } */}
-
+                        // min 1 max 2
+                        const newDpr = 1.0 + factor * 1.0
+                        setDpr(newDpr)
+                    }}
+                />
 
                 {/* TODO: state/store to trigger timeline play in / */}
                 <Preload />
