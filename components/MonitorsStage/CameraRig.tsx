@@ -4,12 +4,14 @@ import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { easing } from 'maath'
+import gsap from 'gsap'
 
 export const CameraRig = () => {
     const { camera } = useThree()
+    const hasAnimatedEntry = useRef(false)
 
     const targetZ = useRef(camera.position.z)
-    const target = new THREE.Vector3(0, 2, 0) // Camera always looks at monitor group
+    const target = new THREE.Vector3(0, 2, 0)
 
     const minZoom = 3
     // const maxZoom = 7
@@ -18,6 +20,28 @@ export const CameraRig = () => {
     const horizontalLimit = 2.5  // How far left/right camera can move
     const verticalLimit = 1.5    // How far up it can go from center
     const minY = 1.2             // Prevent camera from dropping below monitor base
+
+
+
+    // Initial entry animation
+    useEffect(() => {
+        if (!hasAnimatedEntry.current) {
+            hasAnimatedEntry.current = true
+
+            // Start camera further back
+            camera.position.z = maxZoom
+
+            // Animate to default position
+            gsap.to(camera.position, {
+                z: 5, // position from <Canvas/> in <GlobalScene/>
+                duration: 2,
+                ease: 'power2.inOut',
+                onUpdate: () => {
+                    targetZ.current = camera.position.z
+                }
+            })
+        }
+    }, [camera])
 
     // Handle scroll zoom
     useEffect(() => {
