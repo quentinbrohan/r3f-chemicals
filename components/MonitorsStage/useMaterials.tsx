@@ -23,7 +23,7 @@ export const useMaterials = ({
         return {
             value: resolution ?? new THREE.Vector2(size.width, size.height)
         }
-    }, [])
+    }, [resolution, size.width, size.height]) // Add dependencies
 
     // TODO subfile for each hormone (material + controls)
     const [dopamineMaterial] = useState<THREE.ShaderMaterial | null>(() => {

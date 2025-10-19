@@ -4,19 +4,14 @@ import {
     BakeShadows,
     Environment,
     MeshReflectorMaterial,
-    OrbitControls,
-    Preload,
-    useTexture,
+    useTexture
 } from "@react-three/drei"
-import { Suspense } from "react"
+import { Bloom, EffectComposer, Noise, Vignette } from '@react-three/postprocessing'
 import { folder, useControls } from "leva"
 import { CableCeilings } from "./CablesCeiling"
 import { CablesFloor } from "./CablesFloor"
 import { CameraRig } from "./CameraRig"
 import { Monitors } from "./Monitors"
-import React from 'react'
-import { Bloom, DepthOfField, EffectComposer, Noise, Vignette } from '@react-three/postprocessing'
-import { Canvas } from '@react-three/fiber'
 
 export const MonitorsStage = () => {
     // LIGHTS

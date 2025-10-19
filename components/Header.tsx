@@ -46,11 +46,11 @@ const Header: React.FC<HeaderProps> = ({ }) => {
             .add(
                 gsap.fromTo([navLinkEls, splitEls], {
                     opacity: 0,
-                    y: MOTION_CONFIG.Y_OFFSET.lg,
+                    y: MOTION_CONFIG.Y_OFFSET.LG,
 
                 }, {
                     opacity: 1,
-                    stagger: MOTION_CONFIG.STAGGER.lg,
+                    stagger: MOTION_CONFIG.STAGGER.LG,
                 }), '<+=0.25')
 
 

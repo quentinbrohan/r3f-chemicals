@@ -9,7 +9,7 @@ void main() {
 
 /** dopamine and oxytocin */
 export const fragmentShader = /* glsl */ `
-precision mediump float;
+precision highp float;
 
 uniform float u_time;
 uniform vec2 u_mouse;
@@ -142,7 +142,7 @@ void main() {
 /** serotonin with full uniforms & full code (like dopamine) but different pattern & color logic */
 
 export const serotoninFragmentShader = /* glsl */ `
-precision mediump float;
+precision highp float;
 
 uniform float u_time;
 uniform vec2 u_mouse;
