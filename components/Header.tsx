@@ -49,8 +49,9 @@ const Header: React.FC<HeaderProps> = ({ }) => {
                     y: MOTION_CONFIG.Y_OFFSET.LG,
 
                 }, {
+                    y:0,
                     opacity: 1,
-                    stagger: MOTION_CONFIG.STAGGER.LG,
+                    stagger: MOTION_CONFIG.STAGGER.MD,
                 }), '<+=0.25')
 
 
