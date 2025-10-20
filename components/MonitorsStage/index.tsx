@@ -12,55 +12,59 @@ import { CableCeilings } from "./CablesCeiling"
 import { CablesFloor } from "./CablesFloor"
 import { CameraRig } from "./CameraRig"
 import { Monitors } from "./Monitors"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { useEffect } from "react"
 
 export const MonitorsStage = () => {
+    const isMobile = useIsMobile();
+
     // LIGHTS
-    const ambientLight = useControls("Scene/Lights/Ambient", {
+    const [ambientLight, setAmbientLight] = useControls("Scene/Lights/Ambient", () => ({
         intensity: { value: 0.7, min: 0, max: 2 },
         color: "#ffffff",
-    })
+    }))
 
-    const spotMain = useControls("Scene/Lights/Spot Main", {
+    const [spotMain, setSpotMain] = useControls("Scene/Lights/Spot Main", () => ({
         position: { value: [2, 4, 0] },
         intensity: { value: 0.8, min: 0, max: 2 },
         angle: { value: 0.6, min: 0, max: Math.PI / 2 },
         penumbra: { value: 0.8, min: 0, max: 1 },
         color: "#e8e8ff",
-        castShadow: true,
-    })
+        castShadow: !isMobile,
+    }))
 
-    const spotFill = useControls("Scene/Lights/Spot Fill", {
+    const [spotFill, setSpotFill] = useControls("Scene/Lights/Spot Fill", () => ({
         position: { value: [-3, 2, -2] },
         intensity: { value: 0.4, min: 0, max: 2 },
         angle: { value: 0.8, min: 0, max: Math.PI / 2 },
         penumbra: { value: 1, min: 0, max: 1 },
         color: "#4a4a6e",
-    })
+    }))
 
-    const directionalLight = useControls("Scene/Lights/Directional", {
+    const [directionalLight, setDirectionalLight] = useControls("Scene/Lights/Directional", () => ({
         position: { value: [0, 10, 0] },
         intensity: { value: 0.6, min: 0, max: 2 },
         color: "#fff5e8",
         castShadow: true,
-    })
+    }))
 
-    const ceilingLight = useControls("Scene/Lights/Ceiling", {
+    const [ceilingLight, setCeilingLight] = useControls("Scene/Lights/Ceiling", () => ({
         position: { value: [0, 4, 0] },
         intensity: { value: 0.8, min: 0, max: 2 },
         distance: { value: 8, min: 0, max: 20 },
         color: '#ffffff',
-    })
+    }))
 
     // FOG
-    const fog = useControls("Scene/Fog", {
+    const [fog, setFog] = useControls("Scene/Fog", () => ({
         enabled: true,
         color: "#000000",
         near: { value: 12, min: 0, max: 50 },
         far: { value: 30, min: 0, max: 100 },
-    })
+    }))
 
     // GROUND
-    const ground = useControls("Scene/Ground", {
+    const [ground, setGround] = useControls("Scene/Ground", () => ({
         blurX: { value: 300, min: 0, max: 300 },
         blurY: { value: 100, min: 0, max: 300 },
         resolution: 1024,
@@ -74,8 +78,7 @@ export const MonitorsStage = () => {
         roughness: { value: 0.7, min: 0, max: 1 },
         mirror: { value: 0.5, min: 0, max: 1 },
         displacementScale: { value: 1, min: 0, max: 5 }
-
-    })
+    }))
 
     // ENVIRONMENT
     const environment = useControls("Scene/Environment", {
@@ -107,7 +110,7 @@ export const MonitorsStage = () => {
             '/webgl/textures/floor/concrete_floor_worn_001_disp_1k.png',
         ])
 
-    const postProcessingControls = useControls('Scene/Postprocessing', {
+    const [postProcessing, setPostProcessing] = useControls('Scene/Postprocessing', () => ({
         effectComposerEnabled: { value: true, label: 'Enabled' },
 
         Bloom: folder({
@@ -129,8 +132,27 @@ export const MonitorsStage = () => {
             vignetteOffset: { value: 0.3, min: 0, max: 1 },
             vignetteDarkness: { value: 0.5, min: 0, max: 1 },
         }),
-    })
+    }))
 
+    useEffect(() => {
+        if (isMobile) {
+            setAmbientLight({ intensity: 0.35 })
+            setSpotMain({ position: [2, 2, 0], intensity: 0.4, angle: 0.5, penumbra: 0.5 })
+            setSpotFill({ position: [-2, 1, -2], intensity: 0.18, angle: 0.7, penumbra: 0.8 })
+            setDirectionalLight({ position: [0, 6, 10], intensity: 0.25, castShadow: false })
+            setCeilingLight({ position: [0, 2, 0], intensity: 0.35, distance: 4 })
+            setFog({ near: 15, far: 22 })
+            setGround({ blurX: 120, blurY: 40 })
+            setPostProcessing({
+                bloomHeight: 150,
+                bloomIntensity: 0.3,
+                bloomLuminanceThreshold: 0.95,
+                noiseOpacity: 0.01,
+                vignetteOffset: 0.35,
+                vignetteDarkness: 0.4,
+            })
+        }
+    }, [isMobile, setAmbientLight, setSpotMain, setSpotFill, setDirectionalLight, setCeilingLight, setFog, setGround, setPostProcessing])
 
     return (
         <>
@@ -184,25 +206,25 @@ export const MonitorsStage = () => {
 
             <BakeShadows />
 
-            {postProcessingControls.effectComposerEnabled && (
+            {postProcessing.effectComposerEnabled && (
                 <EffectComposer>
                     <>
-                        {postProcessingControls.bloomEnabled && (
+                        {postProcessing.bloomEnabled && (
                             <Bloom
-                                luminanceThreshold={postProcessingControls.bloomLuminanceThreshold}
-                                luminanceSmoothing={postProcessingControls.bloomLuminanceSmoothing}
-                                intensity={postProcessingControls.bloomIntensity}
-                                height={postProcessingControls.bloomHeight}
+                                luminanceThreshold={postProcessing.bloomLuminanceThreshold}
+                                luminanceSmoothing={postProcessing.bloomLuminanceSmoothing}
+                                intensity={postProcessing.bloomIntensity}
+                                height={postProcessing.bloomHeight}
                             />
                         )}
-                        {postProcessingControls.noiseEnabled && (
-                            <Noise opacity={postProcessingControls.noiseOpacity} />
+                        {postProcessing.noiseEnabled && (
+                            <Noise opacity={postProcessing.noiseOpacity} />
                         )}
-                        {postProcessingControls.vignetteEnabled && (
+                        {postProcessing.vignetteEnabled && (
                             <Vignette
-                                eskil={postProcessingControls.vignetteEskil}
-                                offset={postProcessingControls.vignetteOffset}
-                                darkness={postProcessingControls.vignetteDarkness}
+                                eskil={postProcessing.vignetteEskil}
+                                offset={postProcessing.vignetteOffset}
+                                darkness={postProcessing.vignetteDarkness}
                             />
                         )}
                     </>
