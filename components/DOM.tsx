@@ -190,6 +190,9 @@ const DOM: React.FC = () => {
                 <p className="text-xs opacity-0">
                     For more information or to explore other projects, visit <a className='link hover:underline transition' href="https://quentinbrohan.fr/" target="_blank" rel="noopener noreferrer">quentinbrohan.fr</a>.
                 </p>
+                <p className="text-xs opacity-0">
+                    CREDITS// 3D Models: <a className='link hover:underline transition' href="http://monogrid.com/" target="_blank" rel="noopener noreferrer">MONOGRID</a>.
+                </p>
             </div>
 
             <div
