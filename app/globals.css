@@ -119,7 +119,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
   body {
     @apply bg-background text-foreground;
+    /* Full-viewport canvas app — prevent scrollbars on Windows from DOM overflow */
+    overflow: hidden;
+    /* Prevent Chrome/Safari swipe-to-navigate from triggering on horizontal canvas drag */
+    overscroll-behavior-x: none;
   }
 }

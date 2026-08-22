@@ -72,7 +72,7 @@ const MonitorFrameMaterial = () => {
         envMapIntensity: { value: 0.5, min: 0, max: 5, step: 0.1 },
         emissive: "#000000",
         emissiveIntensity: { value: 1, min: 0, max: 10 },
-    })
+    }, { collapsed: true })
 
     return (
         <meshStandardMaterial
@@ -118,7 +118,7 @@ const HormoneLabel: React.FC<HormoneLabelProps> = ({
     const controls = useControls(`Scene/Texts/Label/${monitor.name}`, {
         rotation: { value: getTextRotation(monitor.name) },
         position: { value: position },
-    })
+    }, { collapsed: true })
 
     useFrame((_state, delta) => {
         if (!meshRef.current) return
@@ -295,7 +295,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         decay: { value: 2, min: 0, max: 10 },
         castShadow: true,
         color: monitorData[0].color,
-    })
+    }, { collapsed: true })
 
     const pointLightOxytocin = useControls("Scene/Lights/Point Oxytocin", {
         position: { value: monitorData[1].position },
@@ -304,7 +304,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         decay: { value: 2, min: 0, max: 10 },
         castShadow: true,
         color: monitorData[1].color,
-    })
+    }, { collapsed: true })
 
     const pointLightSerotonin = useControls("Scene/Lights/Point Serotonin", {
         position: { value: getCenteredPos(monitorData[2].position, 'right') },
@@ -313,7 +313,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         decay: { value: 2, min: 0, max: 10 },
         castShadow: true,
         color: monitorData[2].color,
-    })
+    }, { collapsed: true })
 
     const router = useRouter();
 
@@ -330,7 +330,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLR.geometry}
                 material={nodes.FrameLR.material}
                 position={getFramePosition(MONITORS_POSITION[0])}
-                raycast={() => null}
                 renderOrder={0}
                 {...monitorHandlers('DOPAMINE')}
             >
@@ -354,7 +353,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameC.geometry}
                 material={nodes.FrameC.material}
                 position={getFramePosition(MONITORS_POSITION[1])}
-                raycast={() => null}
                 renderOrder={0}
                 {...monitorHandlers('OXYTOCIN')}
             >
@@ -423,11 +421,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLL.geometry}
                 material={nodes.FrameLL.material}
                 position={getFramePosition(MONITORS_POSITION[2])}
-                raycast={() => null}
                 renderOrder={0}
                 {...monitorHandlers('SEROTONIN')}
-
-
             >
                 <MonitorFrameMaterial />
             </mesh>

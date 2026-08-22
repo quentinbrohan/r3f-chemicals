@@ -22,7 +22,7 @@ export const MonitorsStage = () => {
     const [ambientLight, setAmbientLight] = useControls("Scene/Lights/Ambient", () => ({
         intensity: { value: 0.7, min: 0, max: 2 },
         color: "#ffffff",
-    }))
+    }), { collapsed: true })
 
     const [spotMain, setSpotMain] = useControls("Scene/Lights/Spot Main", () => ({
         position: { value: [2, 4, 0] },
@@ -31,7 +31,7 @@ export const MonitorsStage = () => {
         penumbra: { value: 0.8, min: 0, max: 1 },
         color: "#e8e8ff",
         castShadow: !isMobile,
-    }))
+    }), { collapsed: true })
 
     const [spotFill, setSpotFill] = useControls("Scene/Lights/Spot Fill", () => ({
         position: { value: [-3, 2, -2] },
@@ -39,21 +39,21 @@ export const MonitorsStage = () => {
         angle: { value: 0.8, min: 0, max: Math.PI / 2 },
         penumbra: { value: 1, min: 0, max: 1 },
         color: "#4a4a6e",
-    }))
+    }), { collapsed: true })
 
     const [directionalLight, setDirectionalLight] = useControls("Scene/Lights/Directional", () => ({
         position: { value: [0, 10, 0] },
         intensity: { value: 0.6, min: 0, max: 2 },
         color: "#fff5e8",
         castShadow: true,
-    }))
+    }), { collapsed: true })
 
     const [ceilingLight, setCeilingLight] = useControls("Scene/Lights/Ceiling", () => ({
         position: { value: [0, 4, 0] },
         intensity: { value: 0.8, min: 0, max: 2 },
         distance: { value: 8, min: 0, max: 20 },
         color: '#ffffff',
-    }))
+    }), { collapsed: true })
 
     // FOG
     const [fog, setFog] = useControls("Scene/Fog", () => ({
@@ -61,7 +61,7 @@ export const MonitorsStage = () => {
         color: "#000000",
         near: { value: 12, min: 0, max: 50 },
         far: { value: 30, min: 0, max: 100 },
-    }))
+    }), { collapsed: true })
 
     // GROUND
     const [ground, setGround] = useControls("Scene/Ground", () => ({
@@ -78,29 +78,29 @@ export const MonitorsStage = () => {
         roughness: { value: 0.7, min: 0, max: 1 },
         mirror: { value: 0.5, min: 0, max: 1 },
         displacementScale: { value: 1, min: 0, max: 5 }
-    }))
+    }), { collapsed: true })
 
     // ENVIRONMENT
     const environment = useControls("Scene/Environment", {
         files: "/webgl/hdri/studio_small_03_1k.hdr",
         environmentIntensity: { value: 0.5, min: 0, max: 2 },
-    })
+    }, { collapsed: true })
 
     // OBJECTS: POS + SCALE
     const cablesCeiling = useControls("Scene/Objects/CablesCeiling", {
         position: { value: [0, 4.5, 0.5] },
         scale: { value: 0.6, min: 0.1, max: 2 },
-    })
+    }, { collapsed: true })
 
     const cablesFloor = useControls("Scene/Objects/CablesFloor", {
         position: { value: [0, 0, 0] },
         scale: { value: 0.6, min: 0.1, max: 2 },
-    })
+    }, { collapsed: true })
 
     const monitors = useControls("Scene/Objects/Monitors", {
         position: { value: [0, 2, 0] },
         scale: { value: 1, min: 0.1, max: 2 },
-    })
+    }, { collapsed: true })
 
     const [
         normalMap, roughnessMap, colorMap, displacementMap] = useTexture([
@@ -119,20 +119,20 @@ export const MonitorsStage = () => {
             bloomLuminanceSmoothing: { value: 0.9, min: 0, max: 1 },
             bloomIntensity: { value: 0.5, min: 0, max: 5 },
             bloomHeight: { value: 300, min: 1, max: 1080, step: 1 },
-        }),
+        }, { collapsed: true }),
 
         Noise: folder({
             noiseEnabled: { value: true },
             noiseOpacity: { value: 0.015, min: 0, max: 1 },
-        }),
+        }, { collapsed: true }),
 
         Vignette: folder({
             vignetteEnabled: { value: true },
             vignetteEskil: { value: false },
             vignetteOffset: { value: 0.3, min: 0, max: 1 },
             vignetteDarkness: { value: 0.5, min: 0, max: 1 },
-        }),
-    }))
+        }, { collapsed: true }),
+    }), { collapsed: true })
 
     useEffect(() => {
         if (isMobile) {

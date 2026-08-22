@@ -9,6 +9,7 @@ import { Leva } from "leva";
 import { useSearchParams } from "next/navigation";
 import * as THREE from 'three/webgpu';
 import { Preload } from "./Preload";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 declare module '@react-three/fiber' {
     interface ThreeElements extends ThreeToJSXElements<typeof THREE> { }
@@ -22,6 +23,7 @@ interface GlobalSceneProps {
 }
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = false }) => {
+    const isMobile = useIsMobile()
     const [dpr, setDpr] = useState(1.5)
 
     const alpha = false;
@@ -54,7 +56,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
                     inset: 0,
                     maxWidth: '100vw',
                     maxHeight: '100vh',
-                    pointerEvents: 'all'
+                    pointerEvents: 'all',
+                    // Prevent Chrome/Safari swipe-to-navigate triggering on canvas drag
+                    touchAction: 'none',
                 }}
                 eventSource={document.documentElement}
                 eventPrefix="client"
@@ -64,9 +68,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
                 <PerformanceMonitor
                     bounds={(refreshrate) => [59, refreshrate]}
                     onChange={({ factor }) => {
-
-                        // min: 1, max: 2
-                        const newDpr = 1.0 + factor * 1.0
+                        // Desktop: 1.0–2.0 DPR range; mobile: cap at 1.5
+                        const maxDpr = isMobile ? 0.5 : 1.0
+                        const newDpr = 1.0 + factor * maxDpr
                         setDpr(newDpr)
                     }}
                 />
