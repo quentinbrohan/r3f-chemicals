@@ -42,7 +42,7 @@ const CableMaterial: React.FC = () => {
         emissive: "#0d0d0d",
         emissiveIntensity: { value: 2, min: 0, max: 10 },
         displacementScale: { value: 0.015, min: 0, max: 5 }
-    })
+    }, { collapsed: true })
 
     return (
         <meshStandardMaterial

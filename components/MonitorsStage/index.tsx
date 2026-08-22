@@ -93,7 +93,7 @@ export const MonitorsStage = () => {
     }, { collapsed: true })
 
     const cablesFloor = useControls("Scene/Objects/CablesFloor", {
-        position: { value: [0, 0, 0] },
+        position: { value: [0.25, 0, 0] },
         scale: { value: 0.6, min: 0.1, max: 2 },
     }, { collapsed: true })
 

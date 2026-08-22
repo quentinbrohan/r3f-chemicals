@@ -30,7 +30,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
 
     const params = useSearchParams();
 
-    const showDebug = params.get('debug') === 'true'
+    const showDebug = params.has('debug')
 
     return (
         <>
