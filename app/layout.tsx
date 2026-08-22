@@ -6,14 +6,24 @@ import { inter } from './fonts'
 import { GSAP } from '@/components/GSAP'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://chemicals.quentinbrohan.fr'),
   title: 'Chemicals',
-  description: 'Real-time visualization of hormones with procedural shaders. R3F.',
-  authors: [
-    {
-      name: 'Quentin Brohan',
-      url: 'https://www.quentinbrohan.fr/'
-    }
-  ]
+  description: 'Real-time visualization of hormones with procedural shaders. Built with React Three Fiber and GSAP.',
+  authors: [{ name: 'Quentin Brohan', url: 'https://www.quentinbrohan.fr/' }],
+  openGraph: {
+    title: 'Chemicals',
+    description: 'Real-time visualization of hormones with procedural shaders. Built with React Three Fiber and GSAP.',
+    url: 'https://chemicals.quentinbrohan.fr/',
+    siteName: 'Chemicals',
+    images: [{ url: '/og.jpg', width: 1200, height: 628, alt: 'Chemicals — WebGL hormone visualization' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Chemicals',
+    description: 'Real-time visualization of hormones with procedural shaders. Built with React Three Fiber and GSAP.',
+    images: ['/og.jpg'],
+  },
 }
 
 export default function RootLayout({
