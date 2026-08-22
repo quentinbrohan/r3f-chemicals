@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-inter dark ${inter.variable}`}>
+      <body className={`font-inter dark ${inter.variable}`} suppressHydrationWarning>
         <Header />
         <GSAP />
         {children}
