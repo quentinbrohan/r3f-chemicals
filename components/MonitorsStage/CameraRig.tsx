@@ -5,10 +5,24 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { easing } from 'maath'
 import gsap from 'gsap'
+import { useControls } from 'leva'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 export const CameraRig = () => {
     const { camera } = useThree()
+    const isMobile = useIsMobile()
     const hasAnimatedEntry = useRef(false)
+
+    const { fov, fovMobile } = useControls('Scene/Camera', {
+        fov: { value: 45, min: 20, max: 120, label: 'FOV (desktop)' },
+        fovMobile: { value: 65, min: 20, max: 120, label: 'FOV (mobile)' },
+    }, { collapsed: true })
+
+    useEffect(() => {
+        const targetFov = isMobile ? fovMobile : fov
+        ;(camera as THREE.PerspectiveCamera).fov = targetFov
+        ;(camera as THREE.PerspectiveCamera).updateProjectionMatrix()
+    }, [camera, fov, fovMobile, isMobile])
 
     const targetZ = useRef(camera.position.z)
     const target = new THREE.Vector3(0, 2, 0)
