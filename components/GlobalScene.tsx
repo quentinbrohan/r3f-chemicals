@@ -3,7 +3,7 @@
 import { Canvas, ThreeToJSXElements } from "@react-three/fiber";
 import React, { useState } from 'react';
 
-import { PerformanceMonitor, Stats } from "@react-three/drei";
+import { PerformanceMonitor } from "@react-three/drei";
 import { extend } from '@react-three/fiber';
 import { Leva } from "leva";
 import { useSearchParams } from "next/navigation";
@@ -64,7 +64,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
                 eventPrefix="client"
             >
                 {children}
-                {showDebug && <Stats />}
                 <PerformanceMonitor
                     bounds={(refreshrate) => [59, refreshrate]}
                     onChange={({ factor }) => {
@@ -77,7 +76,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
 
                 <Preload />
             </Canvas>
-            <Leva hidden={!showDebug} />
+            <Leva hidden={!showDebug} collapsed />
         </>
     );
 }

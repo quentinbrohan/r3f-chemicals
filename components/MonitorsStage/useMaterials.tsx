@@ -70,7 +70,7 @@ export const useMaterials = ({
     });
 
 
-    const dopamineControls = enabled.includes(HORMONE_NAMES.DOPAMINE) ? useControls('Scene/Shaders/Dopamine', {
+    const dopamineControls = enabled.includes(HORMONE_NAMES.DOPAMINE) ? useControls('Shader: Dopamine', {
         Animation: folder({
             uvScale: {
                 value: 1.14,
@@ -147,7 +147,7 @@ export const useMaterials = ({
         }),
     }) : null;
 
-    const oxytocinControls = enabled.includes(HORMONE_NAMES.OXYTOCIN) ? useControls('Scene/Shaders/Oxytocin', {
+    const oxytocinControls = enabled.includes(HORMONE_NAMES.OXYTOCIN) ? useControls('Shader: Oxytocin', {
         'Animation': folder({
             uvScale: { value: 3.5, min: 0.5, max: 10, step: 0.1 },
             timeSpeed: { value: 0.045, min: 0, max: 0.5, step: 0.01 },
@@ -212,7 +212,7 @@ export const useMaterials = ({
         }),
     }) : null;
 
-    const serotoninControls = enabled.includes(HORMONE_NAMES.SEROTONIN) ? useControls('Scene/Shaders/Serotonin', {
+    const serotoninControls = enabled.includes(HORMONE_NAMES.SEROTONIN) ? useControls('Shader: Serotonin', {
         Animation: folder({
             timeSpeed: { value: 0.03, min: 0, max: 1, step: 0.01 },
             uvScale: { value: 2.0, min: 0.1, max: 10, step: 0.1 },

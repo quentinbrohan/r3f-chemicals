@@ -19,12 +19,12 @@ export const MonitorsStage = () => {
     const isMobile = useIsMobile();
 
     // LIGHTS
-    const [ambientLight, setAmbientLight] = useControls("Scene/Lights/Ambient", () => ({
+    const [ambientLight, setAmbientLight] = useControls("Ambient Light", () => ({
         intensity: { value: 0.7, min: 0, max: 2 },
         color: "#ffffff",
     }), { collapsed: true })
 
-    const [spotMain, setSpotMain] = useControls("Scene/Lights/Spot Main", () => ({
+    const [spotMain, setSpotMain] = useControls("Spot Light: Main", () => ({
         position: { value: [2, 4, 0] },
         intensity: { value: 0.8, min: 0, max: 2 },
         angle: { value: 0.6, min: 0, max: Math.PI / 2 },
@@ -33,7 +33,7 @@ export const MonitorsStage = () => {
         castShadow: !isMobile,
     }), { collapsed: true })
 
-    const [spotFill, setSpotFill] = useControls("Scene/Lights/Spot Fill", () => ({
+    const [spotFill, setSpotFill] = useControls("Spot Light: Fill", () => ({
         position: { value: [-3, 2, -2] },
         intensity: { value: 0.4, min: 0, max: 2 },
         angle: { value: 0.8, min: 0, max: Math.PI / 2 },
@@ -41,14 +41,14 @@ export const MonitorsStage = () => {
         color: "#4a4a6e",
     }), { collapsed: true })
 
-    const [directionalLight, setDirectionalLight] = useControls("Scene/Lights/Directional", () => ({
+    const [directionalLight, setDirectionalLight] = useControls("Directional Light", () => ({
         position: { value: [0, 10, 0] },
         intensity: { value: 0.6, min: 0, max: 2 },
         color: "#fff5e8",
         castShadow: true,
     }), { collapsed: true })
 
-    const [ceilingLight, setCeilingLight] = useControls("Scene/Lights/Ceiling", () => ({
+    const [ceilingLight, setCeilingLight] = useControls("Ceiling Light", () => ({
         position: { value: [0, 4, 0] },
         intensity: { value: 0.8, min: 0, max: 2 },
         distance: { value: 8, min: 0, max: 20 },
@@ -56,7 +56,7 @@ export const MonitorsStage = () => {
     }), { collapsed: true })
 
     // FOG
-    const [fog, setFog] = useControls("Scene/Fog", () => ({
+    const [fog, setFog] = useControls("Fog", () => ({
         enabled: true,
         color: "#000000",
         near: { value: 12, min: 0, max: 50 },
@@ -64,7 +64,7 @@ export const MonitorsStage = () => {
     }), { collapsed: true })
 
     // GROUND
-    const [ground, setGround] = useControls("Scene/Ground", () => ({
+    const [ground, setGround] = useControls("Ground", () => ({
         blurX: { value: 300, min: 0, max: 300 },
         blurY: { value: 100, min: 0, max: 300 },
         resolution: 1024,
@@ -81,23 +81,23 @@ export const MonitorsStage = () => {
     }), { collapsed: true })
 
     // ENVIRONMENT
-    const environment = useControls("Scene/Environment", {
+    const environment = useControls("Environment", {
         files: "/webgl/hdri/studio_small_03_1k.hdr",
         environmentIntensity: { value: 0.5, min: 0, max: 2 },
     }, { collapsed: true })
 
     // OBJECTS: POS + SCALE
-    const cablesCeiling = useControls("Scene/Objects/CablesCeiling", {
+    const cablesCeiling = useControls("Cables: Ceiling", {
         position: { value: [0, 4.5, 0.5] },
         scale: { value: 0.6, min: 0.1, max: 2 },
     }, { collapsed: true })
 
-    const cablesFloor = useControls("Scene/Objects/CablesFloor", {
+    const cablesFloor = useControls("Cables: Floor", {
         position: { value: [0.25, 0, 0] },
         scale: { value: 0.6, min: 0.1, max: 2 },
     }, { collapsed: true })
 
-    const monitors = useControls("Scene/Objects/Monitors", {
+    const monitors = useControls("Monitors", {
         position: { value: [0, 2, 0] },
         scale: { value: 1, min: 0.1, max: 2 },
     }, { collapsed: true })
@@ -110,7 +110,7 @@ export const MonitorsStage = () => {
             '/webgl/textures/floor/concrete_floor_worn_001_disp_1k.png',
         ])
 
-    const [postProcessing, setPostProcessing] = useControls('Scene/Postprocessing', () => ({
+    const [postProcessing, setPostProcessing] = useControls('Postprocessing', () => ({
         effectComposerEnabled: { value: true, label: 'Enabled' },
 
         Bloom: folder({

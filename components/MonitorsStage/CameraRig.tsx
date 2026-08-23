@@ -13,7 +13,7 @@ export const CameraRig = () => {
     const isMobile = useIsMobile()
     const hasAnimatedEntry = useRef(false)
 
-    const { fov, fovMobile } = useControls('Scene/Camera', {
+    const { fov, fovMobile } = useControls('Camera', {
         fov: { value: 45, min: 20, max: 120, label: 'FOV (desktop)' },
         fovMobile: { value: 65, min: 20, max: 120, label: 'FOV (mobile)' },
     }, { collapsed: true })
