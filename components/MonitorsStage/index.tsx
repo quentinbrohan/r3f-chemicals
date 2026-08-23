@@ -104,10 +104,10 @@ export const MonitorsStage = () => {
 
     const [
         normalMap, roughnessMap, colorMap, displacementMap] = useTexture([
-            '/webgl/textures/floor/concrete_floor_worn_001_nor_gl_1k.jpg',
-            '/webgl/textures/floor/concrete_floor_worn_001_rough_1k.jpg',
-            '/webgl/textures/floor/concrete_floor_worn_001_col_1k.jpg',
-            '/webgl/textures/floor/concrete_floor_worn_001_disp_1k.png',
+            '/webgl/textures/floor/concrete_floor_worn_001_nor_gl_1k.webp',
+            '/webgl/textures/floor/concrete_floor_worn_001_rough_1k.webp',
+            '/webgl/textures/floor/concrete_floor_worn_001_col_1k.webp',
+            '/webgl/textures/floor/concrete_floor_worn_001_disp_1k.webp',
         ])
 
     const [postProcessing, setPostProcessing] = useControls('Postprocessing', () => ({

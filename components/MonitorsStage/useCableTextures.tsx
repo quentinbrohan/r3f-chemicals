@@ -3,10 +3,10 @@ import { useControls } from "leva"
 
 export const useCablesTextures = () => {
     return useTexture([
-        '/webgl/textures/cables/Rubber004_1K-JPG_Color.jpg',
-        '/webgl/textures/cables/Rubber004_1K-JPG_NormalGL.jpg',
-        '/webgl/textures/cables/Rubber004_1K-JPG_Roughness.jpg',
-        '/webgl/textures/cables/Rubber004_1K-JPG_Displacement.jpg',
+        '/webgl/textures/cables/Rubber004_1K-JPG_Color.webp',
+        '/webgl/textures/cables/Rubber004_1K-JPG_NormalGL.webp',
+        '/webgl/textures/cables/Rubber004_1K-JPG_Roughness.webp',
+        '/webgl/textures/cables/Rubber004_1K-JPG_Displacement.webp',
     ])
 }
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { useProgress } from '@react-three/drei'
 import { useStore } from '@/lib/store'
 import { useThree } from '@react-three/fiber'
 import { useEffect } from 'react'
@@ -12,9 +13,10 @@ export function Preload() {
     const camera = useThree((state) => state.camera)
     const scene = useThree((state) => state.scene)
     const [isLoaderLoaded, setIsLoaderLoader] = useStore(useShallow((state) => [state.isLoaderLoaded, state.setIsLoaderLoaded]))
+    const { active } = useProgress()
 
     useEffect(() => {
-        if (isLoaderLoaded) return
+        if (active || isLoaderLoaded) return
 
 
         async function load() {
@@ -44,6 +46,7 @@ export function Preload() {
 
         load()
     }, [
+        active,
         camera,
         gl,
         scene,
