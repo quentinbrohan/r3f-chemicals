@@ -15,8 +15,8 @@ export function CableMaterial({ label, defaultEnvMapIntensity = 1 }: { label: st
 
     const materialProps = useControls(label, {
         color: "#0d0d0d",
-        metalness: { value: 0.0, min: 0, max: 1, step: 0.01 },
-        roughness: { value: 0.6, min: 0, max: 1, step: 0.01 },
+        metalness: { value: 0.3, min: 0, max: 1, step: 0.01 },
+        roughness: { value: 0.4, min: 0, max: 1, step: 0.01 },
         opacity: { value: 1, min: 0, max: 1, step: 0.01 },
         transparent: false,
         envMapIntensity: { value: defaultEnvMapIntensity, min: 0, max: 5, step: 0.1 },

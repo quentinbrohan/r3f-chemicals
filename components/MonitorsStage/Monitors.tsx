@@ -65,8 +65,8 @@ const MonitorFrameMaterial = () => {
 
     const materialProps = useControls("Monitor: Frame Material", {
         color: "#2a2a2a",
-        metalness: { value: 0.6, min: 0, max: 1, step: 0.01 },
-        roughness: { value: 0.4, min: 0, max: 1, step: 0.01 },
+        metalness: { value: 1, min: 0, max: 1, step: 0.01 },
+        roughness: { value: 0.2, min: 0, max: 1, step: 0.01 },
         opacity: { value: 1, min: 0, max: 1, step: 0.01 },
         transparent: false,
         envMapIntensity: { value: 0.5, min: 0, max: 5, step: 0.1 },
