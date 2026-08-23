@@ -76,7 +76,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
 
                 <Preload />
             </Canvas>
-            <Leva hidden={!showDebug} collapsed />
+            <Leva hidden={!showDebug} />
         </>
     );
 }
