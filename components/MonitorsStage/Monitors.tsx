@@ -57,10 +57,10 @@ const MONITORS_POSITION: THREE.Vector3Tuple[] = [
 
 const MonitorFrameMaterial = () => {
     const [normalMap, roughnessMap, colorMap, metalnessMap] = useTexture([
-        '/webgl/textures/monitors/Metal011_1K-JPG_NormalGL.jpg',
-        '/webgl/textures/monitors/Metal011_1K-JPG_Roughness.jpg',
-        '/webgl/textures/monitors/Metal011_1K-JPG_Color.jpg',
-        '/webgl/textures/monitors/Metal011_1K-JPG_Metalness.jpg',
+        '/webgl/textures/monitors/Metal011_1K-JPG_NormalGL.webp',
+        '/webgl/textures/monitors/Metal011_1K-JPG_Roughness.webp',
+        '/webgl/textures/monitors/Metal011_1K-JPG_Color.webp',
+        '/webgl/textures/monitors/Metal011_1K-JPG_Metalness.webp',
     ])
 
     const materialProps = useControls("Monitor: Frame Material", {
