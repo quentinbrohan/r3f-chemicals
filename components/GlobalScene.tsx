@@ -60,6 +60,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({ children, postprocessing = fa
                     // Prevent Chrome/Safari swipe-to-navigate triggering on canvas drag
                     touchAction: 'none',
                 }}
+                className="bg-background"
                 eventSource={document.documentElement}
                 eventPrefix="client"
             >
