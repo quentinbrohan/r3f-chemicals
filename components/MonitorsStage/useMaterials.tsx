@@ -7,9 +7,7 @@ import { getDopamineShaderMaterial, getOxytocinShaderMaterial, getSerotoninShade
 import { HORMONE_NAMES, HormoneNames } from '@/lib/store';
 
 
-// TODO: move file
 export const useMaterials = ({
-    // TODO: condition returned data based on enabled
     enabled = ['DOPAMINE', 'OXYTOCIN', 'SEROTONIN'],
     resolution,
 }: {
@@ -23,9 +21,8 @@ export const useMaterials = ({
         return {
             value: resolution ?? new THREE.Vector2(size.width, size.height)
         }
-    }, [resolution, size.width, size.height]) // Add dependencies
+    }, [resolution, size.width, size.height])
 
-    // TODO subfile for each hormone (material + controls)
     const [dopamineMaterial] = useState<THREE.ShaderMaterial | null>(() => {
         if (!enabled.includes(HORMONE_NAMES.DOPAMINE)) return null
 
@@ -70,7 +67,7 @@ export const useMaterials = ({
     });
 
 
-    const dopamineControls = enabled.includes(HORMONE_NAMES.DOPAMINE) ? useControls('Shader: Dopamine', {
+    const dopamineControls = useControls('Shader: Dopamine', {
         Animation: folder({
             uvScale: {
                 value: 1.14,
@@ -145,9 +142,9 @@ export const useMaterials = ({
             patternOffset2Y: { value: 8.0, min: -10, max: 10, step: 0.1 },
             patternFinalMult: { value: 3.5, min: 0, max: 5, step: 0.1 },
         }, { collapsed: true }),
-    }, { collapsed: true }) : null;
+    }, { collapsed: true });
 
-    const oxytocinControls = enabled.includes(HORMONE_NAMES.OXYTOCIN) ? useControls('Shader: Oxytocin', {
+    const oxytocinControls = useControls('Shader: Oxytocin', {
         'Animation': folder({
             uvScale: { value: 3.5, min: 0.5, max: 10, step: 0.1 },
             timeSpeed: { value: 0.045, min: 0, max: 0.5, step: 0.01 },
@@ -210,9 +207,9 @@ export const useMaterials = ({
             patternOffset2Y: { value: 7.9, min: -10, max: 10, step: 0.1 },
             patternFinalMult: { value: 2.3, min: 0, max: 5, step: 0.01 },
         }, { collapsed: true }),
-    }, { collapsed: true }) : null;
+    }, { collapsed: true });
 
-    const serotoninControls = enabled.includes(HORMONE_NAMES.SEROTONIN) ? useControls('Shader: Serotonin', {
+    const serotoninControls = useControls('Shader: Serotonin', {
         Animation: folder({
             timeSpeed: { value: 0.03, min: 0, max: 1, step: 0.01 },
             uvScale: { value: 2.0, min: 0.1, max: 10, step: 0.1 },
@@ -282,7 +279,7 @@ export const useMaterials = ({
             patternOffset2Y: { value: 8.0, min: -10, max: 10, step: 0.1 },
             patternFinalMult: { value: 2.8, min: 0, max: 5, step: 0.1 },
         }, { collapsed: true }),
-    }, { collapsed: true }) : null;
+    }, { collapsed: true });
 
     useFrame(() => {
         const data = [

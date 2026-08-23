@@ -126,9 +126,9 @@ const HormoneLabel: React.FC<HormoneLabelProps> = ({
         const target = isHovered ? 1 : 0
         easing.damp(targetOpacity, 'current', target, 0.3, delta)
 
-        if (meshRef.current.material) {
-            // @ts-ignore TODO: fix type
-            meshRef.current.material.opacity = targetOpacity.current
+        const mat = meshRef.current.material
+        if (mat && !Array.isArray(mat)) {
+            mat.opacity = targetOpacity.current
             meshRef.current.visible = targetOpacity.current > 0.01
         }
     })
@@ -221,9 +221,13 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
 
     const lastTapTimeRef = useRef<Record<string, number>>({})
     const DOUBLE_TAP_DELAY = 300
+
     const monitorHandlers = (name: MonitorData['name']) => ({
-        onPointerEnter: () => onPointerEnterMonitor(name),
-        onPointerLeave: () => onPointerLeaveMonitor(),
+        onPointerOver: (event: ThreeEvent<PointerEvent>) => {
+            event.stopPropagation() // stop raycast on closest object
+            onPointerEnterMonitor(name)
+        },
+        onPointerOut: () => onPointerLeaveMonitor(),
         onDoubleClick: () => onDoubleClick(name),
 
         // touch events for mobile
@@ -236,9 +240,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 const lastTap = lastTapTimeRef.current[name] || 0
 
                 if (now - lastTap < DOUBLE_TAP_DELAY) {
-                    // Double-tap detected!
                     onDoubleClick(name)
-                    lastTapTimeRef.current[name] = 0 // Reset
+                    lastTapTimeRef.current[name] = 0
                 } else {
                     lastTapTimeRef.current[name] = now
                 }
@@ -315,10 +318,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         color: monitorData[2].color,
     }, { collapsed: true })
 
-    const { debugHitboxes } = useControls('Debug', {
-        debugHitboxes: { value: false, label: 'Show hitboxes' },
-    }, { collapsed: true })
-
     const router = useRouter();
 
     return (
@@ -334,8 +333,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLR.geometry}
                 material={nodes.FrameLR.material}
                 position={getFramePosition(MONITORS_POSITION[0])}
-                raycast={() => null}
-                renderOrder={0}
             >
                 <MonitorFrameMaterial />
             </mesh>
@@ -347,8 +344,9 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorLR!}
                 material={dopamineMaterial!}
                 position={MONITORS_POSITION[0]}
-                raycast={() => null}
-                renderOrder={1}
+                {...monitorHandlers('DOPAMINE')}
+
+
             />
             <mesh
                 name="FrameC"
@@ -357,8 +355,6 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameC.geometry}
                 material={nodes.FrameC.material}
                 position={getFramePosition(MONITORS_POSITION[1])}
-                raycast={() => null}
-                renderOrder={0}
             >
                 <MonitorFrameMaterial />
             </mesh>
@@ -370,8 +366,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorC!}
                 material={oxytocinMaterial!}
                 position={MONITORS_POSITION[1]}
-                raycast={() => null}
-                renderOrder={1}
+                {...monitorHandlers('OXYTOCIN')}
             />
             {/* <mesh
                 name="FrameTL"
@@ -413,8 +408,8 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={fixedGeometries.MonitorLL!}
                 material={serotoninMaterial!}
                 position={MONITORS_POSITION[2]}
-                raycast={() => null}
-                renderOrder={1}
+                {...monitorHandlers('SEROTONIN')}
+
             />
             <mesh
                 name="FrameLL"
@@ -423,33 +418,9 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
                 geometry={nodes.FrameLL.geometry}
                 material={nodes.FrameLL.material}
                 position={getFramePosition(MONITORS_POSITION[2])}
-                raycast={() => null}
-                renderOrder={0}
             >
                 <MonitorFrameMaterial />
             </mesh>
-
-            {/* Invisible hit planes — one per monitor, in front of screen+frame.
-                Single raycast target per monitor eliminates the pointer-event race
-                that caused hover to get stuck when moving between monitors. */}
-            <group name="HitPlanes">
-                {monitorData.map((monitor) => (
-                    <mesh
-                        key={`hitplane-${monitor.name}`}
-                        position={[monitor.position[0], monitor.position[1], monitor.position[2] + 0.1]}
-                        {...monitorHandlers(monitor.name)}
-                    >
-                        <planeGeometry args={[2.5, 3.6]} />
-                        <meshBasicMaterial
-                            transparent
-                            opacity={debugHitboxes ? 0.25 : 0}
-                            color="cyan"
-                            depthWrite={false}
-                        />
-                    </mesh>
-                ))}
-            </group>
-
             <group name="Labels">
                 {monitorData.map((monitor) => (
                     <HormoneLabel key={monitor.name} monitor={monitor} isHovered={
