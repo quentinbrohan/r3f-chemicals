@@ -1,9 +1,13 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Header from '@/components/Header'
 import { inter } from './fonts'
 import { GSAP } from '@/components/GSAP'
+
+export const viewport: Viewport = {
+  userScalable: false,
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chemicals.quentinbrohan.fr'),
