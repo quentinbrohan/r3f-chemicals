@@ -32,7 +32,7 @@ type GLTFResult = GLTF & {
 const CableMaterial: React.FC = () => {
     const [colorMap, normalMap, roughnessMap, displacementMap] = useCablesTextures()
 
-    const materialProps = useControls("Scene/Objects/CablesFloor/Material", {
+    const materialProps = useControls("Cables Floor: Material", {
         color: "#0d0d0d",
         metalness: { value: 0.0, min: 0, max: 1, step: 0.01 },
         roughness: { value: 0.6, min: 0, max: 1, step: 0.01 },

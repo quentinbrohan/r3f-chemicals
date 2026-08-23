@@ -63,7 +63,7 @@ const MonitorFrameMaterial = () => {
         '/webgl/textures/monitors/Metal011_1K-JPG_Metalness.jpg',
     ])
 
-    const materialProps = useControls("Scene/Objects/Monitors/Frame Material", {
+    const materialProps = useControls("Monitor: Frame Material", {
         color: "#2a2a2a",
         metalness: { value: 0.6, min: 0, max: 1, step: 0.01 },
         roughness: { value: 0.4, min: 0, max: 1, step: 0.01 },
@@ -115,7 +115,7 @@ const HormoneLabel: React.FC<HormoneLabelProps> = ({
     const meshRef = useRef<THREE.Mesh>(null)
     const targetOpacity = useRef(0)
 
-    const controls = useControls(`Scene/Texts/Label/${monitor.name}`, {
+    const controls = useControls(`Label: ${monitor.name}`, {
         rotation: { value: getTextRotation(monitor.name) },
         position: { value: position },
     }, { collapsed: true })
@@ -288,7 +288,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         return [centeredX, y, z]
     }
 
-    const pointLightDopamine = useControls("Scene/Lights/Point Dopamine", {
+    const pointLightDopamine = useControls("Point Light: Dopamine", {
         position: { value: getCenteredPos(monitorData[0].position, 'left') },
         intensity: { value: 1.5, min: 0, max: 2 },
         distance: { value: 6, min: 0, max: 50 },
@@ -297,7 +297,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         color: monitorData[0].color,
     }, { collapsed: true })
 
-    const pointLightOxytocin = useControls("Scene/Lights/Point Oxytocin", {
+    const pointLightOxytocin = useControls("Point Light: Oxytocin", {
         position: { value: monitorData[1].position },
         intensity: { value: 1.5, min: 0, max: 2 },
         distance: { value: 6, min: 0, max: 50 },
@@ -306,7 +306,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         color: monitorData[1].color,
     }, { collapsed: true })
 
-    const pointLightSerotonin = useControls("Scene/Lights/Point Serotonin", {
+    const pointLightSerotonin = useControls("Point Light: Serotonin", {
         position: { value: getCenteredPos(monitorData[2].position, 'right') },
         intensity: { value: 1.5, min: 0, max: 2 },
         distance: { value: 6, min: 0, max: 50 },
@@ -315,7 +315,7 @@ export function Monitors(props: React.JSX.IntrinsicElements['group']) {
         color: monitorData[2].color,
     }, { collapsed: true })
 
-    const { debugHitboxes } = useControls('Scene/Debug', {
+    const { debugHitboxes } = useControls('Debug', {
         debugHitboxes: { value: false, label: 'Show hitboxes' },
     }, { collapsed: true })
 
