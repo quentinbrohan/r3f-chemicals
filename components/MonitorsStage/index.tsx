@@ -65,19 +65,20 @@ export const MonitorsStage = () => {
 
     // GROUND
     const [ground, setGround] = useControls("Ground", () => ({
-        blurX: { value: 300, min: 0, max: 300 },
-        blurY: { value: 100, min: 0, max: 300 },
+        blurX: { value: 1024, step: 64, min: 0, max: 1034 },
+        blurY: { value: 256, step: 64, min: 0, max: 256 },
         resolution: 1024,
-        mixBlur: { value: 0.6, min: 0, max: 1 },
-        mixStrength: { value: 40, min: 0, max: 100 },
-        depthScale: { value: 1.2, min: 0, max: 10 },
-        minDepthThreshold: { value: 0.4, min: 0, max: 1 },
+        mixBlur: { value: 4, min: 0, max: 100 },
+        mixStrength: { value: 30, min: 0, max: 100 },
+        depthScale: { value: 0, min: 0, max: 10 },
+        minDepthThreshold: { value: 0.9, min: 0, max: 1 },
         maxDepthThreshold: { value: 1, min: 0, max: 1 },
         color: "#454545",
         metalness: { value: 0.0, min: 0, max: 1 },
-        roughness: { value: 0.7, min: 0, max: 1 },
-        mirror: { value: 0.5, min: 0, max: 1 },
-        displacementScale: { value: 1, min: 0, max: 5 }
+        roughness: { value: 0.7, min: 0, max: 10 },
+        mirror: { value: 0.85, min: 0, max: 1 },
+        displacementScale: { value: 1, min: 0, max: 5 },
+        distortion: { value: 0.1, min: 0, max: 1 },
     }), { collapsed: true })
 
     // ENVIRONMENT
@@ -189,6 +190,7 @@ export const MonitorsStage = () => {
                         metalness: ground.metalness,
                         roughness: ground.roughness,
                         mirror: ground.mirror,
+                        distortion: ground.distortion
                     }}
                     roughnessMap={roughnessMap}
                     normalMap={normalMap}
