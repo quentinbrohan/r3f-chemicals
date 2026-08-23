@@ -13,6 +13,8 @@ export const CameraRig = () => {
     const isMobile = useIsMobile()
     const hasAnimatedEntry = useRef(false)
 
+    console.log({isMobile});
+    
     const { fov, fovMobile } = useControls('Camera', {
         fov: { value: 45, min: 20, max: 120, label: 'FOV (desktop)' },
         fovMobile: { value: 65, min: 20, max: 120, label: 'FOV (mobile)' },
@@ -68,6 +70,40 @@ export const CameraRig = () => {
         }
         window.addEventListener('wheel', onWheel)
         return () => window.removeEventListener('wheel', onWheel)
+    }, [])
+
+    // Handle pinch zoom on mobile
+    useEffect(() => {
+        let lastDistance = 0
+
+        const onTouchStart = (e: TouchEvent) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX
+                const dy = e.touches[0].clientY - e.touches[1].clientY
+                lastDistance = Math.sqrt(dx * dx + dy * dy)
+            }
+        }
+
+        const onTouchMove = (e: TouchEvent) => {
+            if (e.touches.length !== 2) return
+            const dx = e.touches[0].clientX - e.touches[1].clientX
+            const dy = e.touches[0].clientY - e.touches[1].clientY
+            const distance = Math.sqrt(dx * dx + dy * dy)
+            const delta = distance - lastDistance
+            targetZ.current = THREE.MathUtils.clamp(
+                targetZ.current - delta * 0.02,
+                minZoom,
+                maxZoom
+            )
+            lastDistance = distance
+        }
+
+        window.addEventListener('touchstart', onTouchStart, { passive: true })
+        window.addEventListener('touchmove', onTouchMove, { passive: true })
+        return () => {
+            window.removeEventListener('touchstart', onTouchStart)
+            window.removeEventListener('touchmove', onTouchMove)
+        }
     }, [])
 
     useFrame((state, delta) => {
